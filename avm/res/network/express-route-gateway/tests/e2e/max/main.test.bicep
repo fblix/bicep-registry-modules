@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -37,7 +37,6 @@ module nestedDependencies 'dependencies.bicep' = {
   params: {
     virtualWANName: 'dep-${namePrefix}-vwan-${serviceShort}'
     virtualHubName: 'dep-${namePrefix}-hub-${serviceShort}'
-    location: resourceLocation
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
   }
 }
@@ -57,18 +56,20 @@ module testDeployment '../../../main.bicep' = {
     }
     autoScaleConfigurationBoundsMin: 2
     autoScaleConfigurationBoundsMax: 3
-    virtualHubId: nestedDependencies.outputs.virtualHubResourceId
+    virtualHubResourceId: nestedDependencies.outputs.virtualHubResourceId
     lock: {
       kind: 'CanNotDelete'
       name: 'myCustomLockName'
     }
     roleAssignments: [
       {
+        name: '78ad6c3f-7f77-4d26-9576-dbd947241ef0'
         roleDefinitionIdOrName: 'Owner'
         principalId: nestedDependencies.outputs.managedIdentityPrincipalId
         principalType: 'ServicePrincipal'
       }
       {
+        name: guid('Custom seed ${namePrefix}${serviceShort}')
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
         principalId: nestedDependencies.outputs.managedIdentityPrincipalId
         principalType: 'ServicePrincipal'
@@ -83,7 +84,4 @@ module testDeployment '../../../main.bicep' = {
       }
     ]
   }
-  dependsOn: [
-    nestedDependencies
-  ]
 }

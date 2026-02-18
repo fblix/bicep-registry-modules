@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -37,13 +37,12 @@ module nestedDependencies 'dependencies.bicep' = {
   params: {
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
-    location: resourceLocation
   }
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -51,7 +50,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -66,23 +64,11 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      lock: {
-        kind: 'CanNotDelete'
-        name: 'myCustomLockName'
-      }
-      location: resourceLocation
-      skuObject: {
-        name: 'Premium'
-        capacity: 2
-      }
-      premiumMessagingPartitions: 1
-      zoneRedundant: true
       tags: {
         'hidden-title': 'This is visible in the resource name'
         Environment: 'Non-Prod'
         Role: 'DeploymentValidation'
       }
-      roleAssignments: []
       networkRuleSets: {
         defaultAction: 'Deny'
         trustedServiceAccessEnabled: true
@@ -180,9 +166,13 @@ module testDeployment '../../../main.bicep' = [
         {
           service: 'namespace'
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           tags: {
             'hidden-title': 'This is visible in the resource name'
             Environment: 'Non-Prod'
@@ -190,19 +180,7 @@ module testDeployment '../../../main.bicep' = [
           }
         }
       ]
-      managedIdentities: {
-        systemAssigned: true
-        userAssignedResourcesIds: [
-          nestedDependencies.outputs.managedIdentityResourceId
-        ]
-      }
-      disableLocalAuth: true
-      publicNetworkAccess: 'Enabled'
-      minimumTlsVersion: '1.2'
+      publicNetworkAccess: 'Disabled'
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

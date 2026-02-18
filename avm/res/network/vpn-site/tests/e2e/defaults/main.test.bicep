@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -35,7 +35,6 @@ module nestedDependencies 'dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
   params: {
-    location: resourceLocation
     virtualWANName: 'dep-${namePrefix}-vw-${serviceShort}'
   }
 }
@@ -50,16 +49,12 @@ module testDeployment '../../../main.bicep' = [
     scope: resourceGroup
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
-      location: resourceLocation
       name: '${namePrefix}-${serviceShort}'
-      virtualWanId: nestedDependencies.outputs.virtualWWANResourceId
+      virtualWanResourceId: nestedDependencies.outputs.virtualWWANResourceId
       addressPrefixes: [
         '10.0.0.0/16'
       ]
       ipAddress: '1.2.3.4'
     }
-    dependsOn: [
-      nestedDependencies
-    ]
   }
 ]

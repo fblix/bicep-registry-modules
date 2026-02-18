@@ -17,8 +17,8 @@ param resourceLocation string = deployment().location
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 param serviceShort string = 'rsvwaf'
 
-@description('Optional. Enable telemetry via a Globally Unique Identifier (GUID).')
-param enableDefaultTelemetry bool = true
+@description('Generated. Used as a basis for unique resource names.')
+param baseTime string = utcNow('u')
 
 @description('Optional. A token to inject into the name of each resource.')
 param namePrefix string = '#_namePrefix_#'
@@ -29,7 +29,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -38,7 +38,7 @@ module nestedDependencies 'dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
   params: {
-    location: resourceLocation
+    keyVaultName: 'dep-${namePrefix}-kv-${serviceShort}-${substring(uniqueString(baseTime), 0, 3)}'
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
   }
@@ -46,7 +46,7 @@ module nestedDependencies 'dependencies.bicep' = {
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -54,7 +54,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -68,8 +67,6 @@ module testDeployment '../../../main.bicep' = [
     scope: resourceGroup
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
-      location: resourceLocation
-      enableTelemetry: enableDefaultTelemetry
       name: '${namePrefix}${serviceShort}001'
       backupConfig: {
         enhancedSecurityState: 'Disabled'
@@ -305,10 +302,6 @@ module testDeployment '../../../main.bicep' = [
           }
         }
       ]
-      backupStorageConfig: {
-        crossRegionRestoreFlag: true
-        storageModelType: 'GeoRedundant'
-      }
       replicationAlertSettings: {
         customEmailAddresses: [
           'test.user@testcompany.com'
@@ -330,10 +323,6 @@ module testDeployment '../../../main.bicep' = [
           workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
         }
       ]
-      lock: {
-        kind: 'CanNotDelete'
-        name: 'myCustomLockName'
-      }
       managedIdentities: {
         systemAssigned: true
         userAssignedResourceIds: [
@@ -384,9 +373,13 @@ module testDeployment '../../../main.bicep' = [
               }
             }
           ]
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
           tags: {
             'hidden-title': 'This is visible in the resource name'
@@ -398,20 +391,25 @@ module testDeployment '../../../main.bicep' = [
       monitoringSettings: {
         azureMonitorAlertSettings: {
           alertsForAllJobFailures: 'Enabled'
+          alertsForAllFailoverIssues: 'Enabled'
+          alertsForAllReplicationIssues: 'Enabled'
         }
         classicAlertSettings: {
           alertsForCriticalOperations: 'Enabled'
+          emailNotificationsForSiteRecovery: 'Enabled'
         }
       }
-      securitySettings: {
-        immutabilitySettings: {
-          state: 'Unlocked'
-        }
+      immutabilitySettingState: 'Unlocked'
+      customerManagedKey: {
+        keyName: nestedDependencies.outputs.keyVaultEncryptionKeyName
+        keyVaultResourceId: nestedDependencies.outputs.keyVaultResourceId
+        userAssignedIdentityResourceId: nestedDependencies.outputs.managedIdentityResourceId
+        autoRotationEnabled: true
       }
-      tags: {
-        'hidden-title': 'This is visible in the resource name'
-        Environment: 'Non-Prod'
-        Role: 'DeploymentValidation'
+      softDeleteSettings: {
+        enhancedSecurityState: 'Enabled'
+        softDeleteRetentionPeriodInDays: 14
+        softDeleteState: 'Enabled'
       }
     }
   }

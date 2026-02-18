@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -42,7 +42,7 @@ module nestedDependencies 'dependencies.bicep' = {
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -68,6 +68,53 @@ module testDeployment '../../../main.bicep' = [
       bandwidthInMbps: 50
       peeringLocation: 'Amsterdam'
       serviceProviderName: 'Equinix'
+      peerings: [
+        {
+          name: 'AzurePrivatePeering'
+          properties: {
+            peeringType: 'AzurePrivatePeering'
+            peerASN: 65001
+            primaryPeerAddressPrefix: '10.0.0.0/30'
+            secondaryPeerAddressPrefix: '10.0.0.4/30'
+            vlanId: 100
+            state: 'Enabled'
+            ipv6PeeringConfig: {
+              primaryPeerAddressPrefix: '2001:db8::/126'
+              secondaryPeerAddressPrefix: '2001:db8::8/126'
+            }
+          }
+        }
+        {
+          name: 'MicrosoftPeering'
+          properties: {
+            peeringType: 'MicrosoftPeering'
+            peerASN: 65002
+            primaryPeerAddressPrefix: '203.0.113.0/30'
+            secondaryPeerAddressPrefix: '203.0.113.4/30'
+            vlanId: 200
+            state: 'Disabled'
+            microsoftPeeringConfig: {
+              advertisedPublicPrefixes: [
+                '203.0.113.0/24'
+              ]
+              customerASN: 65002
+              routingRegistryName: 'ARIN'
+            }
+            ipv6PeeringConfig: {
+              primaryPeerAddressPrefix: '2001:db8:100::/126'
+              secondaryPeerAddressPrefix: '2001:db8:100::8/126'
+              microsoftPeeringConfig: {
+                advertisedPublicPrefixes: [
+                  '2001:db8:200::/48'
+                ]
+                customerASN: 65002
+                routingRegistryName: 'ARIN'
+              }
+            }
+          }
+        }
+      ]
+      globalReachEnabled: true
       diagnosticSettings: [
         {
           name: 'customSetting'
@@ -82,17 +129,20 @@ module testDeployment '../../../main.bicep' = [
           workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
         }
       ]
+      enableDirectPortRateLimit: true
       lock: {
         kind: 'CanNotDelete'
         name: 'myCustomLockName'
       }
       roleAssignments: [
         {
+          name: 'd7aa3dfa-6ba6-4ed8-b561-2164fbb1327e'
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
         {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
@@ -115,6 +165,5 @@ module testDeployment '../../../main.bicep' = [
         Role: 'DeploymentValidation'
       }
     }
-    dependsOn: [nestedDependencies]
   }
 ]

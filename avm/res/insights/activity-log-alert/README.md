@@ -2,6 +2,14 @@
 
 This module deploys an Activity Log Alert.
 
+You can reference the module as follows:
+```bicep
+module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
@@ -13,10 +21,11 @@ This module deploys an Activity Log Alert.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Insights/activityLogAlerts` | [2020-10-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2020-10-01/activityLogAlerts) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Insights/activityLogAlerts` | 2020-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.insights_activitylogalerts.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2020-10-01/activityLogAlerts)</li></ul> |
 
 ## Usage examples
 
@@ -34,6 +43,8 @@ The following section provides usage examples for the module, which were used to
 
 This instance deploys the module with the minimum set of required parameters.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
 
 <details>
 
@@ -41,7 +52,6 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>' = {
-  name: 'activityLogAlertDeployment'
   params: {
     // Required parameters
     conditions: [
@@ -86,7 +96,7 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -140,9 +150,57 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/activity-log-alert:<version>'
+
+// Required parameters
+param conditions = [
+  {
+    equals: 'ServiceHealth'
+    field: 'category'
+  }
+  {
+    anyOf: [
+      {
+        equals: 'Incident'
+        field: 'properties.incidentType'
+      }
+      {
+        equals: 'Maintenance'
+        field: 'properties.incidentType'
+      }
+    ]
+  }
+  {
+    containsAny: [
+      'Storage'
+    ]
+    field: 'properties.impactedServices[*].ServiceName'
+  }
+  {
+    containsAny: [
+      'West Europe'
+    ]
+    field: 'properties.impactedServices[*].ImpactedRegions[*].RegionName'
+  }
+]
+param name = 'ialamin001'
+// Non-required parameters
+param location = 'global'
+```
+
+</details>
+<p>
+
 ### Example 2: _Using large parameter set_
 
 This instance deploys the module with most of its features enabled.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
 
 
 <details>
@@ -151,7 +209,6 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>' = {
-  name: 'activityLogAlertDeployment'
   params: {
     // Required parameters
     conditions: [
@@ -194,13 +251,19 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
       }
     ]
     location: 'global'
+    lock: {
+      kind: 'CanNotDelete'
+      name: 'myCustomLockName'
+    }
     roleAssignments: [
       {
+        name: 'be96d7a9-6596-40c7-9acd-db6acd5cd41b'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -228,7 +291,7 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -284,14 +347,22 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
     "location": {
       "value": "global"
     },
+    "lock": {
+      "value": {
+        "kind": "CanNotDelete",
+        "name": "myCustomLockName"
+      }
+    },
     "roleAssignments": {
       "value": [
         {
+          "name": "be96d7a9-6596-40c7-9acd-db6acd5cd41b",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -322,9 +393,95 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/activity-log-alert:<version>'
+
+// Required parameters
+param conditions = [
+  {
+    equals: 'ServiceHealth'
+    field: 'category'
+  }
+  {
+    anyOf: [
+      {
+        equals: 'Incident'
+        field: 'properties.incidentType'
+      }
+      {
+        equals: 'Maintenance'
+        field: 'properties.incidentType'
+      }
+    ]
+  }
+  {
+    containsAny: [
+      'Action Groups'
+      'Activity Logs & Alerts'
+    ]
+    field: 'properties.impactedServices[*].ServiceName'
+  }
+  {
+    containsAny: [
+      'Global'
+      'West Europe'
+    ]
+    field: 'properties.impactedServices[*].ImpactedRegions[*].RegionName'
+  }
+]
+param name = 'ialamax001'
+// Non-required parameters
+param actions = [
+  {
+    actionGroupId: '<actionGroupId>'
+  }
+]
+param location = 'global'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param roleAssignments = [
+  {
+    name: 'be96d7a9-6596-40c7-9acd-db6acd5cd41b'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param scopes = [
+  '<id>'
+]
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
+
 ### Example 3: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -333,7 +490,6 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>' = {
-  name: 'activityLogAlertDeployment'
   params: {
     // Required parameters
     conditions: [
@@ -375,7 +531,6 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
         actionGroupId: '<actionGroupId>'
       }
     ]
-    location: 'global'
     scopes: [
       '<id>'
     ]
@@ -393,7 +548,7 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -446,9 +601,6 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
         }
       ]
     },
-    "location": {
-      "value": "global"
-    },
     "scopes": {
       "value": [
         "<id>"
@@ -468,6 +620,65 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/activity-log-alert:<version>'
+
+// Required parameters
+param conditions = [
+  {
+    equals: 'ServiceHealth'
+    field: 'category'
+  }
+  {
+    anyOf: [
+      {
+        equals: 'Incident'
+        field: 'properties.incidentType'
+      }
+      {
+        equals: 'Maintenance'
+        field: 'properties.incidentType'
+      }
+    ]
+  }
+  {
+    containsAny: [
+      'Action Groups'
+      'Activity Logs & Alerts'
+    ]
+    field: 'properties.impactedServices[*].ServiceName'
+  }
+  {
+    containsAny: [
+      'Global'
+      'West Europe'
+    ]
+    field: 'properties.impactedServices[*].ImpactedRegions[*].RegionName'
+  }
+]
+param name = 'ialawaf001'
+// Non-required parameters
+param actions = [
+  {
+    actionGroupId: '<actionGroupId>'
+  }
+]
+param scopes = [
+  '<id>'
+]
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -487,6 +698,7 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
 | [`enabled`](#parameter-enabled) | bool | Indicates whether this alert is enabled. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`location`](#parameter-location) | string | Location for all resources. |
+| [`lock`](#parameter-lock) | object | The lock settings of the service. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
 | [`scopes`](#parameter-scopes) | array | The list of resource IDs that this Activity Log Alert is scoped to. |
 | [`tags`](#parameter-tags) | object | Tags of the resource. |
@@ -545,12 +757,62 @@ Location for all resources.
 - Type: string
 - Default: `'global'`
 
+### Parameter: `lock`
+
+The lock settings of the service.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
+| [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
+
+### Parameter: `lock.kind`
+
+Specify the type of lock.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'CanNotDelete'
+    'None'
+    'ReadOnly'
+  ]
+  ```
+
+### Parameter: `lock.name`
+
+Specify the name of lock.
+
+- Required: No
+- Type: string
+
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments`
 
 Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -567,6 +829,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -617,6 +880,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -654,7 +924,6 @@ Tags of the resource.
 - Required: No
 - Type: object
 
-
 ## Outputs
 
 | Output | Type | Description |
@@ -666,8 +935,13 @@ Tags of the resource.
 
 ## Cross-referenced modules
 
-_None_
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.5.1` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.0` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

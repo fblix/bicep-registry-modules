@@ -4,12 +4,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "4754954307876642999"
+      "version": "0.37.4.10188",
+      "templateHash": "13047991468364354176"
     },
     "name": "Synapse Workspaces Keys",
-    "description": "This module deploys a Synapse Workspaces Key.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a Synapse Workspaces Key."
   },
   "parameters": {
     "name": {
@@ -44,7 +43,7 @@
       "name": "[format('{0}/{1}', parameters('workspaceName'), parameters('name'))]",
       "properties": {
         "isActiveCMK": "[parameters('isActiveCMK')]",
-        "keyVaultUrl": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('keyVaultResourceId'), '/')[2], split(parameters('keyVaultResourceId'), '/')[4]), 'Microsoft.KeyVault/vaults/keys', last(split(parameters('keyVaultResourceId'), '/')), parameters('name')), '2023-02-01').keyUri]"
+        "keyVaultUrl": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('keyVaultResourceId'), '/')[2], split(parameters('keyVaultResourceId'), '/')[4]), 'Microsoft.KeyVault/vaults/keys', last(split(parameters('keyVaultResourceId'), '/')), parameters('name')), '2024-11-01').keyUri]"
       }
     }
   ],

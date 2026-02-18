@@ -1,6 +1,19 @@
 # Azure Databricks Workspaces `[Microsoft.Databricks/workspaces]`
 
+> ⚠️THIS MODULE IS CURRENTLY ORPHANED.⚠️
+>
+> - Only security and bug fixes are being handled by the AVM core team at present.
+> - If interested in becoming the module owner of this orphaned module (must be Microsoft FTE), please look for the related "orphaned module" GitHub issue [here](https://aka.ms/AVM/OrphanedModules)!
+
 This module deploys an Azure Databricks Workspace.
+
+You can reference the module as follows:
+```bicep
+module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
 
 ## Navigation
 
@@ -14,14 +27,14 @@ This module deploys an Azure Databricks Workspace.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Databricks/workspaces` | [2023-02-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Databricks/2023-02-01/workspaces) |
-| `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
-| `Microsoft.Network/privateEndpoints` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints) |
-| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints/privateDnsZoneGroups) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Databricks/workspaces` | 2024-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.databricks_workspaces.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Databricks/2024-05-01/workspaces)</li></ul> |
+| `Microsoft.Insights/diagnosticSettings` | 2021-05-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.insights_diagnosticsettings.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings)</li></ul> |
+| `Microsoft.Network/privateEndpoints` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/privateEndpoints)</li></ul> |
+| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints_privatednszonegroups.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/privateEndpoints/privateDnsZoneGroups)</li></ul> |
 
 ## Usage examples
 
@@ -31,14 +44,22 @@ The following section provides usage examples for the module, which were used to
 
 >**Note**: To reference the module, please use the following syntax `br/public:avm/res/databricks/workspace:<version>`.
 
-- [Using only defaults](#example-1-using-only-defaults)
-- [Using large parameter set](#example-2-using-large-parameter-set)
-- [WAF-aligned](#example-3-waf-aligned)
+- [Using managed HSM Customer-Managed-Keys with User-Assigned identity](#example-1-using-managed-hsm-customer-managed-keys-with-user-assigned-identity)
+- [With encryption](#example-2-with-encryption)
+- [Using only defaults](#example-3-using-only-defaults)
+- [Using large parameter set](#example-4-using-large-parameter-set)
+- [WAF-aligned](#example-5-waf-aligned)
 
-### Example 1: _Using only defaults_
+### Example 1: _Using managed HSM Customer-Managed-Keys with User-Assigned identity_
 
-This instance deploys the module with the minimum set of required parameters.
+This instance deploys the module with Managed HSM-based Customer Managed Key (CMK) encryption, using a User-Assigned Managed Identity to access the HSM key.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/cmk-hsm-uami]
+
+> **Note**: This test is skipped from the CI deployment validation due to the presence of a `.e2eignore` file in the test folder. The reason for skipping the deployment is:
+```text
+The test is skipped because running the HSM scenario requires a persistent Managed HSM instance to be available and configured at all times, which would incur significant costs for contributors.
+```
 
 <details>
 
@@ -46,12 +67,20 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
-  name: 'workspaceDeployment'
   params: {
     // Required parameters
-    name: 'dwmin001'
+    name: 'dwhsm001'
     // Non-required parameters
-    location: '<location>'
+    customerManagedKey: {
+      keyName: '<keyName>'
+      keyVaultResourceId: '<keyVaultResourceId>'
+      keyVersion: '<keyVersion>'
+    }
+    customerManagedKeyManagedDisk: {
+      keyName: '<keyName>'
+      keyVaultResourceId: '<keyVaultResourceId>'
+      keyVersion: '<keyVersion>'
+    }
   }
 }
 ```
@@ -61,7 +90,7 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -70,11 +99,22 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
   "parameters": {
     // Required parameters
     "name": {
-      "value": "dwmin001"
+      "value": "dwhsm001"
     },
     // Non-required parameters
-    "location": {
-      "value": "<location>"
+    "customerManagedKey": {
+      "value": {
+        "keyName": "<keyName>",
+        "keyVaultResourceId": "<keyVaultResourceId>",
+        "keyVersion": "<keyVersion>"
+      }
+    },
+    "customerManagedKeyManagedDisk": {
+      "value": {
+        "keyName": "<keyName>",
+        "keyVaultResourceId": "<keyVaultResourceId>",
+        "keyVersion": "<keyVersion>"
+      }
     }
   }
 }
@@ -83,9 +123,36 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
 </details>
 <p>
 
-### Example 2: _Using large parameter set_
+<details>
 
-This instance deploys the module with most of its features enabled.
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/databricks/workspace:<version>'
+
+// Required parameters
+param name = 'dwhsm001'
+// Non-required parameters
+param customerManagedKey = {
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+  keyVersion: '<keyVersion>'
+}
+param customerManagedKeyManagedDisk = {
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+  keyVersion: '<keyVersion>'
+}
+```
+
+</details>
+<p>
+
+### Example 2: _With encryption_
+
+This instance deploys the module with customer-managed keys for encryption, where 2 different keys are hosted in the same vault and the AzureDatabricks Enterprise Application is used to pull the keys.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/cmk-uami]
 
 
 <details>
@@ -94,12 +161,10 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
-  name: 'workspaceDeployment'
   params: {
     // Required parameters
-    name: 'dwmax001'
+    name: 'dwenc001'
     // Non-required parameters
-    amlWorkspaceResourceId: '<amlWorkspaceResourceId>'
     customerManagedKey: {
       keyName: '<keyName>'
       keyVaultResourceId: '<keyVaultResourceId>'
@@ -107,11 +172,163 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     customerManagedKeyManagedDisk: {
       keyName: '<keyName>'
       keyVaultResourceId: '<keyVaultResourceId>'
-      rotationToLatestKeyVersionEnabled: true
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via JSON parameters file</summary>
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Required parameters
+    "name": {
+      "value": "dwenc001"
+    },
+    // Non-required parameters
+    "customerManagedKey": {
+      "value": {
+        "keyName": "<keyName>",
+        "keyVaultResourceId": "<keyVaultResourceId>"
+      }
+    },
+    "customerManagedKeyManagedDisk": {
+      "value": {
+        "keyName": "<keyName>",
+        "keyVaultResourceId": "<keyVaultResourceId>"
+      }
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/databricks/workspace:<version>'
+
+// Required parameters
+param name = 'dwenc001'
+// Non-required parameters
+param customerManagedKey = {
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+}
+param customerManagedKeyManagedDisk = {
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+}
+```
+
+</details>
+<p>
+
+### Example 3: _Using only defaults_
+
+This instance deploys the module with the minimum set of required parameters.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
+
+<details>
+
+<summary>via Bicep module</summary>
+
+```bicep
+module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
+  params: {
+    name: 'dwmin002'
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via JSON parameters file</summary>
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "value": "dwmin002"
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/databricks/workspace:<version>'
+
+param name = 'dwmin002'
+```
+
+</details>
+<p>
+
+### Example 4: _Using large parameter set_
+
+This instance deploys the module with most of its features enabled.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
+
+
+<details>
+
+<summary>via Bicep module</summary>
+
+```bicep
+module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
+  params: {
+    // Required parameters
+    name: 'dwmax005'
+    // Non-required parameters
+    amlWorkspaceResourceId: '<amlWorkspaceResourceId>'
+    automaticClusterUpdate: 'Enabled'
+    complianceSecurityProfileValue: 'Enabled'
+    complianceStandards: [
+      'HIPAA'
+      'PCI_DSS'
+    ]
+    customerManagedKey: {
+      keyName: '<keyName>'
+      keyVaultResourceId: '<keyVaultResourceId>'
+    }
+    customerManagedKeyManagedDisk: {
+      autoRotationEnabled: false
+      keyName: '<keyName>'
+      keyVaultResourceId: '<keyVaultResourceId>'
     }
     customPrivateSubnetName: '<customPrivateSubnetName>'
     customPublicSubnetName: '<customPublicSubnetName>'
     customVirtualNetworkResourceId: '<customVirtualNetworkResourceId>'
+    defaultCatalog: {
+      initialType: 'UnityCatalog'
+    }
     diagnosticSettings: [
       {
         eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
@@ -130,6 +347,7 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
       }
     ]
     disablePublicIp: true
+    enhancedSecurityMonitoring: 'Enabled'
     loadBalancerBackendPoolName: '<loadBalancerBackendPoolName>'
     loadBalancerResourceId: '<loadBalancerResourceId>'
     location: '<location>'
@@ -142,9 +360,13 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     prepareEncryption: true
     privateEndpoints: [
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         service: 'databricks_ui_api'
         subnetResourceId: '<subnetResourceId>'
         tags: {
@@ -153,9 +375,13 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
         }
       }
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         service: 'browser_authentication'
         subnetResourceId: '<subnetResourceId>'
       }
@@ -166,11 +392,13 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     requireInfrastructureEncryption: true
     roleAssignments: [
       {
+        name: '2754e64b-b96e-44bc-9cb2-6e39b057f515'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -199,7 +427,7 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -208,11 +436,23 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
   "parameters": {
     // Required parameters
     "name": {
-      "value": "dwmax001"
+      "value": "dwmax005"
     },
     // Non-required parameters
     "amlWorkspaceResourceId": {
       "value": "<amlWorkspaceResourceId>"
+    },
+    "automaticClusterUpdate": {
+      "value": "Enabled"
+    },
+    "complianceSecurityProfileValue": {
+      "value": "Enabled"
+    },
+    "complianceStandards": {
+      "value": [
+        "HIPAA",
+        "PCI_DSS"
+      ]
     },
     "customerManagedKey": {
       "value": {
@@ -222,9 +462,9 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     },
     "customerManagedKeyManagedDisk": {
       "value": {
+        "autoRotationEnabled": false,
         "keyName": "<keyName>",
-        "keyVaultResourceId": "<keyVaultResourceId>",
-        "rotationToLatestKeyVersionEnabled": true
+        "keyVaultResourceId": "<keyVaultResourceId>"
       }
     },
     "customPrivateSubnetName": {
@@ -235,6 +475,11 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     },
     "customVirtualNetworkResourceId": {
       "value": "<customVirtualNetworkResourceId>"
+    },
+    "defaultCatalog": {
+      "value": {
+        "initialType": "UnityCatalog"
+      }
     },
     "diagnosticSettings": {
       "value": [
@@ -257,6 +502,9 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     },
     "disablePublicIp": {
       "value": true
+    },
+    "enhancedSecurityMonitoring": {
+      "value": "Enabled"
     },
     "loadBalancerBackendPoolName": {
       "value": "<loadBalancerBackendPoolName>"
@@ -285,9 +533,13 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     "privateEndpoints": {
       "value": [
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "service": "databricks_ui_api",
           "subnetResourceId": "<subnetResourceId>",
           "tags": {
@@ -296,9 +548,13 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
           }
         },
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "service": "browser_authentication",
           "subnetResourceId": "<subnetResourceId>"
         }
@@ -319,11 +575,13 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     "roleAssignments": {
       "value": [
         {
+          "name": "2754e64b-b96e-44bc-9cb2-6e39b057f515",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -361,9 +619,137 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
 </details>
 <p>
 
-### Example 3: _WAF-aligned_
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/databricks/workspace:<version>'
+
+// Required parameters
+param name = 'dwmax005'
+// Non-required parameters
+param amlWorkspaceResourceId = '<amlWorkspaceResourceId>'
+param automaticClusterUpdate = 'Enabled'
+param complianceSecurityProfileValue = 'Enabled'
+param complianceStandards = [
+  'HIPAA'
+  'PCI_DSS'
+]
+param customerManagedKey = {
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+}
+param customerManagedKeyManagedDisk = {
+  autoRotationEnabled: false
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+}
+param customPrivateSubnetName = '<customPrivateSubnetName>'
+param customPublicSubnetName = '<customPublicSubnetName>'
+param customVirtualNetworkResourceId = '<customVirtualNetworkResourceId>'
+param defaultCatalog = {
+  initialType: 'UnityCatalog'
+}
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    logCategoriesAndGroups: [
+      {
+        category: 'jobs'
+      }
+      {
+        category: 'notebook'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param disablePublicIp = true
+param enhancedSecurityMonitoring = 'Enabled'
+param loadBalancerBackendPoolName = '<loadBalancerBackendPoolName>'
+param loadBalancerResourceId = '<loadBalancerResourceId>'
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param managedResourceGroupResourceId = '<managedResourceGroupResourceId>'
+param natGatewayName = 'nat-gateway'
+param prepareEncryption = true
+param privateEndpoints = [
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    service: 'databricks_ui_api'
+    subnetResourceId: '<subnetResourceId>'
+    tags: {
+      Environment: 'Non-Prod'
+      Role: 'DeploymentValidation'
+    }
+  }
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    service: 'browser_authentication'
+    subnetResourceId: '<subnetResourceId>'
+  }
+]
+param publicIpName = 'nat-gw-public-ip'
+param publicNetworkAccess = 'Disabled'
+param requiredNsgRules = 'NoAzureDatabricksRules'
+param requireInfrastructureEncryption = true
+param roleAssignments = [
+  {
+    name: '2754e64b-b96e-44bc-9cb2-6e39b057f515'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param skuName = 'premium'
+param storageAccountName = 'sadwmax001'
+param storageAccountSkuName = 'Standard_ZRS'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+param vnetAddressPrefix = '10.100'
+```
+
+</details>
+<p>
+
+### Example 5: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -372,12 +758,14 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
-  name: 'workspaceDeployment'
   params: {
     // Required parameters
-    name: 'dwwaf001'
+    name: 'dwwaf003'
     // Non-required parameters
+    accessConnectorResourceId: '<accessConnectorResourceId>'
     amlWorkspaceResourceId: '<amlWorkspaceResourceId>'
+    automaticClusterUpdate: 'Enabled'
+    complianceSecurityProfileValue: 'Disabled'
     customerManagedKey: {
       keyName: '<keyName>'
       keyVaultResourceId: '<keyVaultResourceId>'
@@ -385,7 +773,6 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     customerManagedKeyManagedDisk: {
       keyName: '<keyName>'
       keyVaultResourceId: '<keyVaultResourceId>'
-      rotationToLatestKeyVersionEnabled: true
     }
     customPrivateSubnetName: '<customPrivateSubnetName>'
     customPublicSubnetName: '<customPublicSubnetName>'
@@ -408,21 +795,21 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
       }
     ]
     disablePublicIp: true
+    enhancedSecurityMonitoring: 'Enabled'
     loadBalancerBackendPoolName: '<loadBalancerBackendPoolName>'
     loadBalancerResourceId: '<loadBalancerResourceId>'
-    location: '<location>'
-    lock: {
-      kind: 'CanNotDelete'
-      name: 'myCustomLockName'
-    }
     managedResourceGroupResourceId: '<managedResourceGroupResourceId>'
     natGatewayName: 'nat-gateway'
     prepareEncryption: true
     privateEndpoints: [
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         service: 'databricks_ui_api'
         subnetResourceId: '<subnetResourceId>'
         tags: {
@@ -431,12 +818,30 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
         }
       }
     ]
+    privateStorageAccount: 'Enabled'
     publicIpName: 'nat-gw-public-ip'
     publicNetworkAccess: 'Disabled'
     requiredNsgRules: 'NoAzureDatabricksRules'
     requireInfrastructureEncryption: true
     skuName: 'premium'
     storageAccountName: 'sadwwaf001'
+    storageAccountPrivateEndpoints: [
+      {
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
+        service: 'blob'
+        subnetResourceId: '<subnetResourceId>'
+        tags: {
+          Environment: 'Non-Prod'
+          Role: 'DeploymentValidation'
+        }
+      }
+    ]
     storageAccountSkuName: 'Standard_ZRS'
     tags: {
       Environment: 'Non-Prod'
@@ -453,7 +858,7 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -462,11 +867,20 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
   "parameters": {
     // Required parameters
     "name": {
-      "value": "dwwaf001"
+      "value": "dwwaf003"
     },
     // Non-required parameters
+    "accessConnectorResourceId": {
+      "value": "<accessConnectorResourceId>"
+    },
     "amlWorkspaceResourceId": {
       "value": "<amlWorkspaceResourceId>"
+    },
+    "automaticClusterUpdate": {
+      "value": "Enabled"
+    },
+    "complianceSecurityProfileValue": {
+      "value": "Disabled"
     },
     "customerManagedKey": {
       "value": {
@@ -477,8 +891,7 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     "customerManagedKeyManagedDisk": {
       "value": {
         "keyName": "<keyName>",
-        "keyVaultResourceId": "<keyVaultResourceId>",
-        "rotationToLatestKeyVersionEnabled": true
+        "keyVaultResourceId": "<keyVaultResourceId>"
       }
     },
     "customPrivateSubnetName": {
@@ -512,20 +925,14 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     "disablePublicIp": {
       "value": true
     },
+    "enhancedSecurityMonitoring": {
+      "value": "Enabled"
+    },
     "loadBalancerBackendPoolName": {
       "value": "<loadBalancerBackendPoolName>"
     },
     "loadBalancerResourceId": {
       "value": "<loadBalancerResourceId>"
-    },
-    "location": {
-      "value": "<location>"
-    },
-    "lock": {
-      "value": {
-        "kind": "CanNotDelete",
-        "name": "myCustomLockName"
-      }
     },
     "managedResourceGroupResourceId": {
       "value": "<managedResourceGroupResourceId>"
@@ -539,9 +946,13 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     "privateEndpoints": {
       "value": [
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "service": "databricks_ui_api",
           "subnetResourceId": "<subnetResourceId>",
           "tags": {
@@ -550,6 +961,9 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
           }
         }
       ]
+    },
+    "privateStorageAccount": {
+      "value": "Enabled"
     },
     "publicIpName": {
       "value": "nat-gw-public-ip"
@@ -568,6 +982,25 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
     },
     "storageAccountName": {
       "value": "sadwwaf001"
+    },
+    "storageAccountPrivateEndpoints": {
+      "value": [
+        {
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
+          "service": "blob",
+          "subnetResourceId": "<subnetResourceId>",
+          "tags": {
+            "Environment": "Non-Prod",
+            "Role": "DeploymentValidation"
+          }
+        }
+      ]
     },
     "storageAccountSkuName": {
       "value": "Standard_ZRS"
@@ -589,6 +1022,107 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/databricks/workspace:<version>'
+
+// Required parameters
+param name = 'dwwaf003'
+// Non-required parameters
+param accessConnectorResourceId = '<accessConnectorResourceId>'
+param amlWorkspaceResourceId = '<amlWorkspaceResourceId>'
+param automaticClusterUpdate = 'Enabled'
+param complianceSecurityProfileValue = 'Disabled'
+param customerManagedKey = {
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+}
+param customerManagedKeyManagedDisk = {
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+}
+param customPrivateSubnetName = '<customPrivateSubnetName>'
+param customPublicSubnetName = '<customPublicSubnetName>'
+param customVirtualNetworkResourceId = '<customVirtualNetworkResourceId>'
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    logCategoriesAndGroups: [
+      {
+        category: 'jobs'
+      }
+      {
+        category: 'notebook'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param disablePublicIp = true
+param enhancedSecurityMonitoring = 'Enabled'
+param loadBalancerBackendPoolName = '<loadBalancerBackendPoolName>'
+param loadBalancerResourceId = '<loadBalancerResourceId>'
+param managedResourceGroupResourceId = '<managedResourceGroupResourceId>'
+param natGatewayName = 'nat-gateway'
+param prepareEncryption = true
+param privateEndpoints = [
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    service: 'databricks_ui_api'
+    subnetResourceId: '<subnetResourceId>'
+    tags: {
+      Environment: 'Non-Prod'
+      Role: 'DeploymentValidation'
+    }
+  }
+]
+param privateStorageAccount = 'Enabled'
+param publicIpName = 'nat-gw-public-ip'
+param publicNetworkAccess = 'Disabled'
+param requiredNsgRules = 'NoAzureDatabricksRules'
+param requireInfrastructureEncryption = true
+param skuName = 'premium'
+param storageAccountName = 'sadwwaf001'
+param storageAccountPrivateEndpoints = [
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    service: 'blob'
+    subnetResourceId: '<subnetResourceId>'
+    tags: {
+      Environment: 'Non-Prod'
+      Role: 'DeploymentValidation'
+    }
+  }
+]
+param storageAccountSkuName = 'Standard_ZRS'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+param vnetAddressPrefix = '10.100'
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -598,19 +1132,30 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
 | :-- | :-- | :-- |
 | [`name`](#parameter-name) | string | The name of the Azure Databricks workspace to create. |
 
+**Conditional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`accessConnectorResourceId`](#parameter-accessconnectorresourceid) | string | The resource ID of the associated access connector for private access to the managed workspace storage account. Required if privateStorageAccount is enabled. |
+
 **Optional parameters**
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`amlWorkspaceResourceId`](#parameter-amlworkspaceresourceid) | string | The resource ID of a Azure Machine Learning workspace to link with Databricks workspace. |
+| [`automaticClusterUpdate`](#parameter-automaticclusterupdate) | string | The value for enabling automatic cluster updates in enhanced security compliance. |
+| [`complianceSecurityProfileValue`](#parameter-compliancesecurityprofilevalue) | string | The value to Enable or Disable for the compliance security profile. |
+| [`complianceStandards`](#parameter-compliancestandards) | array | The compliance standards array for the security profile. Should be a list of compliance standards like "HIPAA", "NONE" or "PCI_DSS". |
 | [`customerManagedKey`](#parameter-customermanagedkey) | object | The customer managed key definition to use for the managed service. |
-| [`customerManagedKeyManagedDisk`](#parameter-customermanagedkeymanageddisk) | object | The customer managed key definition to use for the managed disk. |
+| [`customerManagedKeyManagedDisk`](#parameter-customermanagedkeymanageddisk) | object | The customer managed key definition to use for the managed disk.<p>Action Required: A role assignment needs to be added to the key that is used by the Disk Encryption Set created during workspace deployment. After your workspace is created, please follow the steps outlined in the documentation. If this action is not taken, cluster creation will fail ([learn more](https://learn.microsoft.com/azure/databricks/security/keys/cmk-managed-disks-azure?WT.mc_id=Portal-Microsoft_Azure_Databricks)). |
 | [`customPrivateSubnetName`](#parameter-customprivatesubnetname) | string | The name of the Private Subnet within the Virtual Network. |
 | [`customPublicSubnetName`](#parameter-custompublicsubnetname) | string | The name of a Public Subnet within the Virtual Network. |
 | [`customVirtualNetworkResourceId`](#parameter-customvirtualnetworkresourceid) | string | The resource ID of a Virtual Network where this Databricks Cluster should be created. |
+| [`defaultCatalog`](#parameter-defaultcatalog) | object | The default catalog configuration for the Databricks workspace. |
 | [`diagnosticSettings`](#parameter-diagnosticsettings) | array | The diagnostic settings of the service. |
 | [`disablePublicIp`](#parameter-disablepublicip) | bool | Disable Public IP. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
+| [`enhancedSecurityMonitoring`](#parameter-enhancedsecuritymonitoring) | string | The value for enabling or configuring enhanced security monitoring. |
 | [`loadBalancerBackendPoolName`](#parameter-loadbalancerbackendpoolname) | string | Name of the outbound Load Balancer Backend Pool for Secure Cluster Connectivity (No Public IP). |
 | [`loadBalancerResourceId`](#parameter-loadbalancerresourceid) | string | Resource URI of Outbound Load balancer for Secure Cluster Connectivity (No Public IP) workspace. |
 | [`location`](#parameter-location) | string | Location for all Resources. |
@@ -619,6 +1164,7 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
 | [`natGatewayName`](#parameter-natgatewayname) | string | Name of the NAT gateway for Secure Cluster Connectivity (No Public IP) workspace subnets. |
 | [`prepareEncryption`](#parameter-prepareencryption) | bool | Prepare the workspace for encryption. Enables the Managed Identity for managed storage account. |
 | [`privateEndpoints`](#parameter-privateendpoints) | array | Configuration details for private endpoints. For security reasons, it is recommended to use private endpoints whenever possible. |
+| [`privateStorageAccount`](#parameter-privatestorageaccount) | string | Determines whether the managed storage account should be private or public. For best security practices, it is recommended to set it to Enabled. |
 | [`publicIpName`](#parameter-publicipname) | string | Name of the Public IP for No Public IP workspace with managed vNet. |
 | [`publicNetworkAccess`](#parameter-publicnetworkaccess) | string | The network access type for accessing workspace. Set value to disabled to access workspace only via private link. |
 | [`requiredNsgRules`](#parameter-requirednsgrules) | string | Gets or sets a value indicating whether data plane (clusters) to control plane communication happen over private endpoint. |
@@ -626,6 +1172,7 @@ module workspace 'br/public:avm/res/databricks/workspace:<version>' = {
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
 | [`skuName`](#parameter-skuname) | string | The pricing tier of workspace. |
 | [`storageAccountName`](#parameter-storageaccountname) | string | Default DBFS storage account name. |
+| [`storageAccountPrivateEndpoints`](#parameter-storageaccountprivateendpoints) | array | Configuration details for private endpoints for the managed workspace storage account, required when privateStorageAccount is set to Enabled. For security reasons, it is recommended to use private endpoints whenever possible. |
 | [`storageAccountSkuName`](#parameter-storageaccountskuname) | string | Storage account SKU name. |
 | [`tags`](#parameter-tags) | object | Tags of the resource. |
 | [`vnetAddressPrefix`](#parameter-vnetaddressprefix) | string | Address prefix for Managed virtual network. |
@@ -637,6 +1184,14 @@ The name of the Azure Databricks workspace to create.
 - Required: Yes
 - Type: string
 
+### Parameter: `accessConnectorResourceId`
+
+The resource ID of the associated access connector for private access to the managed workspace storage account. Required if privateStorageAccount is enabled.
+
+- Required: No
+- Type: string
+- Default: `''`
+
 ### Parameter: `amlWorkspaceResourceId`
 
 The resource ID of a Azure Machine Learning workspace to link with Databricks workspace.
@@ -644,6 +1199,46 @@ The resource ID of a Azure Machine Learning workspace to link with Databricks wo
 - Required: No
 - Type: string
 - Default: `''`
+
+### Parameter: `automaticClusterUpdate`
+
+The value for enabling automatic cluster updates in enhanced security compliance.
+
+- Required: No
+- Type: string
+- Default: `''`
+- Allowed:
+  ```Bicep
+  [
+    ''
+    'Disabled'
+    'Enabled'
+  ]
+  ```
+
+### Parameter: `complianceSecurityProfileValue`
+
+The value to Enable or Disable for the compliance security profile.
+
+- Required: No
+- Type: string
+- Default: `''`
+- Allowed:
+  ```Bicep
+  [
+    ''
+    'Disabled'
+    'Enabled'
+  ]
+  ```
+
+### Parameter: `complianceStandards`
+
+The compliance standards array for the security profile. Should be a list of compliance standards like "HIPAA", "NONE" or "PCI_DSS".
+
+- Required: No
+- Type: array
+- Default: `[]`
 
 ### Parameter: `customerManagedKey`
 
@@ -663,7 +1258,7 @@ The customer managed key definition to use for the managed service.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`keyVersion`](#parameter-customermanagedkeykeyversion) | string | The version of the customer managed key to reference for encryption. If not provided, using 'latest'. |
+| [`keyVersion`](#parameter-customermanagedkeykeyversion) | string | The version of the customer managed key to reference for encryption. If not provided, the deployment will use the latest version available at deployment time. |
 | [`userAssignedIdentityResourceId`](#parameter-customermanagedkeyuserassignedidentityresourceid) | string | User assigned identity to use when fetching the customer managed key. Required if no system assigned identity is available for use. |
 
 ### Parameter: `customerManagedKey.keyName`
@@ -682,7 +1277,7 @@ The resource ID of a key vault to reference a customer managed key for encryptio
 
 ### Parameter: `customerManagedKey.keyVersion`
 
-The version of the customer managed key to reference for encryption. If not provided, using 'latest'.
+The version of the customer managed key to reference for encryption. If not provided, the deployment will use the latest version available at deployment time.
 
 - Required: No
 - Type: string
@@ -696,7 +1291,7 @@ User assigned identity to use when fetching the customer managed key. Required i
 
 ### Parameter: `customerManagedKeyManagedDisk`
 
-The customer managed key definition to use for the managed disk.
+The customer managed key definition to use for the managed disk.<p>Action Required: A role assignment needs to be added to the key that is used by the Disk Encryption Set created during workspace deployment. After your workspace is created, please follow the steps outlined in the documentation. If this action is not taken, cluster creation will fail ([learn more](https://learn.microsoft.com/azure/databricks/security/keys/cmk-managed-disks-azure?WT.mc_id=Portal-Microsoft_Azure_Databricks)).
 
 - Required: No
 - Type: object
@@ -712,8 +1307,8 @@ The customer managed key definition to use for the managed disk.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`keyVersion`](#parameter-customermanagedkeymanageddiskkeyversion) | string | The version of the customer managed key to reference for encryption. If not provided, using 'latest'. |
-| [`rotationToLatestKeyVersionEnabled`](#parameter-customermanagedkeymanageddiskrotationtolatestkeyversionenabled) | bool | Indicate whether the latest key version should be automatically used for Managed Disk Encryption. Enabled by default. |
+| [`autoRotationEnabled`](#parameter-customermanagedkeymanageddiskautorotationenabled) | bool | Enable or disable auto-rotating to the latest key version. Default is `true`. If set to `false`, the latest key version at the time of the deployment is used. |
+| [`keyVersion`](#parameter-customermanagedkeymanageddiskkeyversion) | string | The version of the customer managed key to reference for encryption. If not provided, using version as per 'autoRotationEnabled' setting. |
 | [`userAssignedIdentityResourceId`](#parameter-customermanagedkeymanageddiskuserassignedidentityresourceid) | string | User assigned identity to use when fetching the customer managed key. Required if no system assigned identity is available for use. |
 
 ### Parameter: `customerManagedKeyManagedDisk.keyName`
@@ -730,19 +1325,19 @@ The resource ID of a key vault to reference a customer managed key for encryptio
 - Required: Yes
 - Type: string
 
-### Parameter: `customerManagedKeyManagedDisk.keyVersion`
+### Parameter: `customerManagedKeyManagedDisk.autoRotationEnabled`
 
-The version of the customer managed key to reference for encryption. If not provided, using 'latest'.
-
-- Required: No
-- Type: string
-
-### Parameter: `customerManagedKeyManagedDisk.rotationToLatestKeyVersionEnabled`
-
-Indicate whether the latest key version should be automatically used for Managed Disk Encryption. Enabled by default.
+Enable or disable auto-rotating to the latest key version. Default is `true`. If set to `false`, the latest key version at the time of the deployment is used.
 
 - Required: No
 - Type: bool
+
+### Parameter: `customerManagedKeyManagedDisk.keyVersion`
+
+The version of the customer managed key to reference for encryption. If not provided, using version as per 'autoRotationEnabled' setting.
+
+- Required: No
+- Type: string
 
 ### Parameter: `customerManagedKeyManagedDisk.userAssignedIdentityResourceId`
 
@@ -774,6 +1369,33 @@ The resource ID of a Virtual Network where this Databricks Cluster should be cre
 - Required: No
 - Type: string
 - Default: `''`
+
+### Parameter: `defaultCatalog`
+
+The default catalog configuration for the Databricks workspace.
+
+- Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`initialType`](#parameter-defaultcataloginitialtype) | string | Choose between HiveMetastore or UnityCatalog. |
+
+### Parameter: `defaultCatalog.initialType`
+
+Choose between HiveMetastore or UnityCatalog.
+
+- Required: Yes
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'HiveMetastore'
+    'UnityCatalog'
+  ]
+  ```
 
 ### Parameter: `diagnosticSettings`
 
@@ -903,6 +1525,22 @@ Enable/Disable usage telemetry for module.
 - Type: bool
 - Default: `True`
 
+### Parameter: `enhancedSecurityMonitoring`
+
+The value for enabling or configuring enhanced security monitoring.
+
+- Required: No
+- Type: string
+- Default: `''`
+- Allowed:
+  ```Bicep
+  [
+    ''
+    'Disabled'
+    'Enabled'
+  ]
+  ```
+
 ### Parameter: `loadBalancerBackendPoolName`
 
 Name of the outbound Load Balancer Backend Pool for Secure Cluster Connectivity (No Public IP).
@@ -940,6 +1578,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -963,13 +1602,19 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `managedResourceGroupResourceId`
 
 The managed resource group ID. It is created by the module as per the to-be resource ID you provide.
 
 - Required: No
 - Type: string
-- Default: `''`
 
 ### Parameter: `natGatewayName`
 
@@ -998,7 +1643,7 @@ Configuration details for private endpoints. For security reasons, it is recomme
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the private endpoint for. For example "blob", "table", "queue" or "file". |
+| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the private endpoint for. For example "blob", "table", "queue" or "file" for a Storage Account's Private Endpoints. |
 | [`subnetResourceId`](#parameter-privateendpointssubnetresourceid) | string | Resource ID of the subnet where the endpoint needs to be created. |
 
 **Optional parameters**
@@ -1015,14 +1660,15 @@ Configuration details for private endpoints. For security reasons, it is recomme
 | [`lock`](#parameter-privateendpointslock) | object | Specify the type of lock. |
 | [`manualConnectionRequestMessage`](#parameter-privateendpointsmanualconnectionrequestmessage) | string | A message passed to the owner of the remote resource with the manual connection request. |
 | [`name`](#parameter-privateendpointsname) | string | The name of the private endpoint. |
-| [`privateDnsZoneGroupName`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided. |
-| [`privateDnsZoneResourceIds`](#parameter-privateendpointsprivatednszoneresourceids) | array | The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones. |
+| [`privateDnsZoneGroup`](#parameter-privateendpointsprivatednszonegroup) | object | The private DNS zone group to configure for the private endpoint. |
+| [`privateLinkServiceConnectionName`](#parameter-privateendpointsprivatelinkserviceconnectionname) | string | The name of the private link connection to create. |
+| [`resourceGroupResourceId`](#parameter-privateendpointsresourcegroupresourceid) | string | The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used. |
 | [`roleAssignments`](#parameter-privateendpointsroleassignments) | array | Array of role assignments to create. |
 | [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/resource groups in this deployment. |
 
 ### Parameter: `privateEndpoints.service`
 
-The subresource to deploy the private endpoint for. For example "blob", "table", "queue" or "file".
+The subresource to deploy the private endpoint for. For example "blob", "table", "queue" or "file" for a Storage Account's Private Endpoints.
 
 - Required: Yes
 - Type: string
@@ -1052,15 +1698,13 @@ Custom DNS configurations.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | Fqdn that resolves to private endpoint IP address. |
 | [`ipAddresses`](#parameter-privateendpointscustomdnsconfigsipaddresses) | array | A list of private IP addresses of the private endpoint. |
 
-### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+**Optional parameters**
 
-Fqdn that resolves to private endpoint IP address.
-
-- Required: No
-- Type: string
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | FQDN that resolves to private endpoint IP address. |
 
 ### Parameter: `privateEndpoints.customDnsConfigs.ipAddresses`
 
@@ -1068,6 +1712,13 @@ A list of private IP addresses of the private endpoint.
 
 - Required: Yes
 - Type: array
+
+### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+
+FQDN that resolves to private endpoint IP address.
+
+- Required: No
+- Type: string
 
 ### Parameter: `privateEndpoints.customNetworkInterfaceName`
 
@@ -1167,6 +1818,7 @@ Specify the type of lock.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-privateendpointslockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-privateendpointslockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-privateendpointslocknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `privateEndpoints.lock.kind`
 
@@ -1190,6 +1842,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.manualConnectionRequestMessage`
 
 A message passed to the owner of the remote resource with the manual connection request.
@@ -1204,19 +1863,78 @@ The name of the private endpoint.
 - Required: No
 - Type: string
 
-### Parameter: `privateEndpoints.privateDnsZoneGroupName`
+### Parameter: `privateEndpoints.privateDnsZoneGroup`
 
-The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided.
+The private DNS zone group to configure for the private endpoint.
+
+- Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneGroupConfigs`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigs) | array | The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the Private DNS Zone Group. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs`
+
+The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones.
+
+- Required: Yes
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneResourceId`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsprivatednszoneresourceid) | string | The resource id of the private DNS zone. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsname) | string | The name of the private DNS Zone Group config. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.privateDnsZoneResourceId`
+
+The resource id of the private DNS zone.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.name`
+
+The name of the private DNS Zone Group config.
 
 - Required: No
 - Type: string
 
-### Parameter: `privateEndpoints.privateDnsZoneResourceIds`
+### Parameter: `privateEndpoints.privateDnsZoneGroup.name`
 
-The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones.
+The name of the Private DNS Zone Group.
 
 - Required: No
-- Type: array
+- Type: string
+
+### Parameter: `privateEndpoints.privateLinkServiceConnectionName`
+
+The name of the private link connection to create.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.resourceGroupResourceId`
+
+The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used.
+
+- Required: No
+- Type: string
 
 ### Parameter: `privateEndpoints.roleAssignments`
 
@@ -1224,6 +1942,17 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'DNS Resolver Contributor'`
+  - `'DNS Zone Contributor'`
+  - `'Domain Services Contributor'`
+  - `'Domain Services Reader'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Private DNS Zone Contributor'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
 
 **Required parameters**
 
@@ -1240,6 +1969,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-privateendpointsroleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-privateendpointsroleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-privateendpointsroleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-privateendpointsroleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-privateendpointsroleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `privateEndpoints.roleAssignments.principalId`
@@ -1290,6 +2020,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1313,6 +2050,22 @@ Tags to be applied on all resources/resource groups in this deployment.
 
 - Required: No
 - Type: object
+
+### Parameter: `privateStorageAccount`
+
+Determines whether the managed storage account should be private or public. For best security practices, it is recommended to set it to Enabled.
+
+- Required: No
+- Type: string
+- Default: `''`
+- Allowed:
+  ```Bicep
+  [
+    ''
+    'Disabled'
+    'Enabled'
+  ]
+  ```
 
 ### Parameter: `publicIpName`
 
@@ -1366,6 +2119,12 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -1382,6 +2141,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -1432,6 +2192,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1473,6 +2240,425 @@ Default DBFS storage account name.
 - Type: string
 - Default: `''`
 
+### Parameter: `storageAccountPrivateEndpoints`
+
+Configuration details for private endpoints for the managed workspace storage account, required when privateStorageAccount is set to Enabled. For security reasons, it is recommended to use private endpoints whenever possible.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`service`](#parameter-storageaccountprivateendpointsservice) | string | The subresource to deploy the private endpoint for. For example "blob", "table", "queue" or "file" for a Storage Account's Private Endpoints. |
+| [`subnetResourceId`](#parameter-storageaccountprivateendpointssubnetresourceid) | string | Resource ID of the subnet where the endpoint needs to be created. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`applicationSecurityGroupResourceIds`](#parameter-storageaccountprivateendpointsapplicationsecuritygroupresourceids) | array | Application security groups in which the private endpoint IP configuration is included. |
+| [`customDnsConfigs`](#parameter-storageaccountprivateendpointscustomdnsconfigs) | array | Custom DNS configurations. |
+| [`customNetworkInterfaceName`](#parameter-storageaccountprivateendpointscustomnetworkinterfacename) | string | The custom name of the network interface attached to the private endpoint. |
+| [`enableTelemetry`](#parameter-storageaccountprivateendpointsenabletelemetry) | bool | Enable/Disable usage telemetry for module. |
+| [`ipConfigurations`](#parameter-storageaccountprivateendpointsipconfigurations) | array | A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints. |
+| [`isManualConnection`](#parameter-storageaccountprivateendpointsismanualconnection) | bool | If Manual Private Link Connection is required. |
+| [`location`](#parameter-storageaccountprivateendpointslocation) | string | The location to deploy the private endpoint to. |
+| [`lock`](#parameter-storageaccountprivateendpointslock) | object | Specify the type of lock. |
+| [`manualConnectionRequestMessage`](#parameter-storageaccountprivateendpointsmanualconnectionrequestmessage) | string | A message passed to the owner of the remote resource with the manual connection request. |
+| [`name`](#parameter-storageaccountprivateendpointsname) | string | The name of the private endpoint. |
+| [`privateDnsZoneGroup`](#parameter-storageaccountprivateendpointsprivatednszonegroup) | object | The private DNS zone group to configure for the private endpoint. |
+| [`privateLinkServiceConnectionName`](#parameter-storageaccountprivateendpointsprivatelinkserviceconnectionname) | string | The name of the private link connection to create. |
+| [`resourceGroupResourceId`](#parameter-storageaccountprivateendpointsresourcegroupresourceid) | string | The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used. |
+| [`roleAssignments`](#parameter-storageaccountprivateendpointsroleassignments) | array | Array of role assignments to create. |
+| [`tags`](#parameter-storageaccountprivateendpointstags) | object | Tags to be applied on all resources/resource groups in this deployment. |
+
+### Parameter: `storageAccountPrivateEndpoints.service`
+
+The subresource to deploy the private endpoint for. For example "blob", "table", "queue" or "file" for a Storage Account's Private Endpoints.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.subnetResourceId`
+
+Resource ID of the subnet where the endpoint needs to be created.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.applicationSecurityGroupResourceIds`
+
+Application security groups in which the private endpoint IP configuration is included.
+
+- Required: No
+- Type: array
+
+### Parameter: `storageAccountPrivateEndpoints.customDnsConfigs`
+
+Custom DNS configurations.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`ipAddresses`](#parameter-storageaccountprivateendpointscustomdnsconfigsipaddresses) | array | A list of private IP addresses of the private endpoint. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`fqdn`](#parameter-storageaccountprivateendpointscustomdnsconfigsfqdn) | string | FQDN that resolves to private endpoint IP address. |
+
+### Parameter: `storageAccountPrivateEndpoints.customDnsConfigs.ipAddresses`
+
+A list of private IP addresses of the private endpoint.
+
+- Required: Yes
+- Type: array
+
+### Parameter: `storageAccountPrivateEndpoints.customDnsConfigs.fqdn`
+
+FQDN that resolves to private endpoint IP address.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.customNetworkInterfaceName`
+
+The custom name of the network interface attached to the private endpoint.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.enableTelemetry`
+
+Enable/Disable usage telemetry for module.
+
+- Required: No
+- Type: bool
+
+### Parameter: `storageAccountPrivateEndpoints.ipConfigurations`
+
+A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-storageaccountprivateendpointsipconfigurationsname) | string | The name of the resource that is unique within a resource group. |
+| [`properties`](#parameter-storageaccountprivateendpointsipconfigurationsproperties) | object | Properties of private endpoint IP configurations. |
+
+### Parameter: `storageAccountPrivateEndpoints.ipConfigurations.name`
+
+The name of the resource that is unique within a resource group.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.ipConfigurations.properties`
+
+Properties of private endpoint IP configurations.
+
+- Required: Yes
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`groupId`](#parameter-storageaccountprivateendpointsipconfigurationspropertiesgroupid) | string | The ID of a group obtained from the remote resource that this private endpoint should connect to. |
+| [`memberName`](#parameter-storageaccountprivateendpointsipconfigurationspropertiesmembername) | string | The member name of a group obtained from the remote resource that this private endpoint should connect to. |
+| [`privateIPAddress`](#parameter-storageaccountprivateendpointsipconfigurationspropertiesprivateipaddress) | string | A private IP address obtained from the private endpoint's subnet. |
+
+### Parameter: `storageAccountPrivateEndpoints.ipConfigurations.properties.groupId`
+
+The ID of a group obtained from the remote resource that this private endpoint should connect to.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.ipConfigurations.properties.memberName`
+
+The member name of a group obtained from the remote resource that this private endpoint should connect to.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.ipConfigurations.properties.privateIPAddress`
+
+A private IP address obtained from the private endpoint's subnet.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.isManualConnection`
+
+If Manual Private Link Connection is required.
+
+- Required: No
+- Type: bool
+
+### Parameter: `storageAccountPrivateEndpoints.location`
+
+The location to deploy the private endpoint to.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.lock`
+
+Specify the type of lock.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`kind`](#parameter-storageaccountprivateendpointslockkind) | string | Specify the type of lock. |
+| [`name`](#parameter-storageaccountprivateendpointslockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-storageaccountprivateendpointslocknotes) | string | Specify the notes of the lock. |
+
+### Parameter: `storageAccountPrivateEndpoints.lock.kind`
+
+Specify the type of lock.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'CanNotDelete'
+    'None'
+    'ReadOnly'
+  ]
+  ```
+
+### Parameter: `storageAccountPrivateEndpoints.lock.name`
+
+Specify the name of lock.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.manualConnectionRequestMessage`
+
+A message passed to the owner of the remote resource with the manual connection request.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.name`
+
+The name of the private endpoint.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.privateDnsZoneGroup`
+
+The private DNS zone group to configure for the private endpoint.
+
+- Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneGroupConfigs`](#parameter-storageaccountprivateendpointsprivatednszonegroupprivatednszonegroupconfigs) | array | The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-storageaccountprivateendpointsprivatednszonegroupname) | string | The name of the Private DNS Zone Group. |
+
+### Parameter: `storageAccountPrivateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs`
+
+The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones.
+
+- Required: Yes
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneResourceId`](#parameter-storageaccountprivateendpointsprivatednszonegroupprivatednszonegroupconfigsprivatednszoneresourceid) | string | The resource id of the private DNS zone. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-storageaccountprivateendpointsprivatednszonegroupprivatednszonegroupconfigsname) | string | The name of the private DNS Zone Group config. |
+
+### Parameter: `storageAccountPrivateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.privateDnsZoneResourceId`
+
+The resource id of the private DNS zone.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.name`
+
+The name of the private DNS Zone Group config.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.privateDnsZoneGroup.name`
+
+The name of the Private DNS Zone Group.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.privateLinkServiceConnectionName`
+
+The name of the private link connection to create.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.resourceGroupResourceId`
+
+The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.roleAssignments`
+
+Array of role assignments to create.
+
+- Required: No
+- Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'DNS Resolver Contributor'`
+  - `'DNS Zone Contributor'`
+  - `'Domain Services Contributor'`
+  - `'Domain Services Reader'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Private DNS Zone Contributor'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`principalId`](#parameter-storageaccountprivateendpointsroleassignmentsprincipalid) | string | The principal ID of the principal (user/group/identity) to assign the role to. |
+| [`roleDefinitionIdOrName`](#parameter-storageaccountprivateendpointsroleassignmentsroledefinitionidorname) | string | The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`condition`](#parameter-storageaccountprivateendpointsroleassignmentscondition) | string | The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase "foo_storage_container". |
+| [`conditionVersion`](#parameter-storageaccountprivateendpointsroleassignmentsconditionversion) | string | Version of the condition. |
+| [`delegatedManagedIdentityResourceId`](#parameter-storageaccountprivateendpointsroleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
+| [`description`](#parameter-storageaccountprivateendpointsroleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-storageaccountprivateendpointsroleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
+| [`principalType`](#parameter-storageaccountprivateendpointsroleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
+
+### Parameter: `storageAccountPrivateEndpoints.roleAssignments.principalId`
+
+The principal ID of the principal (user/group/identity) to assign the role to.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.roleAssignments.roleDefinitionIdOrName`
+
+The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.roleAssignments.condition`
+
+The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase "foo_storage_container".
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.roleAssignments.conditionVersion`
+
+Version of the condition.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    '2.0'
+  ]
+  ```
+
+### Parameter: `storageAccountPrivateEndpoints.roleAssignments.delegatedManagedIdentityResourceId`
+
+The Resource Id of the delegated managed identity resource.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.roleAssignments.description`
+
+The description of the role assignment.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
+### Parameter: `storageAccountPrivateEndpoints.roleAssignments.principalType`
+
+The principal type of the assigned principal ID.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Device'
+    'ForeignGroup'
+    'Group'
+    'ServicePrincipal'
+    'User'
+  ]
+  ```
+
+### Parameter: `storageAccountPrivateEndpoints.tags`
+
+Tags to be applied on all resources/resource groups in this deployment.
+
+- Required: No
+- Type: object
+
 ### Parameter: `storageAccountSkuName`
 
 Storage account SKU name.
@@ -1496,20 +2682,23 @@ Address prefix for Managed virtual network.
 - Type: string
 - Default: `'10.139'`
 
-
 ## Outputs
 
 | Output | Type | Description |
 | :-- | :-- | :-- |
 | `location` | string | The location the resource was deployed into. |
-| `managedResourceGroupId` | string | The resource ID of the managed resource group. |
+| `managedDiskIdentityPrincipalId` | string | The principal ID of the managed disk identity created by the workspace if CMK for managed disks is enabled. |
 | `managedResourceGroupName` | string | The name of the managed resource group. |
+| `managedResourceGroupResourceId` | string | The resource ID of the managed resource group. |
 | `name` | string | The name of the deployed databricks workspace. |
-| `privateEndpoints` | array | The private endpoints for the Databricks Workspace. |
+| `privateEndpoints` | array | The private endpoints of the Databricks Workspace. |
 | `resourceGroupName` | string | The resource group of the deployed databricks workspace. |
 | `resourceId` | string | The resource ID of the deployed databricks workspace. |
-| `storageAccountId` | string | The resource ID of the DBFS storage account. |
 | `storageAccountName` | string | The name of the DBFS storage account. |
+| `storageAccountResourceId` | string | The resource ID of the DBFS storage account. |
+| `storagePrivateEndpoints` | array | The private endpoints of the Databricks Workspace Storage. |
+| `workspaceResourceId` | string | The unique identifier of the databricks workspace in databricks control plane. |
+| `workspaceUrl` | string | The workspace URL which is of the format 'adb-{workspaceId}.{random}.azuredatabricks.net'. |
 
 ## Cross-referenced modules
 
@@ -1517,7 +2706,8 @@ This section gives you an overview of all local-referenced module files (i.e., o
 
 | Reference | Type |
 | :-- | :-- |
-| `br/public:avm/res/network/private-endpoint:0.4.0` | Remote reference |
+| `br/public:avm/res/network/private-endpoint:0.11.1` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Notes
 
@@ -1588,4 +2778,4 @@ parameters: {
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

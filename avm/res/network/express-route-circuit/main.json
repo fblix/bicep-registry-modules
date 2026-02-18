@@ -5,14 +5,191 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "12576570459858721920"
+      "version": "0.38.3.11034",
+      "templateHash": "18217359422147885502"
     },
     "name": "ExpressRoute Circuits",
-    "description": "This module deploys an Express Route Circuit.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys an Express Route Circuit."
   },
   "definitions": {
+    "connectionType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The name of the connection."
+          }
+        },
+        "peeringName": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The name of the peering this connection belongs to."
+          }
+        },
+        "peerExpressRouteCircuitPeeringId": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The resource ID of the peer ExpressRoute circuit peering."
+          }
+        },
+        "addressPrefix": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The IPv4 address space (/29) to carve out customer addresses for tunnels."
+          }
+        },
+        "authorizationKey": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The authorization key for the connection."
+          }
+        },
+        "ipv6CircuitConnectionConfig": {
+          "type": "object",
+          "properties": {
+            "addressPrefix": {
+              "type": "string",
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. The IPv6 address space (/125) to carve out customer addresses for global reach."
+              }
+            }
+          },
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. IPv6 circuit connection configuration."
+          }
+        }
+      },
+      "metadata": {
+        "__bicep_export!": true
+      }
+    },
+    "diagnosticSettingFullType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name of the diagnostic setting."
+          }
+        },
+        "logCategoriesAndGroups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": "string",
+                "nullable": true,
+                "metadata": {
+                  "description": "Optional. Name of a Diagnostic Log category for a resource type this setting is applied to. Set the specific logs to collect here."
+                }
+              },
+              "categoryGroup": {
+                "type": "string",
+                "nullable": true,
+                "metadata": {
+                  "description": "Optional. Name of a Diagnostic Log category group for a resource type this setting is applied to. Set to `allLogs` to collect all logs."
+                }
+              },
+              "enabled": {
+                "type": "bool",
+                "nullable": true,
+                "metadata": {
+                  "description": "Optional. Enable or disable the category explicitly. Default is `true`."
+                }
+              }
+            }
+          },
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name of logs that will be streamed. \"allLogs\" includes all possible logs for the resource. Set to `[]` to disable log collection."
+          }
+        },
+        "metricCategories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": "string",
+                "metadata": {
+                  "description": "Required. Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to `AllMetrics` to collect all metrics."
+                }
+              },
+              "enabled": {
+                "type": "bool",
+                "nullable": true,
+                "metadata": {
+                  "description": "Optional. Enable or disable the category explicitly. Default is `true`."
+                }
+              }
+            }
+          },
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name of metrics that will be streamed. \"allMetrics\" includes all possible metrics for the resource. Set to `[]` to disable metric collection."
+          }
+        },
+        "logAnalyticsDestinationType": {
+          "type": "string",
+          "allowedValues": [
+            "AzureDiagnostics",
+            "Dedicated"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. A string indicating whether the export to Log Analytics should use the default destination type, i.e. AzureDiagnostics, or use a destination type."
+          }
+        },
+        "workspaceResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
+          }
+        },
+        "storageAccountResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
+          }
+        },
+        "eventHubAuthorizationRuleResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
+          }
+        },
+        "eventHubName": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
+          }
+        },
+        "marketplacePartnerResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs."
+          }
+        }
+      },
+      "metadata": {
+        "description": "An AVM-aligned type for a diagnostic setting. To be used if both logs & metrics are supported by the resource provider.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.5.1"
+        }
+      }
+    },
     "lockType": {
       "type": "object",
       "properties": {
@@ -34,195 +211,96 @@
           "metadata": {
             "description": "Optional. Specify the type of lock."
           }
+        },
+        "notes": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specify the notes of the lock."
+          }
         }
       },
-      "nullable": true
+      "metadata": {
+        "description": "An AVM-aligned type for a lock.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.6.0"
+        }
+      }
     },
     "roleAssignmentType": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "roleDefinitionIdOrName": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'."
-            }
-          },
-          "principalId": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. The principal ID of the principal (user/group/identity) to assign the role to."
-            }
-          },
-          "principalType": {
-            "type": "string",
-            "allowedValues": [
-              "Device",
-              "ForeignGroup",
-              "Group",
-              "ServicePrincipal",
-              "User"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The principal type of the assigned principal ID."
-            }
-          },
-          "description": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The description of the role assignment."
-            }
-          },
-          "condition": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase \"foo_storage_container\"."
-            }
-          },
-          "conditionVersion": {
-            "type": "string",
-            "allowedValues": [
-              "2.0"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Version of the condition."
-            }
-          },
-          "delegatedManagedIdentityResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The Resource Id of the delegated managed identity resource."
-            }
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name (as GUID) of the role assignment. If not provided, a GUID will be generated."
+          }
+        },
+        "roleDefinitionIdOrName": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'."
+          }
+        },
+        "principalId": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The principal ID of the principal (user/group/identity) to assign the role to."
+          }
+        },
+        "principalType": {
+          "type": "string",
+          "allowedValues": [
+            "Device",
+            "ForeignGroup",
+            "Group",
+            "ServicePrincipal",
+            "User"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The principal type of the assigned principal ID."
+          }
+        },
+        "description": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The description of the role assignment."
+          }
+        },
+        "condition": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase \"foo_storage_container\"."
+          }
+        },
+        "conditionVersion": {
+          "type": "string",
+          "allowedValues": [
+            "2.0"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Version of the condition."
+          }
+        },
+        "delegatedManagedIdentityResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The Resource Id of the delegated managed identity resource."
           }
         }
       },
-      "nullable": true
-    },
-    "diagnosticSettingType": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The name of diagnostic setting."
-            }
-          },
-          "logCategoriesAndGroups": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "category": {
-                  "type": "string",
-                  "nullable": true,
-                  "metadata": {
-                    "description": "Optional. Name of a Diagnostic Log category for a resource type this setting is applied to. Set the specific logs to collect here."
-                  }
-                },
-                "categoryGroup": {
-                  "type": "string",
-                  "nullable": true,
-                  "metadata": {
-                    "description": "Optional. Name of a Diagnostic Log category group for a resource type this setting is applied to. Set to `allLogs` to collect all logs."
-                  }
-                },
-                "enabled": {
-                  "type": "bool",
-                  "nullable": true,
-                  "metadata": {
-                    "description": "Optional. Enable or disable the category explicitly. Default is `true`."
-                  }
-                }
-              }
-            },
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The name of logs that will be streamed. \"allLogs\" includes all possible logs for the resource. Set to `[]` to disable log collection."
-            }
-          },
-          "metricCategories": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "category": {
-                  "type": "string",
-                  "metadata": {
-                    "description": "Required. Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to `AllMetrics` to collect all metrics."
-                  }
-                },
-                "enabled": {
-                  "type": "bool",
-                  "nullable": true,
-                  "metadata": {
-                    "description": "Optional. Enable or disable the category explicitly. Default is `true`."
-                  }
-                }
-              }
-            },
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The name of metrics that will be streamed. \"allMetrics\" includes all possible metrics for the resource. Set to `[]` to disable metric collection."
-            }
-          },
-          "logAnalyticsDestinationType": {
-            "type": "string",
-            "allowedValues": [
-              "AzureDiagnostics",
-              "Dedicated"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. A string indicating whether the export to Log Analytics should use the default destination type, i.e. AzureDiagnostics, or use a destination type."
-            }
-          },
-          "workspaceResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
-            }
-          },
-          "storageAccountResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
-            }
-          },
-          "eventHubAuthorizationRuleResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
-            }
-          },
-          "eventHubName": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
-            }
-          },
-          "marketplacePartnerResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs."
-            }
-          }
+      "metadata": {
+        "description": "An AVM-aligned type for a role assignment.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.5.1"
         }
-      },
-      "nullable": true
+      }
     }
   },
   "parameters": {
@@ -234,20 +312,23 @@
     },
     "serviceProviderName": {
       "type": "string",
+      "nullable": true,
       "metadata": {
-        "description": "Required. This is the name of the ExpressRoute Service Provider. It must exactly match one of the Service Providers from List ExpressRoute Service Providers API call."
+        "description": "Conditional. Required if 'expressRoutePortResourceId' is not set. This is the name of the ExpressRoute Service Provider. It must exactly match one of the Service Providers from List ExpressRoute Service Providers API call."
       }
     },
     "peeringLocation": {
       "type": "string",
+      "nullable": true,
       "metadata": {
-        "description": "Required. This is the name of the peering location and not the ARM resource location. It must exactly match one of the available peering locations from List ExpressRoute Service Providers API call."
+        "description": "Conditional. Required if 'expressRoutePortResourceId' is not set. This is the name of the peering location and not the ARM resource location. It must exactly match one of the available peering locations from List ExpressRoute Service Providers API call."
       }
     },
     "bandwidthInMbps": {
       "type": "int",
+      "nullable": true,
       "metadata": {
-        "description": "Required. This is the bandwidth in Mbps of the circuit being created. It must exactly match one of the available bandwidth offers List ExpressRoute Service Providers API call."
+        "description": "Conditional. Required if 'expressRoutePortResourceId' is not set. This is the bandwidth in Mbps of the circuit being created. It must exactly match one of the available bandwidth offers List ExpressRoute Service Providers API call."
       }
     },
     "skuTier": {
@@ -273,58 +354,15 @@
         "description": "Optional. Chosen SKU family of ExpressRoute circuit. Choose from MeteredData or UnlimitedData SKU families."
       }
     },
-    "peering": {
-      "type": "bool",
-      "defaultValue": false,
+    "peerings": {
+      "type": "array",
       "metadata": {
-        "description": "Optional. Enabled BGP peering type for the Circuit."
-      }
-    },
-    "peeringType": {
-      "type": "string",
-      "defaultValue": "AzurePrivatePeering",
-      "allowedValues": [
-        "AzurePrivatePeering",
-        "MicrosoftPeering"
-      ],
-      "metadata": {
-        "description": "Optional. BGP peering type for the Circuit. Choose from AzurePrivatePeering, AzurePublicPeering or MicrosoftPeering."
-      }
-    },
-    "sharedKey": {
-      "type": "securestring",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. The shared key for peering configuration. Router does MD5 hash comparison to validate the packets sent by BGP connection. This parameter is optional and can be removed from peering configuration if not required."
-      }
-    },
-    "peerASN": {
-      "type": "int",
-      "defaultValue": 0,
-      "metadata": {
-        "description": "Optional. The autonomous system number of the customer/connectivity provider."
-      }
-    },
-    "primaryPeerAddressPrefix": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. A /30 subnet used to configure IP addresses for interfaces on Link1."
-      }
-    },
-    "secondaryPeerAddressPrefix": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional. A /30 subnet used to configure IP addresses for interfaces on Link2."
-      }
-    },
-    "vlanId": {
-      "type": "int",
-      "defaultValue": 0,
-      "metadata": {
-        "description": "Optional. Specifies the identifier that is used to identify the customer."
-      }
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Network/expressRouteCircuits@2024-07-01#properties/properties/properties/peerings"
+        },
+        "description": "Optional. Array of peering configurations for the ExpressRoute circuit."
+      },
+      "nullable": true
     },
     "location": {
       "type": "string",
@@ -340,18 +378,45 @@
         "description": "Optional. Allow classic operations. You can connect to virtual networks in the classic deployment model by setting allowClassicOperations to true."
       }
     },
+    "authorizationNames": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "defaultValue": [],
+      "metadata": {
+        "description": "Optional. List of names for ExpressRoute circuit authorizations to create. To fetch the `authorizationKey` for the authorization, use the `existing` resource reference for `Microsoft.Network/expressRouteCircuits/authorizations`."
+      }
+    },
     "bandwidthInGbps": {
       "type": "int",
       "defaultValue": 0,
       "metadata": {
-        "description": "Optional. The bandwidth of the circuit when the circuit is provisioned on an ExpressRoutePort resource. Available when configuring Express Route Direct. Default value of 0 will set the property to null."
+        "description": "Conditional. Required if 'serviceProviderName', 'peeringLocation', and 'bandwidthInMbps' are not set. The bandwidth of the circuit when the circuit is provisioned on an ExpressRoutePort resource. Available when configuring Express Route Direct. Default value of 0 will set the property to null."
+      }
+    },
+    "connections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/connectionType"
+      },
+      "nullable": true,
+      "metadata": {
+        "description": "Optional. Array of Global Reach connection configurations for peerings."
       }
     },
     "expressRoutePortResourceId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Optional. The reference to the ExpressRoutePort resource when the circuit is provisioned on an ExpressRoutePort resource. Available when configuring Express Route Direct."
+        "description": "Conditional. Required if 'serviceProviderName', 'peeringLocation', and 'bandwidthInMbps' are not set. The reference to the ExpressRoutePort resource when the circuit is provisioned on an ExpressRoutePort resource. Available when configuring Express Route Direct."
+      }
+    },
+    "enableDirectPortRateLimit": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Flag denoting rate-limiting status of the ExpressRoute direct-port circuit."
       }
     },
     "globalReachEnabled": {
@@ -362,29 +427,41 @@
       }
     },
     "diagnosticSettings": {
-      "$ref": "#/definitions/diagnosticSettingType",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/diagnosticSettingFullType"
+      },
+      "nullable": true,
       "metadata": {
         "description": "Optional. The diagnostic settings of the service."
       }
     },
     "lock": {
       "$ref": "#/definitions/lockType",
+      "nullable": true,
       "metadata": {
         "description": "Optional. The lock settings of the service."
       }
     },
     "roleAssignments": {
-      "$ref": "#/definitions/roleAssignmentType",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/roleAssignmentType"
+      },
+      "nullable": true,
       "metadata": {
         "description": "Optional. Array of role assignments to create."
       }
     },
     "tags": {
       "type": "object",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Network/expressRouteCircuits@2024-05-01#properties/tags"
+        },
         "description": "Optional. Tags of the resource."
-      }
+      },
+      "nullable": true
     },
     "enableTelemetry": {
       "type": "bool",
@@ -395,12 +472,19 @@
     }
   },
   "variables": {
+    "copy": [
+      {
+        "name": "formattedRoleAssignments",
+        "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]",
+        "input": "[union(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')], createObject('roleDefinitionId', coalesce(tryGet(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName), if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName)))))]"
+      }
+    ],
     "builtInRoleNames": {
       "Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
       "Network Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4d97b98b-1d4f-4787-a291-c67834d212e7')]",
       "Owner": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
       "Reader": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
-      "Role Based Access Control Administrator (Preview)": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
+      "Role Based Access Control Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
       "User Access Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9')]"
     }
   },
@@ -408,7 +492,7 @@
     "avmTelemetry": {
       "condition": "[parameters('enableTelemetry')]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2023-07-01",
+      "apiVersion": "2024-03-01",
       "name": "[format('46d3xbcp.res.network-expressroutecircuit.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
       "properties": {
         "mode": "Incremental",
@@ -425,9 +509,9 @@
         }
       }
     },
-    "expressRouteCircuits": {
+    "expressRouteCircuit": {
       "type": "Microsoft.Network/expressRouteCircuits",
-      "apiVersion": "2023-04-01",
+      "apiVersion": "2024-10-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -437,19 +521,67 @@
         "family": "[if(equals(parameters('skuTier'), 'Local'), 'UnlimitedData', parameters('skuFamily'))]"
       },
       "properties": {
+        "copy": [
+          {
+            "name": "authorizations",
+            "count": "[length(parameters('authorizationNames'))]",
+            "input": {
+              "name": "[parameters('authorizationNames')[copyIndex('authorizations')]]"
+            }
+          },
+          {
+            "name": "peerings",
+            "count": "[length(coalesce(parameters('peerings'), createArray()))]",
+            "input": {
+              "name": "[coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].name]",
+              "properties": {
+                "peeringType": "[tryGet(coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].properties, 'peeringType')]",
+                "sharedKey": "[tryGet(coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].properties, 'sharedKey')]",
+                "azureASN": "[coalesce(tryGet(coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].properties, 'azureASN'), 12076)]",
+                "peerASN": "[tryGet(coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].properties, 'peerASN')]",
+                "primaryPeerAddressPrefix": "[tryGet(coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].properties, 'primaryPeerAddressPrefix')]",
+                "secondaryPeerAddressPrefix": "[tryGet(coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].properties, 'secondaryPeerAddressPrefix')]",
+                "vlanId": "[tryGet(coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].properties, 'vlanId')]",
+                "ipv6PeeringConfig": "[tryGet(coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].properties, 'ipv6PeeringConfig')]",
+                "microsoftPeeringConfig": "[tryGet(coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].properties, 'microsoftPeeringConfig')]",
+                "routeFilter": "[tryGet(coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].properties, 'routeFilter')]",
+                "state": "[tryGet(coalesce(parameters('peerings'), createArray())[copyIndex('peerings')].properties, 'state')]"
+              }
+            }
+          }
+        ],
         "allowClassicOperations": "[parameters('allowClassicOperations')]",
         "globalReachEnabled": "[parameters('globalReachEnabled')]",
         "bandwidthInGbps": "[if(not(equals(parameters('bandwidthInGbps'), 0)), parameters('bandwidthInGbps'), null())]",
+        "enableDirectPortRateLimit": "[parameters('enableDirectPortRateLimit')]",
         "expressRoutePort": "[if(not(empty(parameters('expressRoutePortResourceId'))), createObject('id', parameters('expressRoutePortResourceId')), null())]",
-        "serviceProviderProperties": {
-          "serviceProviderName": "[parameters('serviceProviderName')]",
-          "peeringLocation": "[parameters('peeringLocation')]",
-          "bandwidthInMbps": "[parameters('bandwidthInMbps')]"
-        },
-        "peerings": "[if(parameters('peering'), createArray(createObject('name', parameters('peeringType'), 'properties', createObject('peeringType', parameters('peeringType'), 'sharedKey', parameters('sharedKey'), 'peerASN', parameters('peerASN'), 'primaryPeerAddressPrefix', parameters('primaryPeerAddressPrefix'), 'secondaryPeerAddressPrefix', parameters('secondaryPeerAddressPrefix'), 'vlanId', parameters('vlanId')))), null())]"
+        "serviceProviderProperties": "[if(empty(parameters('expressRoutePortResourceId')), createObject('serviceProviderName', parameters('serviceProviderName'), 'peeringLocation', parameters('peeringLocation'), 'bandwidthInMbps', parameters('bandwidthInMbps')), null())]"
       }
     },
-    "expressRouteCircuits_lock": {
+    "expressRouteCircuit_peering_connections": {
+      "copy": {
+        "name": "expressRouteCircuit_peering_connections",
+        "count": "[length(coalesce(parameters('connections'), createArray()))]"
+      },
+      "type": "Microsoft.Network/expressRouteCircuits/peerings/connections",
+      "apiVersion": "2024-10-01",
+      "name": "[format('{0}/{1}/{2}', parameters('name'), coalesce(parameters('connections'), createArray())[copyIndex()].peeringName, coalesce(parameters('connections'), createArray())[copyIndex()].name)]",
+      "properties": {
+        "peerExpressRouteCircuitPeering": {
+          "id": "[format('{0}/peerings/{1}', coalesce(parameters('connections'), createArray())[copyIndex()].peerExpressRouteCircuitPeeringId, coalesce(parameters('connections'), createArray())[copyIndex()].peeringName)]"
+        },
+        "expressRouteCircuitPeering": {
+          "id": "[format('{0}/peerings/{1}', resourceId('Microsoft.Network/expressRouteCircuits', parameters('name')), coalesce(parameters('connections'), createArray())[copyIndex()].peeringName)]"
+        },
+        "addressPrefix": "[tryGet(coalesce(parameters('connections'), createArray())[copyIndex()], 'addressPrefix')]",
+        "authorizationKey": "[tryGet(coalesce(parameters('connections'), createArray())[copyIndex()], 'authorizationKey')]",
+        "ipv6CircuitConnectionConfig": "[tryGet(coalesce(parameters('connections'), createArray())[copyIndex()], 'ipv6CircuitConnectionConfig')]"
+      },
+      "dependsOn": [
+        "expressRouteCircuit"
+      ]
+    },
+    "expressRouteCircuit_lock": {
       "condition": "[and(not(empty(coalesce(parameters('lock'), createObject()))), not(equals(tryGet(parameters('lock'), 'kind'), 'None')))]",
       "type": "Microsoft.Authorization/locks",
       "apiVersion": "2020-05-01",
@@ -457,15 +589,15 @@
       "name": "[coalesce(tryGet(parameters('lock'), 'name'), format('lock-{0}', parameters('name')))]",
       "properties": {
         "level": "[coalesce(tryGet(parameters('lock'), 'kind'), '')]",
-        "notes": "[if(equals(tryGet(parameters('lock'), 'kind'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot delete or modify the resource or child resources.')]"
+        "notes": "[coalesce(tryGet(parameters('lock'), 'notes'), if(equals(tryGet(parameters('lock'), 'kind'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot delete or modify the resource or child resources.'))]"
       },
       "dependsOn": [
-        "expressRouteCircuits"
+        "expressRouteCircuit"
       ]
     },
-    "expressRouteCircuits_diagnosticSettings": {
+    "expressRouteCircuit_diagnosticSettings": {
       "copy": {
-        "name": "expressRouteCircuits_diagnosticSettings",
+        "name": "expressRouteCircuit_diagnosticSettings",
         "count": "[length(coalesce(parameters('diagnosticSettings'), createArray()))]"
       },
       "type": "Microsoft.Insights/diagnosticSettings",
@@ -501,29 +633,29 @@
         "logAnalyticsDestinationType": "[tryGet(coalesce(parameters('diagnosticSettings'), createArray())[copyIndex()], 'logAnalyticsDestinationType')]"
       },
       "dependsOn": [
-        "expressRouteCircuits"
+        "expressRouteCircuit"
       ]
     },
-    "expressRouteCircuits_roleAssignments": {
+    "expressRouteCircuit_roleAssignments": {
       "copy": {
-        "name": "expressRouteCircuits_roleAssignments",
-        "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]"
+        "name": "expressRouteCircuit_roleAssignments",
+        "count": "[length(coalesce(variables('formattedRoleAssignments'), createArray()))]"
       },
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
       "scope": "[format('Microsoft.Network/expressRouteCircuits/{0}', parameters('name'))]",
-      "name": "[guid(resourceId('Microsoft.Network/expressRouteCircuits', parameters('name')), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId, coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)]",
+      "name": "[coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'name'), guid(resourceId('Microsoft.Network/expressRouteCircuits', parameters('name')), coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId, coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId))]",
       "properties": {
-        "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName), variables('builtInRoleNames')[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName], if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)))]",
-        "principalId": "[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId]",
-        "description": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'description')]",
-        "principalType": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'principalType')]",
-        "condition": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition')]",
-        "conditionVersion": "[if(not(empty(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
-        "delegatedManagedIdentityResourceId": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
+        "roleDefinitionId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId]",
+        "principalId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId]",
+        "description": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'description')]",
+        "principalType": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'principalType')]",
+        "condition": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition')]",
+        "conditionVersion": "[if(not(empty(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
+        "delegatedManagedIdentityResourceId": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
       },
       "dependsOn": [
-        "expressRouteCircuits"
+        "expressRouteCircuit"
       ]
     }
   },
@@ -531,21 +663,21 @@
     "resourceId": {
       "type": "string",
       "metadata": {
-        "description": "The resource ID of express route curcuit."
+        "description": "The resource ID of express route circuit."
       },
       "value": "[resourceId('Microsoft.Network/expressRouteCircuits', parameters('name'))]"
     },
     "resourceGroupName": {
       "type": "string",
       "metadata": {
-        "description": "The resource group the express route curcuit was deployed into."
+        "description": "The resource group the express route circuit was deployed into."
       },
       "value": "[resourceGroup().name]"
     },
     "name": {
       "type": "string",
       "metadata": {
-        "description": "The name of express route curcuit."
+        "description": "The name of express route circuit."
       },
       "value": "[parameters('name')]"
     },
@@ -554,14 +686,28 @@
       "metadata": {
         "description": "The service key of the express route circuit."
       },
-      "value": "[reference('expressRouteCircuits').serviceKey]"
+      "value": "[reference('expressRouteCircuit').serviceKey]"
+    },
+    "serviceProviderProvisioningState": {
+      "type": "string",
+      "metadata": {
+        "description": "The service provider provisioning state of the express route circuit."
+      },
+      "value": "[reference('expressRouteCircuit').serviceProviderProvisioningState]"
     },
     "location": {
       "type": "string",
       "metadata": {
         "description": "The location the resource was deployed into."
       },
-      "value": "[reference('expressRouteCircuits', '2023-04-01', 'full').location]"
+      "value": "[reference('expressRouteCircuit', '2024-10-01', 'full').location]"
+    },
+    "authorizations": {
+      "type": "array",
+      "metadata": {
+        "description": "The authorizations of the express route circuit."
+      },
+      "value": "[reference('expressRouteCircuit').authorizations]"
     }
   }
 }

@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -58,16 +58,17 @@ module testDeployment '../../../main.bicep' = [
         name: 'myCustomLockName'
       }
       addressPrefix: '10.1.0.0/16'
-      virtualWanId: nestedDependencies.outputs.virtualWWANResourceId
+      virtualWanResourceId: nestedDependencies.outputs.virtualWWANResourceId
       hubRouteTables: [
         {
           name: 'routeTable1'
+          routes: []
         }
       ]
       hubVirtualNetworkConnections: [
         {
           name: 'connection1'
-          remoteVirtualNetworkId: nestedDependencies.outputs.virtualNetworkResourceId
+          remoteVirtualNetworkResourceId: nestedDependencies.outputs.virtualNetworkResourceId
           routingConfiguration: {
             associatedRouteTable: {
               id: '${resourceGroup.id}/providers/Microsoft.Network/virtualHubs/${namePrefix}-${serviceShort}/hubRouteTables/routeTable1'
@@ -78,13 +79,33 @@ module testDeployment '../../../main.bicep' = [
                   id: '${resourceGroup.id}/providers/Microsoft.Network/virtualHubs/${namePrefix}-${serviceShort}/hubRouteTables/routeTable1'
                 }
               ]
-              labels: [
-                'none'
+              labels: []
+            }
+            vnetRoutes: {
+              staticRoutes: [
+                {
+                  name: 'route1'
+                  addressPrefixes: [
+                    '10.150.0.0/24'
+                  ]
+                  nextHopIpAddress: '10.150.0.5'
+                }
               ]
+              staticRoutesConfig: {
+                vnetLocalRouteOverrideCriteria: 'Contains'
+              }
             }
           }
         }
       ]
+      sku: 'Standard'
+      virtualRouterAutoScaleConfiguration: {
+        minCount: 2
+      }
+      preferredRoutingGateway: 'ExpressRoute'
+      hubRoutingPreference: 'ASPath'
+      virtualRouterAsn: 65515
+      routingIntent: {}
       tags: {
         'hidden-title': 'This is visible in the resource name'
         Environment: 'Non-Prod'

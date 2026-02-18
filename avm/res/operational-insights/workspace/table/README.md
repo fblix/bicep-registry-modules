@@ -8,14 +8,13 @@ This module deploys a Log Analytics Workspace Table.
 - [Parameters](#Parameters)
 - [Outputs](#Outputs)
 - [Cross-referenced modules](#Cross-referenced-modules)
-- [Data Collection](#Data-Collection)
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.OperationalInsights/workspaces/tables` | [2022-10-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.OperationalInsights/2022-10-01/workspaces/tables) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.OperationalInsights/workspaces/tables` | 2025-07-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.operationalinsights_workspaces_tables.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.OperationalInsights/2025-07-01/workspaces/tables)</li></ul> |
 
 ## Parameters
 
@@ -37,11 +36,11 @@ This module deploys a Log Analytics Workspace Table.
 | :-- | :-- | :-- |
 | [`plan`](#parameter-plan) | string | Instruct the system how to handle and charge the logs ingested to this table. |
 | [`restoredLogs`](#parameter-restoredlogs) | object | Restore parameters. |
-| [`retentionInDays`](#parameter-retentionindays) | int | The table retention in days, between 4 and 730. Setting this property to -1 will default to the workspace retention. |
+| [`retentionInDays`](#parameter-retentionindays) | int | The table retention in days, between 4 and 730. Don't provide to use the default workspace retention. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
 | [`schema`](#parameter-schema) | object | Table's schema. |
 | [`searchResults`](#parameter-searchresults) | object | Parameters of the search job that initiated this table. |
-| [`totalRetentionInDays`](#parameter-totalretentionindays) | int | The table total retention in days, between 4 and 2555. Setting this property to -1 will default to table retention. |
+| [`totalRetentionInDays`](#parameter-totalretentionindays) | int | The table total retention in days, between 4 and 2555. Don't provide use the default table retention. |
 
 ### Parameter: `name`
 
@@ -78,15 +77,44 @@ Restore parameters.
 
 - Required: No
 - Type: object
-- Default: `{}`
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`endRestoreTime`](#parameter-restoredlogsendrestoretime) | string | The timestamp to end the restore by (UTC). |
+| [`sourceTable`](#parameter-restoredlogssourcetable) | string | The table to restore data from. |
+| [`startRestoreTime`](#parameter-restoredlogsstartrestoretime) | string | The timestamp to start the restore from (UTC). |
+
+### Parameter: `restoredLogs.endRestoreTime`
+
+The timestamp to end the restore by (UTC).
+
+- Required: No
+- Type: string
+
+### Parameter: `restoredLogs.sourceTable`
+
+The table to restore data from.
+
+- Required: No
+- Type: string
+
+### Parameter: `restoredLogs.startRestoreTime`
+
+The timestamp to start the restore from (UTC).
+
+- Required: No
+- Type: string
 
 ### Parameter: `retentionInDays`
 
-The table retention in days, between 4 and 730. Setting this property to -1 will default to the workspace retention.
+The table retention in days, between 4 and 730. Don't provide to use the default workspace retention.
 
 - Required: No
 - Type: int
-- Default: `-1`
+- MinValue: 4
+- MaxValue: 730
 
 ### Parameter: `roleAssignments`
 
@@ -94,6 +122,16 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Log Analytics Contributor'`
+  - `'Log Analytics Reader'`
+  - `'Monitoring Contributor'`
+  - `'Monitoring Reader'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -110,6 +148,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -160,6 +199,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -183,7 +229,120 @@ Table's schema.
 
 - Required: No
 - Type: object
-- Default: `{}`
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`columns`](#parameter-schemacolumns) | array | A list of table custom columns. |
+| [`name`](#parameter-schemaname) | string | The table name. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`description`](#parameter-schemadescription) | string | The table description. |
+| [`displayName`](#parameter-schemadisplayname) | string | The table display name. |
+
+### Parameter: `schema.columns`
+
+A list of table custom columns.
+
+- Required: Yes
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-schemacolumnsname) | string | The column name. |
+| [`type`](#parameter-schemacolumnstype) | string | The column type. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`dataTypeHint`](#parameter-schemacolumnsdatatypehint) | string | The column data type logical hint. |
+| [`description`](#parameter-schemacolumnsdescription) | string | The column description. |
+| [`displayName`](#parameter-schemacolumnsdisplayname) | string | Column display name. |
+
+### Parameter: `schema.columns.name`
+
+The column name.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `schema.columns.type`
+
+The column type.
+
+- Required: Yes
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'boolean'
+    'dateTime'
+    'dynamic'
+    'guid'
+    'int'
+    'long'
+    'real'
+    'string'
+  ]
+  ```
+
+### Parameter: `schema.columns.dataTypeHint`
+
+The column data type logical hint.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'armPath'
+    'guid'
+    'ip'
+    'uri'
+  ]
+  ```
+
+### Parameter: `schema.columns.description`
+
+The column description.
+
+- Required: No
+- Type: string
+
+### Parameter: `schema.columns.displayName`
+
+Column display name.
+
+- Required: No
+- Type: string
+
+### Parameter: `schema.name`
+
+The table name.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `schema.description`
+
+The table description.
+
+- Required: No
+- Type: string
+
+### Parameter: `schema.displayName`
+
+The table display name.
+
+- Required: No
+- Type: string
 
 ### Parameter: `searchResults`
 
@@ -191,16 +350,65 @@ Parameters of the search job that initiated this table.
 
 - Required: No
 - Type: object
-- Default: `{}`
 
-### Parameter: `totalRetentionInDays`
+**Required parameters**
 
-The table total retention in days, between 4 and 2555. Setting this property to -1 will default to table retention.
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`query`](#parameter-searchresultsquery) | string | The search job query. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`description`](#parameter-searchresultsdescription) | string | The search description. |
+| [`endSearchTime`](#parameter-searchresultsendsearchtime) | string | The timestamp to end the search by (UTC). |
+| [`limit`](#parameter-searchresultslimit) | int | Limit the search job to return up to specified number of rows. |
+| [`startSearchTime`](#parameter-searchresultsstartsearchtime) | string | The timestamp to start the search from (UTC). |
+
+### Parameter: `searchResults.query`
+
+The search job query.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `searchResults.description`
+
+The search description.
+
+- Required: No
+- Type: string
+
+### Parameter: `searchResults.endSearchTime`
+
+The timestamp to end the search by (UTC).
+
+- Required: No
+- Type: string
+
+### Parameter: `searchResults.limit`
+
+Limit the search job to return up to specified number of rows.
 
 - Required: No
 - Type: int
-- Default: `-1`
 
+### Parameter: `searchResults.startSearchTime`
+
+The timestamp to start the search from (UTC).
+
+- Required: No
+- Type: string
+
+### Parameter: `totalRetentionInDays`
+
+The table total retention in days, between 4 and 2555. Don't provide use the default table retention.
+
+- Required: No
+- Type: int
+- MinValue: 4
+- MaxValue: 2555
 
 ## Outputs
 
@@ -212,8 +420,8 @@ The table total retention in days, between 4 and 2555. Setting this property to 
 
 ## Cross-referenced modules
 
-_None_
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
 
-## Data Collection
-
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.5.1` | Remote reference |

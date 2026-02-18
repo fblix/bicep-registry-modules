@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -36,7 +36,6 @@ module nestedDependencies 'dependencies.bicep' = {
   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
   params: {
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -51,15 +50,17 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
       createMode: 'Default'
-      disableLocalAuth: false
-      enablePurgeProtection: false
+      enablePurgeProtection: false // Only for Testing purposes. Waf Aligned is true
       privateEndpoints: [
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
           tags: {
             'hidden-title': 'This is visible in the resource name'
@@ -69,9 +70,13 @@ module testDeployment '../../../main.bicep' = [
         }
         {
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
         }
       ]
       softDeleteRetentionInDays: 1

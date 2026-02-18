@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -38,13 +38,12 @@ module nestedDependencies 'dependencies.bicep' = {
     storageAccountName: 'dep${namePrefix}st${serviceShort}'
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
-    location: resourceLocation
   }
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -52,7 +51,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -67,8 +65,7 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
-      storageAccountId: nestedDependencies.outputs.storageAccountResourceId
+      storageAccountResourceId: nestedDependencies.outputs.storageAccountResourceId
       diagnosticSettings: [
         {
           eventHubName: diagnosticDependencies.outputs.eventHubNamespaceEventHubName
@@ -77,16 +74,16 @@ module testDeployment '../../../main.bicep' = [
           workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
         }
       ]
-      lock: {
-        kind: 'CanNotDelete'
-        name: 'myCustomLockName'
-      }
       poolAllocationMode: 'BatchService'
       privateEndpoints: [
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           service: 'batchAccount'
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
         }
@@ -102,9 +99,5 @@ module testDeployment '../../../main.bicep' = [
         Role: 'DeploymentValidation'
       }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

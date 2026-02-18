@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -43,7 +43,7 @@ module nestedDependencies 'dependencies.bicep' = {
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -66,11 +66,10 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
-      primaryAgentPoolProfile: [
+      primaryAgentPoolProfiles: [
         {
           availabilityZones: [
-            '3'
+            3
           ]
           count: 1
           enableAutoScaling: true
@@ -79,17 +78,19 @@ module testDeployment '../../../main.bicep' = [
           minCount: 1
           mode: 'System'
           name: 'systempool'
+          nodeTaints: [
+            'CriticalAddonsOnly=true:NoSchedule'
+          ]
           osDiskSizeGB: 0
           osType: 'Linux'
-          serviceCidr: ''
           type: 'VirtualMachineScaleSets'
-          vmSize: 'Standard_DS2_v2'
+          vmSize: 'Standard_DS4_v2'
         }
       ]
       agentPools: [
         {
           availabilityZones: [
-            '3'
+            3
           ]
           count: 2
           enableAutoScaling: true
@@ -100,38 +101,12 @@ module testDeployment '../../../main.bicep' = [
           mode: 'User'
           name: 'userpool1'
           nodeLabels: {}
-          nodeTaints: [
-            'CriticalAddonsOnly=true:NoSchedule'
-          ]
           osDiskSizeGB: 128
           osType: 'Linux'
           scaleSetEvictionPolicy: 'Delete'
           scaleSetPriority: 'Regular'
           type: 'VirtualMachineScaleSets'
-          vmSize: 'Standard_DS2_v2'
-        }
-        {
-          availabilityZones: [
-            '3'
-          ]
-          count: 2
-          enableAutoScaling: true
-          maxCount: 3
-          maxPods: 30
-          minCount: 1
-          minPods: 2
-          mode: 'User'
-          name: 'userpool2'
-          nodeLabels: {}
-          nodeTaints: [
-            'CriticalAddonsOnly=true:NoSchedule'
-          ]
-          osDiskSizeGB: 128
-          osType: 'Linux'
-          scaleSetEvictionPolicy: 'Delete'
-          scaleSetPriority: 'Regular'
-          type: 'VirtualMachineScaleSets'
-          vmSize: 'Standard_DS2_v2'
+          vmSize: 'Standard_DS4_v2'
         }
       ]
       networkPlugin: 'kubenet'
@@ -151,11 +126,13 @@ module testDeployment '../../../main.bicep' = [
       ]
       roleAssignments: [
         {
+          name: guid('Owner assignment ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
         {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
@@ -170,7 +147,7 @@ module testDeployment '../../../main.bicep' = [
         }
       ]
       managedIdentities: {
-        userAssignedResourcesIds: [
+        userAssignedResourceIds: [
           nestedDependencies.outputs.managedIdentityResourceId
         ]
       }
@@ -179,10 +156,10 @@ module testDeployment '../../../main.bicep' = [
         Environment: 'Non-Prod'
         Role: 'DeploymentValidation'
       }
+      aadProfile: {
+        enableAzureRBAC: true
+        managed: true
+      }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

@@ -52,7 +52,6 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
       }
     ]
   }
-
 }
 
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
@@ -62,6 +61,9 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-
 
 @description('The resource ID of the created Log Analytics Workspace.')
 output logAnalyticsWorkspaceResourceId string = logAnalyticsWorkspace.id
+
+@description('The name of the created Log Analytics Workspace.')
+output logAnalyticsWorkspaceCustomerId string = logAnalyticsWorkspace.properties.customerId
 
 @description('The resource ID of the created Virtual Network Subnet.')
 output subnetResourceId string = virtualNetwork.properties.subnets[0].id

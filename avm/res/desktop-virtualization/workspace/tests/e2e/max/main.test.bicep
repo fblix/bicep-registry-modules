@@ -33,15 +33,16 @@ module nestedDependencies 'dependencies.bicep' = {
   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
   params: {
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
-    location: resourceLocation
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
+    applicationGroupName: 'dep-${namePrefix}-appg-${serviceShort}'
+    hostPoolName: 'dep-${namePrefix}-hp-${serviceShort}'
   }
 }
 
 // Diagnostics
 // ===========
 
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -49,7 +50,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}01'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}01'
-    location: resourceLocation
   }
 }
 
@@ -65,7 +65,9 @@ module testDeployment '../../../main.bicep' = [
     params: {
       name: '${namePrefix}${serviceShort}001'
       location: resourceLocation
-      applicationGroupReferences: []
+      applicationGroupReferences: [
+        nestedDependencies.outputs.applicationGroupResourceId
+      ]
       friendlyName: 'AVD Workspace'
       publicNetworkAccess: 'Disabled'
       diagnosticSettings: [
@@ -84,11 +86,13 @@ module testDeployment '../../../main.bicep' = [
       ]
       roleAssignments: [
         {
+          name: 'e31e3fcd-816f-49b9-a741-feff792a56d7'
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
         {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
@@ -105,9 +109,13 @@ module testDeployment '../../../main.bicep' = [
       privateEndpoints: [
         {
           service: 'feed'
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
           tags: {
             'hidden-title': 'This is visible in the resource name'
@@ -143,9 +151,13 @@ module testDeployment '../../../main.bicep' = [
         }
         {
           service: 'global'
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
           tags: {
             'hidden-title': 'This is visible in the resource name'
@@ -182,9 +194,5 @@ module testDeployment '../../../main.bicep' = [
         name: 'myCustomLockName'
       }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

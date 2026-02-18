@@ -5,14 +5,222 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "4063023963915633324"
+      "version": "0.38.5.1644",
+      "templateHash": "10593926005855712519"
     },
     "name": "Network Watchers",
-    "description": "This module deploys a Network Watcher.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a Network Watcher."
   },
   "definitions": {
+    "flowLogType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Name of the resource."
+          }
+        },
+        "tags": {
+          "type": "object",
+          "metadata": {
+            "__bicep_resource_derived_type!": {
+              "source": "Microsoft.Network/networkWatchers/flowLogs@2024-05-01#properties/tags"
+            },
+            "description": "Optional. Tags of the resource."
+          },
+          "nullable": true
+        },
+        "location": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Location for all resources."
+          }
+        },
+        "targetResourceId": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. Resource ID of the NSG that must be enabled for Flow Logs."
+          }
+        },
+        "storageResourceId": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. Resource ID of the diagnostic storage account."
+          }
+        },
+        "enabled": {
+          "type": "bool",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. If the flow log should be enabled."
+          }
+        },
+        "formatVersion": {
+          "type": "int",
+          "allowedValues": [
+            1,
+            2
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The flow log format version."
+          }
+        },
+        "workspaceResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specify the Log Analytics Workspace Resource ID."
+          }
+        },
+        "trafficAnalyticsInterval": {
+          "type": "int",
+          "allowedValues": [
+            10,
+            60
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The interval in minutes which would decide how frequently TA service should do flow analytics."
+          }
+        },
+        "retentionInDays": {
+          "type": "int",
+          "nullable": true,
+          "minValue": 0,
+          "maxValue": 365,
+          "metadata": {
+            "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+          }
+        },
+        "enabledFilteringCriteria": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Field to filter network traffic logs based on SrcIP, SrcPort, DstIP, DstPort, Protocol, Encryption, Direction and Action. If not specified, all network traffic will be logged."
+          }
+        }
+      },
+      "metadata": {
+        "__bicep_export!": true,
+        "description": "The type of a flow log."
+      }
+    },
+    "connectionMonitorType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. Name of the resource."
+          }
+        },
+        "tags": {
+          "type": "object",
+          "metadata": {
+            "__bicep_resource_derived_type!": {
+              "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/tags"
+            },
+            "description": "Optional. Tags of the resource."
+          },
+          "nullable": true
+        },
+        "location": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Location for all resources."
+          }
+        },
+        "endpoints": {
+          "type": "array",
+          "metadata": {
+            "__bicep_resource_derived_type!": {
+              "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/properties/properties/endpoints"
+            },
+            "description": "Optional. List of connection monitor endpoints."
+          },
+          "nullable": true
+        },
+        "testConfigurations": {
+          "type": "array",
+          "metadata": {
+            "__bicep_resource_derived_type!": {
+              "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/properties/properties/testConfigurations"
+            },
+            "description": "Optional. List of connection monitor test configurations."
+          },
+          "nullable": true
+        },
+        "testGroups": {
+          "type": "array",
+          "metadata": {
+            "__bicep_resource_derived_type!": {
+              "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/properties/properties/testGroups"
+            },
+            "description": "Optional. List of connection monitor test groups."
+          },
+          "nullable": true
+        },
+        "workspaceResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specify the Log Analytics Workspace Resource ID."
+          }
+        },
+        "autoStart": {
+          "type": "bool",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Determines if the connection monitor will start automatically once created."
+          }
+        },
+        "destination": {
+          "type": "object",
+          "metadata": {
+            "__bicep_resource_derived_type!": {
+              "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/properties/properties/destination"
+            },
+            "description": "Optional. Describes the destination of connection monitor."
+          },
+          "nullable": true
+        },
+        "monitoringIntervalInSeconds": {
+          "type": "int",
+          "nullable": true,
+          "minValue": 30,
+          "maxValue": 1800,
+          "metadata": {
+            "description": "Optional. Monitoring interval in seconds."
+          }
+        },
+        "notes": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Notes to be associated with the connection monitor."
+          }
+        },
+        "source": {
+          "type": "object",
+          "metadata": {
+            "__bicep_resource_derived_type!": {
+              "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/properties/properties/source"
+            },
+            "description": "Optional. Describes the source of connection monitor."
+          },
+          "nullable": true
+        }
+      },
+      "metadata": {
+        "__bicep_export!": true,
+        "description": "The type of a connection monitor."
+      }
+    },
     "lockType": {
       "type": "object",
       "properties": {
@@ -34,75 +242,96 @@
           "metadata": {
             "description": "Optional. Specify the type of lock."
           }
-        }
-      },
-      "nullable": true
-    },
-    "roleAssignmentType": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "roleDefinitionIdOrName": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'."
-            }
-          },
-          "principalId": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. The principal ID of the principal (user/group/identity) to assign the role to."
-            }
-          },
-          "principalType": {
-            "type": "string",
-            "allowedValues": [
-              "Device",
-              "ForeignGroup",
-              "Group",
-              "ServicePrincipal",
-              "User"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The principal type of the assigned principal ID."
-            }
-          },
-          "description": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The description of the role assignment."
-            }
-          },
-          "condition": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase \"foo_storage_container\"."
-            }
-          },
-          "conditionVersion": {
-            "type": "string",
-            "allowedValues": [
-              "2.0"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Version of the condition."
-            }
-          },
-          "delegatedManagedIdentityResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The Resource Id of the delegated managed identity resource."
-            }
+        },
+        "notes": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specify the notes of the lock."
           }
         }
       },
-      "nullable": true
+      "metadata": {
+        "description": "An AVM-aligned type for a lock.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.6.1"
+        }
+      }
+    },
+    "roleAssignmentType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name (as GUID) of the role assignment. If not provided, a GUID will be generated."
+          }
+        },
+        "roleDefinitionIdOrName": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'."
+          }
+        },
+        "principalId": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The principal ID of the principal (user/group/identity) to assign the role to."
+          }
+        },
+        "principalType": {
+          "type": "string",
+          "allowedValues": [
+            "Device",
+            "ForeignGroup",
+            "Group",
+            "ServicePrincipal",
+            "User"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The principal type of the assigned principal ID."
+          }
+        },
+        "description": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The description of the role assignment."
+          }
+        },
+        "condition": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase \"foo_storage_container\"."
+          }
+        },
+        "conditionVersion": {
+          "type": "string",
+          "allowedValues": [
+            "2.0"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Version of the condition."
+          }
+        },
+        "delegatedManagedIdentityResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The Resource Id of the delegated managed identity resource."
+          }
+        }
+      },
+      "metadata": {
+        "description": "An AVM-aligned type for a role assignment.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.6.1"
+        }
+      }
     }
   },
   "parameters": {
@@ -123,36 +352,50 @@
     },
     "connectionMonitors": {
       "type": "array",
-      "defaultValue": [],
+      "items": {
+        "$ref": "#/definitions/connectionMonitorType"
+      },
+      "nullable": true,
       "metadata": {
         "description": "Optional. Array that contains the Connection Monitors."
       }
     },
     "flowLogs": {
       "type": "array",
-      "defaultValue": [],
+      "items": {
+        "$ref": "#/definitions/flowLogType"
+      },
+      "nullable": true,
       "metadata": {
         "description": "Optional. Array that contains the Flow Logs."
       }
     },
     "lock": {
       "$ref": "#/definitions/lockType",
+      "nullable": true,
       "metadata": {
         "description": "Optional. The lock settings of the service."
       }
     },
     "roleAssignments": {
-      "$ref": "#/definitions/roleAssignmentType",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/roleAssignmentType"
+      },
+      "nullable": true,
       "metadata": {
         "description": "Optional. Array of role assignments to create."
       }
     },
     "tags": {
       "type": "object",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Network/networkWatchers@2024-05-01#properties/tags"
+        },
         "description": "Optional. Tags of the resource."
-      }
+      },
+      "nullable": true
     },
     "enableTelemetry": {
       "type": "bool",
@@ -163,12 +406,19 @@
     }
   },
   "variables": {
+    "copy": [
+      {
+        "name": "formattedRoleAssignments",
+        "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]",
+        "input": "[union(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')], createObject('roleDefinitionId', coalesce(tryGet(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName), if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName)))))]"
+      }
+    ],
     "builtInRoleNames": {
       "Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
       "Network Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4d97b98b-1d4f-4787-a291-c67834d212e7')]",
       "Owner": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
       "Reader": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
-      "Role Based Access Control Administrator (Preview)": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
+      "Role Based Access Control Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
       "User Access Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9')]"
     }
   },
@@ -176,7 +426,7 @@
     "avmTelemetry": {
       "condition": "[parameters('enableTelemetry')]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2023-07-01",
+      "apiVersion": "2024-03-01",
       "name": "[format('46d3xbcp.res.network-networkwatcher.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
       "properties": {
         "mode": "Incremental",
@@ -195,7 +445,7 @@
     },
     "networkWatcher": {
       "type": "Microsoft.Network/networkWatchers",
-      "apiVersion": "2023-04-01",
+      "apiVersion": "2024-10-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -209,7 +459,7 @@
       "name": "[coalesce(tryGet(parameters('lock'), 'name'), format('lock-{0}', parameters('name')))]",
       "properties": {
         "level": "[coalesce(tryGet(parameters('lock'), 'kind'), '')]",
-        "notes": "[if(equals(tryGet(parameters('lock'), 'kind'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot delete or modify the resource or child resources.')]"
+        "notes": "[coalesce(tryGet(parameters('lock'), 'notes'), if(equals(tryGet(parameters('lock'), 'kind'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot delete or modify the resource or child resources.'))]"
       },
       "dependsOn": [
         "networkWatcher"
@@ -218,20 +468,20 @@
     "networkWatcher_roleAssignments": {
       "copy": {
         "name": "networkWatcher_roleAssignments",
-        "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]"
+        "count": "[length(coalesce(variables('formattedRoleAssignments'), createArray()))]"
       },
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
       "scope": "[format('Microsoft.Network/networkWatchers/{0}', parameters('name'))]",
-      "name": "[guid(resourceId('Microsoft.Network/networkWatchers', parameters('name')), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId, coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)]",
+      "name": "[coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'name'), guid(resourceId('Microsoft.Network/networkWatchers', parameters('name')), coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId, coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId))]",
       "properties": {
-        "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName), variables('builtInRoleNames')[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName], if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)))]",
-        "principalId": "[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId]",
-        "description": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'description')]",
-        "principalType": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'principalType')]",
-        "condition": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition')]",
-        "conditionVersion": "[if(not(empty(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
-        "delegatedManagedIdentityResourceId": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
+        "roleDefinitionId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId]",
+        "principalId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId]",
+        "description": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'description')]",
+        "principalType": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'principalType')]",
+        "condition": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition')]",
+        "conditionVersion": "[if(not(empty(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
+        "delegatedManagedIdentityResourceId": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
       },
       "dependsOn": [
         "networkWatcher"
@@ -240,10 +490,10 @@
     "networkWatcher_connectionMonitors": {
       "copy": {
         "name": "networkWatcher_connectionMonitors",
-        "count": "[length(parameters('connectionMonitors'))]"
+        "count": "[length(coalesce(parameters('connectionMonitors'), createArray()))]"
       },
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('{0}-NW-ConnectionMonitor-{1}', uniqueString(deployment().name, parameters('location')), copyIndex())]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -251,9 +501,14 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "endpoints": "[if(contains(parameters('connectionMonitors')[copyIndex()], 'endpoints'), createObject('value', parameters('connectionMonitors')[copyIndex()].endpoints), createObject('value', createArray()))]",
+          "tags": {
+            "value": "[parameters('tags')]"
+          },
+          "endpoints": {
+            "value": "[tryGet(coalesce(parameters('connectionMonitors'), createArray())[copyIndex()], 'endpoints')]"
+          },
           "name": {
-            "value": "[parameters('connectionMonitors')[copyIndex()].name]"
+            "value": "[coalesce(parameters('connectionMonitors'), createArray())[copyIndex()].name]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -261,9 +516,30 @@
           "networkWatcherName": {
             "value": "[parameters('name')]"
           },
-          "testConfigurations": "[if(contains(parameters('connectionMonitors')[copyIndex()], 'testConfigurations'), createObject('value', parameters('connectionMonitors')[copyIndex()].testConfigurations), createObject('value', createArray()))]",
-          "testGroups": "[if(contains(parameters('connectionMonitors')[copyIndex()], 'testGroups'), createObject('value', parameters('connectionMonitors')[copyIndex()].testGroups), createObject('value', createArray()))]",
-          "workspaceResourceId": "[if(contains(parameters('connectionMonitors')[copyIndex()], 'workspaceResourceId'), createObject('value', parameters('connectionMonitors')[copyIndex()].workspaceResourceId), createObject('value', ''))]"
+          "testConfigurations": {
+            "value": "[tryGet(coalesce(parameters('connectionMonitors'), createArray())[copyIndex()], 'testConfigurations')]"
+          },
+          "testGroups": {
+            "value": "[tryGet(coalesce(parameters('connectionMonitors'), createArray())[copyIndex()], 'testGroups')]"
+          },
+          "workspaceResourceId": {
+            "value": "[tryGet(coalesce(parameters('connectionMonitors'), createArray())[copyIndex()], 'workspaceResourceId')]"
+          },
+          "autoStart": {
+            "value": "[tryGet(coalesce(parameters('connectionMonitors'), createArray())[copyIndex()], 'autoStart')]"
+          },
+          "destination": {
+            "value": "[tryGet(coalesce(parameters('connectionMonitors'), createArray())[copyIndex()], 'destination')]"
+          },
+          "monitoringIntervalInSeconds": {
+            "value": "[tryGet(coalesce(parameters('connectionMonitors'), createArray())[copyIndex()], 'monitoringIntervalInSeconds')]"
+          },
+          "notes": {
+            "value": "[tryGet(coalesce(parameters('connectionMonitors'), createArray())[copyIndex()], 'notes')]"
+          },
+          "source": {
+            "value": "[tryGet(coalesce(parameters('connectionMonitors'), createArray())[copyIndex()], 'source')]"
+          }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -272,12 +548,11 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "13403868700445795620"
+              "version": "0.38.5.1644",
+              "templateHash": "9988153364509308698"
             },
             "name": "Network Watchers Connection Monitors",
-            "description": "This module deploys a Network Watcher Connection Monitor.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a Network Watcher Connection Monitor."
           },
           "parameters": {
             "networkWatcherName": {
@@ -295,10 +570,13 @@
             },
             "tags": {
               "type": "object",
-              "nullable": true,
               "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/tags"
+                },
                 "description": "Optional. Tags of the resource."
-              }
+              },
+              "nullable": true
             },
             "location": {
               "type": "string",
@@ -309,43 +587,95 @@
             },
             "endpoints": {
               "type": "array",
-              "defaultValue": [],
               "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/properties/properties/endpoints"
+                },
                 "description": "Optional. List of connection monitor endpoints."
-              }
+              },
+              "defaultValue": []
             },
             "testConfigurations": {
               "type": "array",
-              "defaultValue": [],
               "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/properties/properties/testConfigurations"
+                },
                 "description": "Optional. List of connection monitor test configurations."
-              }
+              },
+              "defaultValue": []
             },
             "testGroups": {
               "type": "array",
-              "defaultValue": [],
               "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/properties/properties/testGroups"
+                },
                 "description": "Optional. List of connection monitor test groups."
-              }
+              },
+              "defaultValue": []
             },
             "workspaceResourceId": {
               "type": "string",
-              "defaultValue": "",
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Specify the Log Analytics Workspace Resource ID."
               }
+            },
+            "autoStart": {
+              "type": "bool",
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. Determines if the connection monitor will start automatically once created."
+              }
+            },
+            "destination": {
+              "type": "object",
+              "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/properties/properties/destination"
+                },
+                "description": "Optional. Describes the destination of connection monitor."
+              },
+              "nullable": true
+            },
+            "monitoringIntervalInSeconds": {
+              "type": "int",
+              "nullable": true,
+              "minValue": 30,
+              "maxValue": 1800,
+              "metadata": {
+                "description": "Optional. Monitoring interval in seconds."
+              }
+            },
+            "notes": {
+              "type": "string",
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. Notes to be associated with the connection monitor."
+              }
+            },
+            "source": {
+              "type": "object",
+              "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Network/networkWatchers/connectionMonitors@2024-05-01#properties/properties/properties/source"
+                },
+                "description": "Optional. Describes the source of connection monitor."
+              },
+              "nullable": true
             }
           },
           "resources": {
             "networkWatcher": {
               "existing": true,
               "type": "Microsoft.Network/networkWatchers",
-              "apiVersion": "2023-04-01",
+              "apiVersion": "2024-10-01",
               "name": "[parameters('networkWatcherName')]"
             },
             "connectionMonitor": {
               "type": "Microsoft.Network/networkWatchers/connectionMonitors",
-              "apiVersion": "2023-04-01",
+              "apiVersion": "2024-10-01",
               "name": "[format('{0}/{1}', parameters('networkWatcherName'), parameters('name'))]",
               "tags": "[parameters('tags')]",
               "location": "[parameters('location')]",
@@ -353,11 +683,13 @@
                 "endpoints": "[parameters('endpoints')]",
                 "testConfigurations": "[parameters('testConfigurations')]",
                 "testGroups": "[parameters('testGroups')]",
+                "autoStart": "[parameters('autoStart')]",
+                "destination": "[parameters('destination')]",
+                "monitoringIntervalInSeconds": "[parameters('monitoringIntervalInSeconds')]",
+                "notes": "[parameters('notes')]",
+                "source": "[parameters('source')]",
                 "outputs": "[if(not(empty(parameters('workspaceResourceId'))), createArray(createObject('type', 'Workspace', 'workspaceSettings', createObject('workspaceResourceId', parameters('workspaceResourceId')))), null())]"
-              },
-              "dependsOn": [
-                "networkWatcher"
-              ]
+              }
             }
           },
           "outputs": {
@@ -387,7 +719,7 @@
               "metadata": {
                 "description": "The location the resource was deployed into."
               },
-              "value": "[reference('connectionMonitor', '2023-04-01', 'full').location]"
+              "value": "[reference('connectionMonitor', '2024-10-01', 'full').location]"
             }
           }
         }
@@ -399,10 +731,10 @@
     "networkWatcher_flowLogs": {
       "copy": {
         "name": "networkWatcher_flowLogs",
-        "count": "[length(parameters('flowLogs'))]"
+        "count": "[length(coalesce(parameters('flowLogs'), createArray()))]"
       },
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('{0}-NW-FlowLog-{1}', uniqueString(deployment().name, parameters('location')), copyIndex())]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -410,22 +742,42 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "enabled": "[if(contains(parameters('flowLogs')[copyIndex()], 'enabled'), createObject('value', parameters('flowLogs')[copyIndex()].enabled), createObject('value', true()))]",
-          "formatVersion": "[if(contains(parameters('flowLogs')[copyIndex()], 'formatVersion'), createObject('value', parameters('flowLogs')[copyIndex()].formatVersion), createObject('value', 2))]",
-          "location": "[if(contains(parameters('flowLogs')[copyIndex()], 'location'), createObject('value', parameters('flowLogs')[copyIndex()].location), createObject('value', parameters('location')))]",
-          "name": "[if(contains(parameters('flowLogs')[copyIndex()], 'name'), createObject('value', parameters('flowLogs')[copyIndex()].name), createObject('value', format('{0}-{1}-flowlog', last(split(parameters('flowLogs')[copyIndex()].targetResourceId, '/')), split(parameters('flowLogs')[copyIndex()].targetResourceId, '/')[4])))]",
+          "tags": {
+            "value": "[parameters('tags')]"
+          },
+          "enabled": {
+            "value": "[tryGet(coalesce(parameters('flowLogs'), createArray())[copyIndex()], 'enabled')]"
+          },
+          "formatVersion": {
+            "value": "[tryGet(coalesce(parameters('flowLogs'), createArray())[copyIndex()], 'formatVersion')]"
+          },
+          "location": {
+            "value": "[tryGet(coalesce(parameters('flowLogs'), createArray())[copyIndex()], 'location')]"
+          },
+          "name": {
+            "value": "[tryGet(coalesce(parameters('flowLogs'), createArray())[copyIndex()], 'name')]"
+          },
           "networkWatcherName": {
             "value": "[parameters('name')]"
           },
-          "retentionInDays": "[if(contains(parameters('flowLogs')[copyIndex()], 'retentionInDays'), createObject('value', parameters('flowLogs')[copyIndex()].retentionInDays), createObject('value', 365))]",
-          "storageId": {
-            "value": "[parameters('flowLogs')[copyIndex()].storageId]"
+          "retentionInDays": {
+            "value": "[tryGet(coalesce(parameters('flowLogs'), createArray())[copyIndex()], 'retentionInDays')]"
+          },
+          "storageResourceId": {
+            "value": "[coalesce(parameters('flowLogs'), createArray())[copyIndex()].storageResourceId]"
           },
           "targetResourceId": {
-            "value": "[parameters('flowLogs')[copyIndex()].targetResourceId]"
+            "value": "[coalesce(parameters('flowLogs'), createArray())[copyIndex()].targetResourceId]"
           },
-          "trafficAnalyticsInterval": "[if(contains(parameters('flowLogs')[copyIndex()], 'trafficAnalyticsInterval'), createObject('value', parameters('flowLogs')[copyIndex()].trafficAnalyticsInterval), createObject('value', 60))]",
-          "workspaceResourceId": "[if(contains(parameters('flowLogs')[copyIndex()], 'workspaceResourceId'), createObject('value', parameters('flowLogs')[copyIndex()].workspaceResourceId), createObject('value', ''))]"
+          "trafficAnalyticsInterval": {
+            "value": "[tryGet(coalesce(parameters('flowLogs'), createArray())[copyIndex()], 'trafficAnalyticsInterval')]"
+          },
+          "workspaceResourceId": {
+            "value": "[tryGet(coalesce(parameters('flowLogs'), createArray())[copyIndex()], 'workspaceResourceId')]"
+          },
+          "enabledFilteringCriteria": {
+            "value": "[tryGet(coalesce(parameters('flowLogs'), createArray())[copyIndex()], 'enabledFilteringCriteria')]"
+          }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -434,12 +786,11 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "7721211688474892554"
+              "version": "0.38.5.1644",
+              "templateHash": "7643257579849162716"
             },
             "name": "NSG Flow Logs",
-            "description": "This module controls the Network Security Group Flow Logs and analytics settings.\n**Note: this module must be run on the Resource Group where Network Watcher is deployed**",
-            "owner": "Azure/module-maintainers"
+            "description": "This module controls the Network Security Group Flow Logs and analytics settings.\n**Note: this module must be run on the Resource Group where Network Watcher is deployed**"
           },
           "parameters": {
             "networkWatcherName": {
@@ -458,10 +809,13 @@
             },
             "tags": {
               "type": "object",
-              "nullable": true,
               "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Network/networkWatchers/flowLogs@2024-05-01#properties/tags"
+                },
                 "description": "Optional. Tags of the resource."
-              }
+              },
+              "nullable": true
             },
             "location": {
               "type": "string",
@@ -476,7 +830,7 @@
                 "description": "Required. Resource ID of the NSG that must be enabled for Flow Logs."
               }
             },
-            "storageId": {
+            "storageResourceId": {
               "type": "string",
               "metadata": {
                 "description": "Required. Resource ID of the diagnostic storage account."
@@ -502,7 +856,7 @@
             },
             "workspaceResourceId": {
               "type": "string",
-              "defaultValue": "",
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Specify the Log Analytics Workspace Resource ID."
               }
@@ -526,28 +880,33 @@
               "metadata": {
                 "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
               }
+            },
+            "enabledFilteringCriteria": {
+              "type": "string",
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. Field to filter network traffic logs based on SrcIP, SrcPort, DstIP, DstPort, Protocol, Encryption, Direction and Action. If not specified, all network traffic will be logged."
+              }
             }
-          },
-          "variables": {
-            "flowAnalyticsConfiguration": "[if(and(not(empty(parameters('workspaceResourceId'))), equals(parameters('enabled'), true())), createObject('networkWatcherFlowAnalyticsConfiguration', createObject('enabled', true(), 'workspaceResourceId', parameters('workspaceResourceId'), 'trafficAnalyticsInterval', parameters('trafficAnalyticsInterval'))), createObject('networkWatcherFlowAnalyticsConfiguration', createObject('enabled', false())))]"
           },
           "resources": {
             "networkWatcher": {
               "existing": true,
               "type": "Microsoft.Network/networkWatchers",
-              "apiVersion": "2023-04-01",
+              "apiVersion": "2024-10-01",
               "name": "[parameters('networkWatcherName')]"
             },
             "flowLog": {
               "type": "Microsoft.Network/networkWatchers/flowLogs",
-              "apiVersion": "2023-04-01",
+              "apiVersion": "2024-10-01",
               "name": "[format('{0}/{1}', parameters('networkWatcherName'), parameters('name'))]",
               "tags": "[parameters('tags')]",
               "location": "[parameters('location')]",
               "properties": {
                 "targetResourceId": "[parameters('targetResourceId')]",
-                "storageId": "[parameters('storageId')]",
+                "storageId": "[parameters('storageResourceId')]",
                 "enabled": "[parameters('enabled')]",
+                "enabledFilteringCriteria": "[parameters('enabledFilteringCriteria')]",
                 "retentionPolicy": {
                   "days": "[parameters('retentionInDays')]",
                   "enabled": "[if(equals(parameters('retentionInDays'), 0), false(), true())]"
@@ -556,11 +915,8 @@
                   "type": "JSON",
                   "version": "[parameters('formatVersion')]"
                 },
-                "flowAnalyticsConfiguration": "[variables('flowAnalyticsConfiguration')]"
-              },
-              "dependsOn": [
-                "networkWatcher"
-              ]
+                "flowAnalyticsConfiguration": "[if(and(not(empty(parameters('workspaceResourceId'))), parameters('enabled')), createObject('networkWatcherFlowAnalyticsConfiguration', createObject('enabled', true(), 'workspaceResourceId', parameters('workspaceResourceId'), 'trafficAnalyticsInterval', parameters('trafficAnalyticsInterval'))), createObject('networkWatcherFlowAnalyticsConfiguration', createObject('enabled', false())))]"
+              }
             }
           },
           "outputs": {
@@ -590,7 +946,7 @@
               "metadata": {
                 "description": "The location the resource was deployed into."
               },
-              "value": "[reference('flowLog', '2023-04-01', 'full').location]"
+              "value": "[reference('flowLog', '2024-10-01', 'full').location]"
             }
           }
         }
@@ -627,7 +983,7 @@
       "metadata": {
         "description": "The location the resource was deployed into."
       },
-      "value": "[reference('networkWatcher', '2023-04-01', 'full').location]"
+      "value": "[reference('networkWatcher', '2024-10-01', 'full').location]"
     }
   }
 }

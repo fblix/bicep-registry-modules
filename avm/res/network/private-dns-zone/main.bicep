@@ -1,48 +1,49 @@
 metadata name = 'Private DNS Zones'
 metadata description = 'This module deploys a Private DNS zone.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. Private DNS zone name.')
 param name string
 
 @description('Optional. Array of A records.')
-param a array?
+param a aType[]?
 
 @description('Optional. Array of AAAA records.')
-param aaaa array?
+param aaaa aaaaType[]?
 
 @description('Optional. Array of CNAME records.')
-param cname array?
+param cname cnameType[]?
 
 @description('Optional. Array of MX records.')
-param mx array?
+param mx mxType[]?
 
 @description('Optional. Array of PTR records.')
-param ptr array?
+param ptr ptrType[]?
 
 @description('Optional. Array of SOA records.')
-param soa array?
+param soa soaType[]?
 
 @description('Optional. Array of SRV records.')
-param srv array?
+param srv srvType[]?
 
 @description('Optional. Array of TXT records.')
-param txt array?
+param txt txtType[]?
 
 @description('Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain properties \'virtualNetworkResourceId\' and \'registrationEnabled\'. The \'vnetResourceId\' is a resource ID of a vNet to link, \'registrationEnabled\' (bool) enables automatic DNS registration in the zone for the linked vNet.')
-param virtualNetworkLinks array?
+param virtualNetworkLinks virtualNetworkLinkType[]?
 
 @description('Optional. The location of the PrivateDNSZone. Should be global.')
 param location string = 'global'
 
-@description('Optional. Array of role assignments to create.')
-param roleAssignments roleAssignmentType
+import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
+@sys.description('Optional. Array of role assignments to create.')
+param roleAssignments roleAssignmentType[]?
 
 @description('Optional. Tags of the resource.')
 param tags object?
 
-@description('Optional. The lock settings of the service.')
-param lock lockType
+import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.6.0'
+@sys.description('Optional. The lock settings of the service.')
+param lock lockType?
 
 @description('Optional. Enable/Disable usage telemetry for module.')
 param enableTelemetry bool = true
@@ -59,30 +60,43 @@ var builtInRoleNames = {
     'b12aa53e-6015-4669-85d0-8515ebb3ae7f'
   )
   Reader: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')
-  'Role Based Access Control Administrator (Preview)': subscriptionResourceId(
+  'Role Based Access Control Administrator': subscriptionResourceId(
     'Microsoft.Authorization/roleDefinitions',
     'f58310d9-a9f6-439a-9e8d-f62e7b41a168'
   )
 }
 
-resource avmTelemetry 'Microsoft.Resources/deployments@2023-07-01' =
-  if (enableTelemetry) {
-    name: '46d3xbcp.res.network-privatednszone.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
-    properties: {
-      mode: 'Incremental'
-      template: {
-        '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
-        contentVersion: '1.0.0.0'
-        resources: []
-        outputs: {
-          telemetry: {
-            type: 'String'
-            value: 'For more information, see https://aka.ms/avm/TelemetryInfo'
-          }
+var formattedRoleAssignments = [
+  for (roleAssignment, index) in (roleAssignments ?? []): union(roleAssignment, {
+    roleDefinitionId: builtInRoleNames[?roleAssignment.roleDefinitionIdOrName] ?? (contains(
+        roleAssignment.roleDefinitionIdOrName,
+        '/providers/Microsoft.Authorization/roleDefinitions/'
+      )
+      ? roleAssignment.roleDefinitionIdOrName
+      : subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleAssignment.roleDefinitionIdOrName))
+  })
+]
+
+var enableReferencedModulesTelemetry = false
+
+#disable-next-line no-deployments-resources
+resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
+  name: '46d3xbcp.res.network-privatednszone.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
+  properties: {
+    mode: 'Incremental'
+    template: {
+      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
+      contentVersion: '1.0.0.0'
+      resources: []
+      outputs: {
+        telemetry: {
+          type: 'String'
+          value: 'For more information, see https://aka.ms/avm/TelemetryInfo'
         }
       }
     }
   }
+}
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: name
@@ -100,6 +114,7 @@ module privateDnsZone_A 'a/main.bicep' = [
       metadata: aRecord.?metadata
       ttl: aRecord.?ttl ?? 3600
       roleAssignments: aRecord.?roleAssignments
+      enableTelemetry: enableReferencedModulesTelemetry
     }
   }
 ]
@@ -114,6 +129,7 @@ module privateDnsZone_AAAA 'aaaa/main.bicep' = [
       metadata: aaaaRecord.?metadata
       ttl: aaaaRecord.?ttl ?? 3600
       roleAssignments: aaaaRecord.?roleAssignments
+      enableTelemetry: enableReferencedModulesTelemetry
     }
   }
 ]
@@ -128,6 +144,7 @@ module privateDnsZone_CNAME 'cname/main.bicep' = [
       metadata: cnameRecord.?metadata
       ttl: cnameRecord.?ttl ?? 3600
       roleAssignments: cnameRecord.?roleAssignments
+      enableTelemetry: enableReferencedModulesTelemetry
     }
   }
 ]
@@ -142,6 +159,7 @@ module privateDnsZone_MX 'mx/main.bicep' = [
       mxRecords: mxRecord.?mxRecords
       ttl: mxRecord.?ttl ?? 3600
       roleAssignments: mxRecord.?roleAssignments
+      enableTelemetry: enableReferencedModulesTelemetry
     }
   }
 ]
@@ -156,6 +174,7 @@ module privateDnsZone_PTR 'ptr/main.bicep' = [
       ptrRecords: ptrRecord.?ptrRecords
       ttl: ptrRecord.?ttl ?? 3600
       roleAssignments: ptrRecord.?roleAssignments
+      enableTelemetry: enableReferencedModulesTelemetry
     }
   }
 ]
@@ -170,6 +189,7 @@ module privateDnsZone_SOA 'soa/main.bicep' = [
       soaRecord: soaRecord.?soaRecord
       ttl: soaRecord.?ttl ?? 3600
       roleAssignments: soaRecord.?roleAssignments
+      enableTelemetry: enableReferencedModulesTelemetry
     }
   }
 ]
@@ -184,6 +204,7 @@ module privateDnsZone_SRV 'srv/main.bicep' = [
       srvRecords: srvRecord.?srvRecords
       ttl: srvRecord.?ttl ?? 3600
       roleAssignments: srvRecord.?roleAssignments
+      enableTelemetry: enableReferencedModulesTelemetry
     }
   }
 ]
@@ -198,13 +219,14 @@ module privateDnsZone_TXT 'txt/main.bicep' = [
       txtRecords: txtRecord.?txtRecords
       ttl: txtRecord.?ttl ?? 3600
       roleAssignments: txtRecord.?roleAssignments
+      enableTelemetry: enableReferencedModulesTelemetry
     }
   }
 ]
 
 module privateDnsZone_virtualNetworkLinks 'virtual-network-link/main.bicep' = [
   for (virtualNetworkLink, index) in (virtualNetworkLinks ?? []): {
-    name: '${uniqueString(deployment().name, location)}-PrivateDnsZone-VirtualNetworkLink-${index}'
+    name: '${uniqueString(deployment().name, location)}-PrivateDnsZone-VNetLink-${index}'
     params: {
       privateDnsZoneName: privateDnsZone.name
       name: virtualNetworkLink.?name ?? '${last(split(virtualNetworkLink.virtualNetworkResourceId, '/'))}-vnetlink'
@@ -212,31 +234,27 @@ module privateDnsZone_virtualNetworkLinks 'virtual-network-link/main.bicep' = [
       location: virtualNetworkLink.?location ?? 'global'
       registrationEnabled: virtualNetworkLink.?registrationEnabled ?? false
       tags: virtualNetworkLink.?tags ?? tags
+      resolutionPolicy: virtualNetworkLink.?resolutionPolicy
     }
   }
 ]
 
-resource privateDnsZone_lock 'Microsoft.Authorization/locks@2020-05-01' =
-  if (!empty(lock ?? {}) && lock.?kind != 'None') {
-    name: lock.?name ?? 'lock-${name}'
-    properties: {
-      level: lock.?kind ?? ''
-      notes: lock.?kind == 'CanNotDelete'
-        ? 'Cannot delete resource or child resources.'
-        : 'Cannot delete or modify the resource or child resources.'
-    }
-    scope: privateDnsZone
+resource privateDnsZone_lock 'Microsoft.Authorization/locks@2020-05-01' = if (!empty(lock ?? {}) && lock.?kind != 'None') {
+  name: lock.?name ?? 'lock-${name}'
+  properties: {
+    level: lock.?kind ?? ''
+    notes: lock.?notes ?? (lock.?kind == 'CanNotDelete'
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot delete or modify the resource or child resources.')
   }
+  scope: privateDnsZone
+}
 
 resource privateDnsZone_roleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
-  for (roleAssignment, index) in (roleAssignments ?? []): {
-    name: guid(privateDnsZone.id, roleAssignment.principalId, roleAssignment.roleDefinitionIdOrName)
+  for (roleAssignment, index) in (formattedRoleAssignments ?? []): {
+    name: roleAssignment.?name ?? guid(privateDnsZone.id, roleAssignment.principalId, roleAssignment.roleDefinitionId)
     properties: {
-      roleDefinitionId: contains(builtInRoleNames, roleAssignment.roleDefinitionIdOrName)
-        ? builtInRoleNames[roleAssignment.roleDefinitionIdOrName]
-        : contains(roleAssignment.roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/')
-            ? roleAssignment.roleDefinitionIdOrName
-            : subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleAssignment.roleDefinitionIdOrName)
+      roleDefinitionId: roleAssignment.roleDefinitionId
       principalId: roleAssignment.principalId
       description: roleAssignment.?description
       principalType: roleAssignment.?principalType
@@ -264,33 +282,178 @@ output location string = privateDnsZone.location
 // Definitions      //
 // ================ //
 
-type roleAssignmentType = {
-  @description('Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: \'/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11\'.')
-  roleDefinitionIdOrName: string
+@export()
+@description('The type for the A record.')
+type aType = {
+  @description('Required. The name of the record.')
+  name: string
 
-  @description('Required. The principal ID of the principal (user/group/identity) to assign the role to.')
-  principalId: string
+  @description('Optional. The metadata of the record.')
+  metadata: resourceInput<'Microsoft.Network/privateDnsZones/A@2024-06-01'>.properties.metadata?
 
-  @description('Optional. The principal type of the assigned principal ID.')
-  principalType: ('ServicePrincipal' | 'Group' | 'User' | 'ForeignGroup' | 'Device')?
+  @description('Optional. The TTL of the record.')
+  ttl: int?
 
-  @description('Optional. The description of the role assignment.')
-  description: string?
+  @description('Optional. Array of role assignments to create.')
+  roleAssignments: roleAssignmentType[]?
 
-  @description('Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase "foo_storage_container".')
-  condition: string?
+  @description('Optional. The list of A records in the record set.')
+  aRecords: resourceInput<'Microsoft.Network/privateDnsZones/A@2024-06-01'>.properties.aRecords?
+}
 
-  @description('Optional. Version of the condition.')
-  conditionVersion: '2.0'?
+@export()
+@description('The type for the AAAA record.')
+type aaaaType = {
+  @description('Required. The name of the record.')
+  name: string
 
-  @description('Optional. The Resource Id of the delegated managed identity resource.')
-  delegatedManagedIdentityResourceId: string?
-}[]?
+  @description('Optional. The metadata of the record.')
+  metadata: resourceInput<'Microsoft.Network/privateDnsZones/AAAA@2024-06-01'>.properties.metadata?
 
-type lockType = {
-  @description('Optional. Specify the name of lock.')
+  @description('Optional. The TTL of the record.')
+  ttl: int?
+
+  @description('Optional. Array of role assignments to create.')
+  roleAssignments: roleAssignmentType[]?
+
+  @description('Optional. The list of AAAA records in the record set.')
+  aaaaRecords: resourceInput<'Microsoft.Network/privateDnsZones/AAAA@2024-06-01'>.properties.aaaaRecords?
+}
+
+@export()
+@description('The type for the CNAME record.')
+type cnameType = {
+  @description('Required. The name of the record.')
+  name: string
+
+  @description('Optional. The metadata of the record.')
+  metadata: resourceInput<'Microsoft.Network/privateDnsZones/CNAME@2024-06-01'>.properties.metadata?
+
+  @description('Optional. The TTL of the record.')
+  ttl: int?
+
+  @description('Optional. Array of role assignments to create.')
+  roleAssignments: roleAssignmentType[]?
+
+  @description('Optional. The CNAME record in the record set.')
+  cnameRecord: resourceInput<'Microsoft.Network/privateDnsZones/CNAME@2024-06-01'>.properties.cnameRecord?
+}
+
+@export()
+@description('The type for the MX record.')
+type mxType = {
+  @description('Required. The name of the record.')
+  name: string
+
+  @description('Optional. The metadata of the record.')
+  metadata: resourceInput<'Microsoft.Network/privateDnsZones/MX@2024-06-01'>.properties.metadata?
+
+  @description('Optional. The TTL of the record.')
+  ttl: int?
+
+  @description('Optional. Array of role assignments to create.')
+  roleAssignments: roleAssignmentType[]?
+
+  @description('Optional. The list of MX records in the record set.')
+  mxRecords: resourceInput<'Microsoft.Network/privateDnsZones/MX@2024-06-01'>.properties.mxRecords?
+}
+
+@export()
+@description('The type for the PTR record.')
+type ptrType = {
+  @description('Required. The name of the record.')
+  name: string
+
+  @description('Optional. The metadata of the record.')
+  metadata: resourceInput<'Microsoft.Network/privateDnsZones/PTR@2024-06-01'>.properties.metadata?
+
+  @description('Optional. The TTL of the record.')
+  ttl: int?
+
+  @description('Optional. Array of role assignments to create.')
+  roleAssignments: roleAssignmentType[]?
+
+  @description('Optional. The list of PTR records in the record set.')
+  ptrRecords: resourceInput<'Microsoft.Network/privateDnsZones/PTR@2024-06-01'>.properties.ptrRecords?
+}
+
+@export()
+@description('The type for the SOA record.')
+type soaType = {
+  @description('Required. The name of the record.')
+  name: string
+
+  @description('Optional. The metadata of the record.')
+  metadata: resourceInput<'Microsoft.Network/privateDnsZones/SOA@2024-06-01'>.properties.metadata?
+
+  @description('Optional. The TTL of the record.')
+  ttl: int?
+
+  @description('Optional. Array of role assignments to create.')
+  roleAssignments: roleAssignmentType[]?
+
+  @description('Optional. The SOA record in the record set.')
+  soaRecord: resourceInput<'Microsoft.Network/privateDnsZones/SOA@2024-06-01'>.properties.soaRecord?
+}
+
+@export()
+@description('The type for the SRV record.')
+type srvType = {
+  @description('Required. The name of the record.')
+  name: string
+
+  @description('Optional. The metadata of the record.')
+  metadata: resourceInput<'Microsoft.Network/privateDnsZones/SRV@2024-06-01'>.properties.metadata?
+
+  @description('Optional. The TTL of the record.')
+  ttl: int?
+
+  @description('Optional. Array of role assignments to create.')
+  roleAssignments: roleAssignmentType[]?
+
+  @description('Optional. The list of SRV records in the record set.')
+  srvRecords: resourceInput<'Microsoft.Network/privateDnsZones/SRV@2024-06-01'>.properties.srvRecords?
+}
+
+@export()
+@description('The type for the TXT record.')
+type txtType = {
+  @description('Required. The name of the record.')
+  name: string
+
+  @description('Optional. The metadata of the record.')
+  metadata: resourceInput<'Microsoft.Network/privateDnsZones/TXT@2024-06-01'>.properties.metadata?
+
+  @description('Optional. The TTL of the record.')
+  ttl: int?
+
+  @description('Optional. Array of role assignments to create.')
+  roleAssignments: roleAssignmentType[]?
+
+  @description('Optional. The list of TXT records in the record set.')
+  txtRecords: resourceInput<'Microsoft.Network/privateDnsZones/TXT@2024-06-01'>.properties.txtRecords?
+}
+
+@export()
+@description('The type for the virtual network link.')
+type virtualNetworkLinkType = {
+  @description('Optional. The resource name.')
+  @minLength(1)
+  @maxLength(80)
   name: string?
 
-  @description('Optional. Specify the type of lock.')
-  kind: ('CanNotDelete' | 'ReadOnly' | 'None')?
-}?
+  @description('Required. The resource ID of the virtual network to link.')
+  virtualNetworkResourceId: string
+
+  @description('Optional. The Azure Region where the resource lives.')
+  location: string?
+
+  @description('Optional. Is auto-registration of virtual machine records in the virtual network in the Private DNS zone enabled?.')
+  registrationEnabled: bool?
+
+  @description('Optional. Resource tags.')
+  tags: resourceInput<'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01'>.tags?
+
+  @description('Optional. The resolution type of the private-dns-zone fallback machanism.')
+  resolutionPolicy: ('Default' | 'NxDomainRedirect')?
+}

@@ -1,6 +1,19 @@
 # Event Hub Namespaces `[Microsoft.EventHub/namespaces]`
 
+> ⚠️THIS MODULE IS CURRENTLY ORPHANED.⚠️
+>
+> - Only security and bug fixes are being handled by the AVM core team at present.
+> - If interested in becoming the module owner of this orphaned module (must be Microsoft FTE), please look for the related "orphaned module" GitHub issue [here](https://aka.ms/AVM/OrphanedModules)!
+
 This module deploys an Event Hub Namespace.
+
+You can reference the module as follows:
+```bicep
+module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
 
 ## Navigation
 
@@ -13,20 +26,21 @@ This module deploys an Event Hub Namespace.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.EventHub/namespaces` | [2022-10-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2022-10-01-preview/namespaces) |
-| `Microsoft.EventHub/namespaces/authorizationRules` | [2022-10-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2022-10-01-preview/namespaces/authorizationRules) |
-| `Microsoft.EventHub/namespaces/disasterRecoveryConfigs` | [2022-10-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2022-10-01-preview/namespaces/disasterRecoveryConfigs) |
-| `Microsoft.EventHub/namespaces/eventhubs` | [2022-10-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2022-10-01-preview/namespaces/eventhubs) |
-| `Microsoft.EventHub/namespaces/eventhubs/authorizationRules` | [2022-10-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2022-10-01-preview/namespaces/eventhubs/authorizationRules) |
-| `Microsoft.EventHub/namespaces/eventhubs/consumergroups` | [2022-10-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2022-10-01-preview/namespaces/eventhubs/consumergroups) |
-| `Microsoft.EventHub/namespaces/networkRuleSets` | [2022-10-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2022-10-01-preview/namespaces/networkRuleSets) |
-| `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
-| `Microsoft.Network/privateEndpoints` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints) |
-| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints/privateDnsZoneGroups) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.EventHub/namespaces` | 2024-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.eventhub_namespaces.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2024-01-01/namespaces)</li></ul> |
+| `Microsoft.EventHub/namespaces/authorizationRules` | 2024-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.eventhub_namespaces_authorizationrules.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2024-01-01/namespaces/authorizationRules)</li></ul> |
+| `Microsoft.EventHub/namespaces/disasterRecoveryConfigs` | 2024-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.eventhub_namespaces_disasterrecoveryconfigs.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2024-01-01/namespaces/disasterRecoveryConfigs)</li></ul> |
+| `Microsoft.EventHub/namespaces/eventhubs` | 2024-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.eventhub_namespaces_eventhubs.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2024-01-01/namespaces/eventhubs)</li></ul> |
+| `Microsoft.EventHub/namespaces/eventhubs/authorizationRules` | 2024-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.eventhub_namespaces_eventhubs_authorizationrules.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2024-01-01/namespaces/eventhubs/authorizationRules)</li></ul> |
+| `Microsoft.EventHub/namespaces/eventhubs/consumergroups` | 2024-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.eventhub_namespaces_eventhubs_consumergroups.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2024-01-01/namespaces/eventhubs/consumergroups)</li></ul> |
+| `Microsoft.EventHub/namespaces/networkRuleSets` | 2024-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.eventhub_namespaces_networkrulesets.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2024-01-01/namespaces/networkRuleSets)</li></ul> |
+| `Microsoft.Insights/diagnosticSettings` | 2021-05-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.insights_diagnosticsettings.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings)</li></ul> |
+| `Microsoft.KeyVault/vaults/secrets` | 2024-11-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.keyvault_vaults_secrets.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2024-11-01/vaults/secrets)</li></ul> |
+| `Microsoft.Network/privateEndpoints` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/privateEndpoints)</li></ul> |
+| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints_privatednszonegroups.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/privateEndpoints/privateDnsZoneGroups)</li></ul> |
 
 ## Usage examples
 
@@ -36,15 +50,23 @@ The following section provides usage examples for the module, which were used to
 
 >**Note**: To reference the module, please use the following syntax `br/public:avm/res/event-hub/namespace:<version>`.
 
-- [Using only defaults](#example-1-using-only-defaults)
+- [Using managed HSM Customer-Managed-Keys with User-Assigned identity](#example-1-using-managed-hsm-customer-managed-keys-with-user-assigned-identity)
 - [Using encryption with Customer-Managed-Key](#example-2-using-encryption-with-customer-managed-key)
-- [Using large parameter set](#example-3-using-large-parameter-set)
-- [WAF-aligned](#example-4-waf-aligned)
+- [Using only defaults](#example-3-using-only-defaults)
+- [Deploying with a key vault reference to save secrets](#example-4-deploying-with-a-key-vault-reference-to-save-secrets)
+- [Using large parameter set](#example-5-using-large-parameter-set)
+- [WAF-aligned](#example-6-waf-aligned)
 
-### Example 1: _Using only defaults_
+### Example 1: _Using managed HSM Customer-Managed-Keys with User-Assigned identity_
 
-This instance deploys the module with the minimum set of required parameters.
+This instance deploys the module with Managed HSM-based Customer Managed Key (CMK) encryption, using a User-Assigned Managed Identity to access the HSM key.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/cmk-hsm-uami]
+
+> **Note**: This test is skipped from the CI deployment validation due to the presence of a `.e2eignore` file in the test folder. The reason for skipping the deployment is:
+```text
+The test is skipped because running the HSM scenario requires a persistent Managed HSM instance to be available and configured at all times, which would incur significant costs for contributors.
+```
 
 <details>
 
@@ -52,72 +74,20 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
-  name: 'namespaceDeployment'
   params: {
     // Required parameters
-    name: 'ehnmin001'
-    // Non-required parameters
-    location: '<location>'
-  }
-}
-```
-
-</details>
-<p>
-
-<details>
-
-<summary>via JSON Parameter file</summary>
-
-```json
-{
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    // Required parameters
-    "name": {
-      "value": "ehnmin001"
-    },
-    // Non-required parameters
-    "location": {
-      "value": "<location>"
-    }
-  }
-}
-```
-
-</details>
-<p>
-
-### Example 2: _Using encryption with Customer-Managed-Key_
-
-This instance deploys the module using Customer-Managed-Keys using a User-Assigned Identity to access the Customer-Managed-Key secret.
-
-
-<details>
-
-<summary>via Bicep module</summary>
-
-```bicep
-module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
-  name: 'namespaceDeployment'
-  params: {
-    // Required parameters
-    name: 'ehnenc001'
+    name: 'ehnhsmu001'
     // Non-required parameters
     customerManagedKey: {
       keyName: '<keyName>'
       keyVaultResourceId: '<keyVaultResourceId>'
+      keyVersion: '<keyVersion>'
       userAssignedIdentityResourceId: '<userAssignedIdentityResourceId>'
     }
-    location: '<location>'
     managedIdentities: {
       systemAssigned: false
-      userAssignedResourceIds: [
-        '<managedIdentityResourceId>'
-      ]
+      userAssignedResourceId: '<userAssignedResourceId>'
     }
-    publicNetworkAccess: 'SecuredByPerimeter'
     requireInfrastructureEncryption: true
     skuName: 'Premium'
   }
@@ -129,7 +99,110 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Required parameters
+    "name": {
+      "value": "ehnhsmu001"
+    },
+    // Non-required parameters
+    "customerManagedKey": {
+      "value": {
+        "keyName": "<keyName>",
+        "keyVaultResourceId": "<keyVaultResourceId>",
+        "keyVersion": "<keyVersion>",
+        "userAssignedIdentityResourceId": "<userAssignedIdentityResourceId>"
+      }
+    },
+    "managedIdentities": {
+      "value": {
+        "systemAssigned": false,
+        "userAssignedResourceId": "<userAssignedResourceId>"
+      }
+    },
+    "requireInfrastructureEncryption": {
+      "value": true
+    },
+    "skuName": {
+      "value": "Premium"
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/event-hub/namespace:<version>'
+
+// Required parameters
+param name = 'ehnhsmu001'
+// Non-required parameters
+param customerManagedKey = {
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+  keyVersion: '<keyVersion>'
+  userAssignedIdentityResourceId: '<userAssignedIdentityResourceId>'
+}
+param managedIdentities = {
+  systemAssigned: false
+  userAssignedResourceId: '<userAssignedResourceId>'
+}
+param requireInfrastructureEncryption = true
+param skuName = 'Premium'
+```
+
+</details>
+<p>
+
+### Example 2: _Using encryption with Customer-Managed-Key_
+
+This instance deploys the module using Customer-Managed-Keys using a User-Assigned Identity to access the Customer-Managed-Key secret.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/cmk-uami]
+
+
+<details>
+
+<summary>via Bicep module</summary>
+
+```bicep
+module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
+  params: {
+    // Required parameters
+    name: 'ehnenc001'
+    // Non-required parameters
+    customerManagedKey: {
+      keyName: '<keyName>'
+      keyVaultResourceId: '<keyVaultResourceId>'
+      userAssignedIdentityResourceId: '<userAssignedIdentityResourceId>'
+    }
+    managedIdentities: {
+      systemAssigned: false
+      userAssignedResourceId: '<userAssignedResourceId>'
+    }
+    requireInfrastructureEncryption: true
+    skuName: 'Premium'
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -148,19 +221,11 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
         "userAssignedIdentityResourceId": "<userAssignedIdentityResourceId>"
       }
     },
-    "location": {
-      "value": "<location>"
-    },
     "managedIdentities": {
       "value": {
         "systemAssigned": false,
-        "userAssignedResourceIds": [
-          "<managedIdentityResourceId>"
-        ]
+        "userAssignedResourceId": "<userAssignedResourceId>"
       }
-    },
-    "publicNetworkAccess": {
-      "value": "SecuredByPerimeter"
     },
     "requireInfrastructureEncryption": {
       "value": true
@@ -175,9 +240,37 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
 </details>
 <p>
 
-### Example 3: _Using large parameter set_
+<details>
 
-This instance deploys the module with most of its features enabled.
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/event-hub/namespace:<version>'
+
+// Required parameters
+param name = 'ehnenc001'
+// Non-required parameters
+param customerManagedKey = {
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+  userAssignedIdentityResourceId: '<userAssignedIdentityResourceId>'
+}
+param managedIdentities = {
+  systemAssigned: false
+  userAssignedResourceId: '<userAssignedResourceId>'
+}
+param requireInfrastructureEncryption = true
+param skuName = 'Premium'
+```
+
+</details>
+<p>
+
+### Example 3: _Using only defaults_
+
+This instance deploys the module with the minimum set of required parameters.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
 
 
 <details>
@@ -186,7 +279,143 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
-  name: 'namespaceDeployment'
+  params: {
+    name: 'ehnmin001'
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via JSON parameters file</summary>
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "value": "ehnmin001"
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/event-hub/namespace:<version>'
+
+param name = 'ehnmin001'
+```
+
+</details>
+<p>
+
+### Example 4: _Deploying with a key vault reference to save secrets_
+
+This instance deploys the module saving all its secrets in a key vault.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/kvSecrets]
+
+
+<details>
+
+<summary>via Bicep module</summary>
+
+```bicep
+module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
+  params: {
+    // Required parameters
+    name: 'ehnkv001'
+    // Non-required parameters
+    secretsExportConfiguration: {
+      keyVaultResourceId: '<keyVaultResourceId>'
+      rootPrimaryConnectionStringName: 'primaryConnectionString-name'
+      rootPrimaryKeyName: 'primaryKey-name'
+      rootSecondaryConnectionStringName: 'secondaryConnectionString-name'
+      rootSecondaryKeyName: 'secondaryKey-name'
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via JSON parameters file</summary>
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Required parameters
+    "name": {
+      "value": "ehnkv001"
+    },
+    // Non-required parameters
+    "secretsExportConfiguration": {
+      "value": {
+        "keyVaultResourceId": "<keyVaultResourceId>",
+        "rootPrimaryConnectionStringName": "primaryConnectionString-name",
+        "rootPrimaryKeyName": "primaryKey-name",
+        "rootSecondaryConnectionStringName": "secondaryConnectionString-name",
+        "rootSecondaryKeyName": "secondaryKey-name"
+      }
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/event-hub/namespace:<version>'
+
+// Required parameters
+param name = 'ehnkv001'
+// Non-required parameters
+param secretsExportConfiguration = {
+  keyVaultResourceId: '<keyVaultResourceId>'
+  rootPrimaryConnectionStringName: 'primaryConnectionString-name'
+  rootPrimaryKeyName: 'primaryKey-name'
+  rootSecondaryConnectionStringName: 'secondaryConnectionString-name'
+  rootSecondaryKeyName: 'secondaryKey-name'
+}
+```
+
+</details>
+<p>
+
+### Example 5: _Using large parameter set_
+
+This instance deploys the module with most of its features enabled.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
+
+
+<details>
+
+<summary>via Bicep module</summary>
+
+```bicep
+module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
   params: {
     // Required parameters
     name: 'ehnmax001'
@@ -225,6 +454,7 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     disableLocalAuth: true
     eventhubs: [
       {
+        messageRetentionInDays: 3
         name: 'az-evh-x-001'
         roleAssignments: [
           {
@@ -252,25 +482,33 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
             ]
           }
         ]
-        captureDescriptionDestinationArchiveNameFormat: '{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}'
-        captureDescriptionDestinationBlobContainer: 'eventhub'
-        captureDescriptionDestinationName: 'EventHubArchive.AzureBlockBlob'
-        captureDescriptionDestinationStorageAccountResourceId: '<captureDescriptionDestinationStorageAccountResourceId>'
-        captureDescriptionEnabled: true
-        captureDescriptionEncoding: 'Avro'
-        captureDescriptionIntervalInSeconds: 300
-        captureDescriptionSizeLimitInBytes: 314572800
-        captureDescriptionSkipEmptyArchives: true
+        captureDescription: {
+          destination: {
+            identity: {
+              userAssignedResourceId: '<userAssignedResourceId>'
+            }
+            name: 'EventHubArchive.AzureBlockBlob'
+            properties: {
+              archiveNameFormat: '{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}'
+              blobContainer: '<blobContainer>'
+              storageAccountResourceId: '<storageAccountResourceId>'
+            }
+          }
+          encoding: 'Avro'
+          intervalInSeconds: 300
+          sizeLimitInBytes: 314572800
+          skipEmptyArchives: true
+        }
         consumergroups: [
           {
             name: 'custom'
             userMetadata: 'customMetadata'
           }
         ]
-        messageRetentionInDays: 1
         name: 'az-evh-x-002'
         partitionCount: 2
         retentionDescriptionCleanupPolicy: 'Delete'
+        retentionDescriptionEnabled: true
         retentionDescriptionRetentionTimeInHours: 3
         roleAssignments: [
           {
@@ -284,6 +522,7 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
       {
         name: 'az-evh-x-003'
         retentionDescriptionCleanupPolicy: 'Compact'
+        retentionDescriptionEnabled: true
         retentionDescriptionTombstoneRetentionTimeInHours: 24
       }
     ]
@@ -293,12 +532,11 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     lock: {
       kind: 'CanNotDelete'
       name: 'myCustomLockName'
+      notes: 'This is a custom lock note.'
     }
     managedIdentities: {
       systemAssigned: true
-      userAssignedResourceIds: [
-        '<managedIdentityResourceId>'
-      ]
+      userAssignedResourceId: '<userAssignedResourceId>'
     }
     maximumThroughputUnits: 4
     minimumTlsVersion: '1.2'
@@ -321,9 +559,13 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     }
     privateEndpoints: [
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         service: 'namespace'
         subnetResourceId: '<subnetResourceId>'
         tags: {
@@ -336,11 +578,13 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     publicNetworkAccess: 'Disabled'
     roleAssignments: [
       {
+        name: 'bd0f41e3-8e3e-4cd3-b028-edd61608bd9f'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -368,7 +612,7 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -421,6 +665,7 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     "eventhubs": {
       "value": [
         {
+          "messageRetentionInDays": 3,
           "name": "az-evh-x-001",
           "roleAssignments": [
             {
@@ -448,25 +693,33 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
               ]
             }
           ],
-          "captureDescriptionDestinationArchiveNameFormat": "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}",
-          "captureDescriptionDestinationBlobContainer": "eventhub",
-          "captureDescriptionDestinationName": "EventHubArchive.AzureBlockBlob",
-          "captureDescriptionDestinationStorageAccountResourceId": "<captureDescriptionDestinationStorageAccountResourceId>",
-          "captureDescriptionEnabled": true,
-          "captureDescriptionEncoding": "Avro",
-          "captureDescriptionIntervalInSeconds": 300,
-          "captureDescriptionSizeLimitInBytes": 314572800,
-          "captureDescriptionSkipEmptyArchives": true,
+          "captureDescription": {
+            "destination": {
+              "identity": {
+                "userAssignedResourceId": "<userAssignedResourceId>"
+              },
+              "name": "EventHubArchive.AzureBlockBlob",
+              "properties": {
+                "archiveNameFormat": "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}",
+                "blobContainer": "<blobContainer>",
+                "storageAccountResourceId": "<storageAccountResourceId>"
+              }
+            },
+            "encoding": "Avro",
+            "intervalInSeconds": 300,
+            "sizeLimitInBytes": 314572800,
+            "skipEmptyArchives": true
+          },
           "consumergroups": [
             {
               "name": "custom",
               "userMetadata": "customMetadata"
             }
           ],
-          "messageRetentionInDays": 1,
           "name": "az-evh-x-002",
           "partitionCount": 2,
           "retentionDescriptionCleanupPolicy": "Delete",
+          "retentionDescriptionEnabled": true,
           "retentionDescriptionRetentionTimeInHours": 3,
           "roleAssignments": [
             {
@@ -480,6 +733,7 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
         {
           "name": "az-evh-x-003",
           "retentionDescriptionCleanupPolicy": "Compact",
+          "retentionDescriptionEnabled": true,
           "retentionDescriptionTombstoneRetentionTimeInHours": 24
         }
       ]
@@ -496,15 +750,14 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     "lock": {
       "value": {
         "kind": "CanNotDelete",
-        "name": "myCustomLockName"
+        "name": "myCustomLockName",
+        "notes": "This is a custom lock note."
       }
     },
     "managedIdentities": {
       "value": {
         "systemAssigned": true,
-        "userAssignedResourceIds": [
-          "<managedIdentityResourceId>"
-        ]
+        "userAssignedResourceId": "<userAssignedResourceId>"
       }
     },
     "maximumThroughputUnits": {
@@ -535,9 +788,13 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     "privateEndpoints": {
       "value": [
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "service": "namespace",
           "subnetResourceId": "<subnetResourceId>",
           "tags": {
@@ -554,11 +811,13 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     "roleAssignments": {
       "value": [
         {
+          "name": "bd0f41e3-8e3e-4cd3-b028-edd61608bd9f",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -593,9 +852,209 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
 </details>
 <p>
 
-### Example 4: _WAF-aligned_
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/event-hub/namespace:<version>'
+
+// Required parameters
+param name = 'ehnmax001'
+// Non-required parameters
+param authorizationRules = [
+  {
+    name: 'RootManageSharedAccessKey'
+    rights: [
+      'Listen'
+      'Manage'
+      'Send'
+    ]
+  }
+  {
+    name: 'SendListenAccess'
+    rights: [
+      'Listen'
+      'Send'
+    ]
+  }
+]
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    metricCategories: [
+      {
+        category: 'AllMetrics'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param disableLocalAuth = true
+param eventhubs = [
+  {
+    messageRetentionInDays: 3
+    name: 'az-evh-x-001'
+    roleAssignments: [
+      {
+        principalId: '<principalId>'
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'Reader'
+      }
+    ]
+  }
+  {
+    authorizationRules: [
+      {
+        name: 'RootManageSharedAccessKey'
+        rights: [
+          'Listen'
+          'Manage'
+          'Send'
+        ]
+      }
+      {
+        name: 'SendListenAccess'
+        rights: [
+          'Listen'
+          'Send'
+        ]
+      }
+    ]
+    captureDescription: {
+      destination: {
+        identity: {
+          userAssignedResourceId: '<userAssignedResourceId>'
+        }
+        name: 'EventHubArchive.AzureBlockBlob'
+        properties: {
+          archiveNameFormat: '{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}'
+          blobContainer: '<blobContainer>'
+          storageAccountResourceId: '<storageAccountResourceId>'
+        }
+      }
+      encoding: 'Avro'
+      intervalInSeconds: 300
+      sizeLimitInBytes: 314572800
+      skipEmptyArchives: true
+    }
+    consumergroups: [
+      {
+        name: 'custom'
+        userMetadata: 'customMetadata'
+      }
+    ]
+    name: 'az-evh-x-002'
+    partitionCount: 2
+    retentionDescriptionCleanupPolicy: 'Delete'
+    retentionDescriptionEnabled: true
+    retentionDescriptionRetentionTimeInHours: 3
+    roleAssignments: [
+      {
+        principalId: '<principalId>'
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'Reader'
+      }
+    ]
+    status: 'Active'
+  }
+  {
+    name: 'az-evh-x-003'
+    retentionDescriptionCleanupPolicy: 'Compact'
+    retentionDescriptionEnabled: true
+    retentionDescriptionTombstoneRetentionTimeInHours: 24
+  }
+]
+param isAutoInflateEnabled = true
+param kafkaEnabled = true
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+  notes: 'This is a custom lock note.'
+}
+param managedIdentities = {
+  systemAssigned: true
+  userAssignedResourceId: '<userAssignedResourceId>'
+}
+param maximumThroughputUnits = 4
+param minimumTlsVersion = '1.2'
+param networkRuleSets = {
+  defaultAction: 'Deny'
+  ipRules: [
+    {
+      action: 'Allow'
+      ipMask: '10.10.10.10'
+    }
+  ]
+  publicNetworkAccess: 'Disabled'
+  trustedServiceAccessEnabled: false
+  virtualNetworkRules: [
+    {
+      ignoreMissingVnetServiceEndpoint: true
+      subnetResourceId: '<subnetResourceId>'
+    }
+  ]
+}
+param privateEndpoints = [
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    service: 'namespace'
+    subnetResourceId: '<subnetResourceId>'
+    tags: {
+      Environment: 'Non-Prod'
+      'hidden-title': 'This is visible in the resource name'
+      Role: 'DeploymentValidation'
+    }
+  }
+]
+param publicNetworkAccess = 'Disabled'
+param roleAssignments = [
+  {
+    name: 'bd0f41e3-8e3e-4cd3-b028-edd61608bd9f'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param skuCapacity = 2
+param skuName = 'Standard'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+param zoneRedundant = true
+```
+
+</details>
+<p>
+
+### Example 6: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -604,7 +1063,6 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
-  name: 'namespaceDeployment'
   params: {
     // Required parameters
     name: 'ehnwaf001'
@@ -663,15 +1121,23 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
             ]
           }
         ]
-        captureDescriptionDestinationArchiveNameFormat: '{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}'
-        captureDescriptionDestinationBlobContainer: 'eventhub'
-        captureDescriptionDestinationName: 'EventHubArchive.AzureBlockBlob'
-        captureDescriptionDestinationStorageAccountResourceId: '<captureDescriptionDestinationStorageAccountResourceId>'
-        captureDescriptionEnabled: true
-        captureDescriptionEncoding: 'Avro'
-        captureDescriptionIntervalInSeconds: 300
-        captureDescriptionSizeLimitInBytes: 314572800
-        captureDescriptionSkipEmptyArchives: true
+        captureDescription: {
+          destination: {
+            identity: {
+              userAssignedResourceId: '<userAssignedResourceId>'
+            }
+            name: 'EventHubArchive.AzureBlockBlob'
+            properties: {
+              archiveNameFormat: '{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}'
+              blobContainer: '<blobContainer>'
+              storageAccountResourceId: '<storageAccountResourceId>'
+            }
+          }
+          encoding: 'Avro'
+          intervalInSeconds: 300
+          sizeLimitInBytes: 314572800
+          skipEmptyArchives: true
+        }
         consumergroups: [
           {
             name: 'custom'
@@ -693,7 +1159,9 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     ]
     isAutoInflateEnabled: true
     kafkaEnabled: true
-    location: '<location>'
+    managedIdentities: {
+      userAssignedResourceId: '<userAssignedResourceId>'
+    }
     maximumThroughputUnits: 4
     minimumTlsVersion: '1.2'
     networkRuleSets: {
@@ -714,9 +1182,13 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     }
     privateEndpoints: [
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         subnetResourceId: '<subnetResourceId>'
         tags: {
           Environment: 'Non-Prod'
@@ -733,7 +1205,6 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
       'hidden-title': 'This is visible in the resource name'
       Role: 'DeploymentValidation'
     }
-    zoneRedundant: true
   }
 }
 ```
@@ -743,7 +1214,7 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -816,15 +1287,23 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
               ]
             }
           ],
-          "captureDescriptionDestinationArchiveNameFormat": "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}",
-          "captureDescriptionDestinationBlobContainer": "eventhub",
-          "captureDescriptionDestinationName": "EventHubArchive.AzureBlockBlob",
-          "captureDescriptionDestinationStorageAccountResourceId": "<captureDescriptionDestinationStorageAccountResourceId>",
-          "captureDescriptionEnabled": true,
-          "captureDescriptionEncoding": "Avro",
-          "captureDescriptionIntervalInSeconds": 300,
-          "captureDescriptionSizeLimitInBytes": 314572800,
-          "captureDescriptionSkipEmptyArchives": true,
+          "captureDescription": {
+            "destination": {
+              "identity": {
+                "userAssignedResourceId": "<userAssignedResourceId>"
+              },
+              "name": "EventHubArchive.AzureBlockBlob",
+              "properties": {
+                "archiveNameFormat": "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}",
+                "blobContainer": "<blobContainer>",
+                "storageAccountResourceId": "<storageAccountResourceId>"
+              }
+            },
+            "encoding": "Avro",
+            "intervalInSeconds": 300,
+            "sizeLimitInBytes": 314572800,
+            "skipEmptyArchives": true
+          },
           "consumergroups": [
             {
               "name": "custom",
@@ -851,8 +1330,10 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     "kafkaEnabled": {
       "value": true
     },
-    "location": {
-      "value": "<location>"
+    "managedIdentities": {
+      "value": {
+        "userAssignedResourceId": "<userAssignedResourceId>"
+      }
     },
     "maximumThroughputUnits": {
       "value": 4
@@ -881,9 +1362,13 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
     "privateEndpoints": {
       "value": [
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "subnetResourceId": "<subnetResourceId>",
           "tags": {
             "Environment": "Non-Prod",
@@ -908,9 +1393,6 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
         "hidden-title": "This is visible in the resource name",
         "Role": "DeploymentValidation"
       }
-    },
-    "zoneRedundant": {
-      "value": true
     }
   }
 }
@@ -919,6 +1401,158 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/event-hub/namespace:<version>'
+
+// Required parameters
+param name = 'ehnwaf001'
+// Non-required parameters
+param authorizationRules = [
+  {
+    name: 'RootManageSharedAccessKey'
+    rights: [
+      'Listen'
+      'Manage'
+      'Send'
+    ]
+  }
+  {
+    name: 'SendListenAccess'
+    rights: [
+      'Listen'
+      'Send'
+    ]
+  }
+]
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    metricCategories: [
+      {
+        category: 'AllMetrics'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param disableLocalAuth = true
+param eventhubs = [
+  {
+    name: 'az-evh-x-001'
+  }
+  {
+    authorizationRules: [
+      {
+        name: 'RootManageSharedAccessKey'
+        rights: [
+          'Listen'
+          'Manage'
+          'Send'
+        ]
+      }
+      {
+        name: 'SendListenAccess'
+        rights: [
+          'Listen'
+          'Send'
+        ]
+      }
+    ]
+    captureDescription: {
+      destination: {
+        identity: {
+          userAssignedResourceId: '<userAssignedResourceId>'
+        }
+        name: 'EventHubArchive.AzureBlockBlob'
+        properties: {
+          archiveNameFormat: '{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}'
+          blobContainer: '<blobContainer>'
+          storageAccountResourceId: '<storageAccountResourceId>'
+        }
+      }
+      encoding: 'Avro'
+      intervalInSeconds: 300
+      sizeLimitInBytes: 314572800
+      skipEmptyArchives: true
+    }
+    consumergroups: [
+      {
+        name: 'custom'
+        userMetadata: 'customMetadata'
+      }
+    ]
+    messageRetentionInDays: 1
+    name: 'az-evh-x-002'
+    partitionCount: 2
+    retentionDescriptionCleanupPolicy: 'Delete'
+    retentionDescriptionRetentionTimeInHours: 3
+    status: 'Active'
+  }
+  {
+    name: 'az-evh-x-003'
+    retentionDescriptionCleanupPolicy: 'Compact'
+    retentionDescriptionTombstoneRetentionTimeInHours: 24
+  }
+]
+param isAutoInflateEnabled = true
+param kafkaEnabled = true
+param managedIdentities = {
+  userAssignedResourceId: '<userAssignedResourceId>'
+}
+param maximumThroughputUnits = 4
+param minimumTlsVersion = '1.2'
+param networkRuleSets = {
+  defaultAction: 'Deny'
+  ipRules: [
+    {
+      action: 'Allow'
+      ipMask: '10.10.10.10'
+    }
+  ]
+  trustedServiceAccessEnabled: false
+  virtualNetworkRules: [
+    {
+      ignoreMissingVnetServiceEndpoint: true
+      subnetResourceId: '<subnetResourceId>'
+    }
+  ]
+}
+param privateEndpoints = [
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    subnetResourceId: '<subnetResourceId>'
+    tags: {
+      Environment: 'Non-Prod'
+      'hidden-title': 'This is visible in the resource name'
+      Role: 'DeploymentValidation'
+    }
+  }
+]
+param publicNetworkAccess = 'Disabled'
+param skuCapacity = 2
+param skuName = 'Standard'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -951,7 +1585,8 @@ module namespace 'br/public:avm/res/event-hub/namespace:<version>' = {
 | [`publicNetworkAccess`](#parameter-publicnetworkaccess) | string | Whether or not public network access is allowed for this resource. For security reasons it should be disabled. If not specified, it will be disabled by default if private endpoints are set. |
 | [`requireInfrastructureEncryption`](#parameter-requireinfrastructureencryption) | bool | Enable infrastructure encryption (double encryption). Note, this setting requires the configuration of Customer-Managed-Keys (CMK) via the corresponding module parameters. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
-| [`skuCapacity`](#parameter-skucapacity) | int | The Event Hub's throughput units for Basic or Standard tiers, where value should be 0 to 20 throughput units. The Event Hubs premium units for Premium tier, where value should be 0 to 10 premium units. |
+| [`secretsExportConfiguration`](#parameter-secretsexportconfiguration) | object | Key vault reference and secret settings for the module's secrets export. |
+| [`skuCapacity`](#parameter-skucapacity) | int | The Event Hubs throughput units for Basic or Standard tiers, where value should be 0 to 20 throughput units. The Event Hubs premium units for Premium tier, where value should be 0 to 10 premium units. |
 | [`skuName`](#parameter-skuname) | string | event hub plan SKU name. |
 | [`tags`](#parameter-tags) | object | Tags of the resource. |
 | [`zoneRedundant`](#parameter-zoneredundant) | bool | Switch to make the Event Hub Namespace zone redundant. |
@@ -1001,7 +1636,8 @@ The customer managed key definition.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`keyVersion`](#parameter-customermanagedkeykeyversion) | string | The version of the customer managed key to reference for encryption. If not provided, using 'latest'. |
+| [`autoRotationEnabled`](#parameter-customermanagedkeyautorotationenabled) | bool | Enable or disable auto-rotating to the latest key version. Default is `true`. If set to `false`, the latest key version at the time of the deployment is used. |
+| [`keyVersion`](#parameter-customermanagedkeykeyversion) | string | The version of the customer managed key to reference for encryption. If not provided, using version as per 'autoRotationEnabled' setting. |
 | [`userAssignedIdentityResourceId`](#parameter-customermanagedkeyuserassignedidentityresourceid) | string | User assigned identity to use when fetching the customer managed key. Required if no system assigned identity is available for use. |
 
 ### Parameter: `customerManagedKey.keyName`
@@ -1018,9 +1654,16 @@ The resource ID of a key vault to reference a customer managed key for encryptio
 - Required: Yes
 - Type: string
 
+### Parameter: `customerManagedKey.autoRotationEnabled`
+
+Enable or disable auto-rotating to the latest key version. Default is `true`. If set to `false`, the latest key version at the time of the deployment is used.
+
+- Required: No
+- Type: bool
+
 ### Parameter: `customerManagedKey.keyVersion`
 
-The version of the customer managed key to reference for encryption. If not provided, using 'latest'.
+The version of the customer managed key to reference for encryption. If not provided, using version as per 'autoRotationEnabled' setting.
 
 - Required: No
 - Type: string
@@ -1049,7 +1692,7 @@ The diagnostic settings of the service.
 | [`logCategoriesAndGroups`](#parameter-diagnosticsettingslogcategoriesandgroups) | array | The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to `[]` to disable log collection. |
 | [`marketplacePartnerResourceId`](#parameter-diagnosticsettingsmarketplacepartnerresourceid) | string | The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs. |
 | [`metricCategories`](#parameter-diagnosticsettingsmetriccategories) | array | The name of metrics that will be streamed. "allMetrics" includes all possible metrics for the resource. Set to `[]` to disable metric collection. |
-| [`name`](#parameter-diagnosticsettingsname) | string | The name of diagnostic setting. |
+| [`name`](#parameter-diagnosticsettingsname) | string | The name of the diagnostic setting. |
 | [`storageAccountResourceId`](#parameter-diagnosticsettingsstorageaccountresourceid) | string | Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 | [`workspaceResourceId`](#parameter-diagnosticsettingsworkspaceresourceid) | string | Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 
@@ -1159,7 +1802,7 @@ Enable or disable the category explicitly. Default is `true`.
 
 ### Parameter: `diagnosticSettings.name`
 
-The name of diagnostic setting.
+The name of the diagnostic setting.
 
 - Required: No
 - Type: string
@@ -1192,7 +1835,32 @@ The disaster recovery config for this namespace.
 
 - Required: No
 - Type: object
-- Default: `{}`
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-disasterrecoveryconfigname) | string | The name of the disaster recovery config. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`partnerNamespaceResourceId`](#parameter-disasterrecoveryconfigpartnernamespaceresourceid) | string | Resource ID of the Primary/Secondary event hub namespace name, which is part of GEO DR pairing. |
+
+### Parameter: `disasterRecoveryConfig.name`
+
+The name of the disaster recovery config.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `disasterRecoveryConfig.partnerNamespaceResourceId`
+
+Resource ID of the Primary/Secondary event hub namespace name, which is part of GEO DR pairing.
+
+- Required: No
+- Type: string
 
 ### Parameter: `enableTelemetry`
 
@@ -1208,7 +1876,440 @@ The event hubs to deploy into this namespace.
 
 - Required: No
 - Type: array
-- Default: `[]`
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-eventhubsname) | string | The name of the Event Hub. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`authorizationRules`](#parameter-eventhubsauthorizationrules) | array | Authorization Rules for the Event Hub. |
+| [`captureDescription`](#parameter-eventhubscapturedescription) | object | Properties of capture description. |
+| [`consumergroups`](#parameter-eventhubsconsumergroups) | array | The consumer groups to create in this Event Hub instance. |
+| [`lock`](#parameter-eventhubslock) | object | The lock settings of the service. |
+| [`messageRetentionInDays`](#parameter-eventhubsmessageretentionindays) | int | Number of days to retain the events for this Event Hub, value should be 1 to 7 days. Will be automatically set to infinite retention if cleanup policy is set to "Compact". |
+| [`partitionCount`](#parameter-eventhubspartitioncount) | int | Number of partitions created for the Event Hub, allowed values are from 1 to 32 partitions. |
+| [`retentionDescriptionCleanupPolicy`](#parameter-eventhubsretentiondescriptioncleanuppolicy) | string | Retention cleanup policy. Enumerates the possible values for cleanup policy. |
+| [`retentionDescriptionEnabled`](#parameter-eventhubsretentiondescriptionenabled) | bool | A value that indicates whether to enable retention description properties. If it is set to true the messageRetentionInDays property is ignored. |
+| [`retentionDescriptionRetentionTimeInHours`](#parameter-eventhubsretentiondescriptionretentiontimeinhours) | int | Retention time in hours. Number of hours to retain the events for this Event Hub. This value is only used when cleanupPolicy is Delete and it overrides the messageRetentionInDays. If cleanupPolicy is Compact the returned value of this property is Long.MaxValue. |
+| [`retentionDescriptionTombstoneRetentionTimeInHours`](#parameter-eventhubsretentiondescriptiontombstoneretentiontimeinhours) | int | Retention cleanup policy. Number of hours to retain the tombstone markers of a compacted Event Hub. This value is only used when cleanupPolicy is Compact. Consumer must complete reading the tombstone marker within this specified amount of time if consumer begins from starting offset to ensure they get a valid snapshot for the specific key described by the tombstone marker within the compacted Event Hub. |
+| [`roleAssignments`](#parameter-eventhubsroleassignments) | array | Array of role assignments to create. |
+| [`status`](#parameter-eventhubsstatus) | string | Enumerates the possible values for the status of the Event Hub. |
+
+### Parameter: `eventhubs.name`
+
+The name of the Event Hub.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `eventhubs.authorizationRules`
+
+Authorization Rules for the Event Hub.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-eventhubsauthorizationrulesname) | string | The name of the Event Hub authorization rule. |
+| [`rights`](#parameter-eventhubsauthorizationrulesrights) | array | The allowed rights for an Event Hub authorization rule. |
+
+### Parameter: `eventhubs.authorizationRules.name`
+
+The name of the Event Hub authorization rule.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `eventhubs.authorizationRules.rights`
+
+The allowed rights for an Event Hub authorization rule.
+
+- Required: Yes
+- Type: array
+- Allowed:
+  ```Bicep
+  [
+    'Listen'
+    'Manage'
+    'Send'
+  ]
+  ```
+
+### Parameter: `eventhubs.captureDescription`
+
+Properties of capture description.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`destination`](#parameter-eventhubscapturedescriptiondestination) | object | Properties of Destination where capture will be stored. (Storage Account, Blob Names). |
+| [`enabled`](#parameter-eventhubscapturedescriptionenabled) | bool | A value that indicates whether capture description is enabled. Defaults to true if `captureDescription` is provided. |
+| [`encoding`](#parameter-eventhubscapturedescriptionencoding) | string | Enumerates the possible values for the encoding format of capture description. Note: "AvroDeflate" will be deprecated in New API Version. |
+| [`intervalInSeconds`](#parameter-eventhubscapturedescriptionintervalinseconds) | int | The time window allows you to set the frequency with which the capture to Azure Blobs will happen. |
+| [`sizeLimitInBytes`](#parameter-eventhubscapturedescriptionsizelimitinbytes) | int | The size window defines the amount of data built up in your Event Hub before an capture operation. |
+| [`skipEmptyArchives`](#parameter-eventhubscapturedescriptionskipemptyarchives) | bool | A value that indicates whether to Skip Empty Archives. |
+
+### Parameter: `eventhubs.captureDescription.destination`
+
+Properties of Destination where capture will be stored. (Storage Account, Blob Names).
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`identity`](#parameter-eventhubscapturedescriptiondestinationidentity) | object | The identity used for the capture destination. |
+| [`name`](#parameter-eventhubscapturedescriptiondestinationname) | string | Name for capture destination. |
+| [`properties`](#parameter-eventhubscapturedescriptiondestinationproperties) | object | Properties describing the storage account, blob container and archive name format for capture destination. |
+
+### Parameter: `eventhubs.captureDescription.destination.identity`
+
+The identity used for the capture destination.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`systemAssigned`](#parameter-eventhubscapturedescriptiondestinationidentitysystemassigned) | bool | Enables system assigned managed identity on the resource. Mutually exclusive with `userAssignedResourceId`. |
+| [`userAssignedResourceId`](#parameter-eventhubscapturedescriptiondestinationidentityuserassignedresourceid) | string | The resource ID to assign to the resource. Mutually exclusive with `systemAssigned`. |
+
+### Parameter: `eventhubs.captureDescription.destination.identity.systemAssigned`
+
+Enables system assigned managed identity on the resource. Mutually exclusive with `userAssignedResourceId`.
+
+- Required: No
+- Type: bool
+
+### Parameter: `eventhubs.captureDescription.destination.identity.userAssignedResourceId`
+
+The resource ID to assign to the resource. Mutually exclusive with `systemAssigned`.
+
+- Required: No
+- Type: string
+
+### Parameter: `eventhubs.captureDescription.destination.name`
+
+Name for capture destination.
+
+- Required: No
+- Type: string
+
+### Parameter: `eventhubs.captureDescription.destination.properties`
+
+Properties describing the storage account, blob container and archive name format for capture destination.
+
+- Required: No
+- Type: object
+
+### Parameter: `eventhubs.captureDescription.enabled`
+
+A value that indicates whether capture description is enabled. Defaults to true if `captureDescription` is provided.
+
+- Required: No
+- Type: bool
+
+### Parameter: `eventhubs.captureDescription.encoding`
+
+Enumerates the possible values for the encoding format of capture description. Note: "AvroDeflate" will be deprecated in New API Version.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Avro'
+    'AvroDeflate'
+  ]
+  ```
+
+### Parameter: `eventhubs.captureDescription.intervalInSeconds`
+
+The time window allows you to set the frequency with which the capture to Azure Blobs will happen.
+
+- Required: No
+- Type: int
+- MinValue: 60
+- MaxValue: 900
+
+### Parameter: `eventhubs.captureDescription.sizeLimitInBytes`
+
+The size window defines the amount of data built up in your Event Hub before an capture operation.
+
+- Required: No
+- Type: int
+- MinValue: 10485760
+- MaxValue: 524288000
+
+### Parameter: `eventhubs.captureDescription.skipEmptyArchives`
+
+A value that indicates whether to Skip Empty Archives.
+
+- Required: No
+- Type: bool
+
+### Parameter: `eventhubs.consumergroups`
+
+The consumer groups to create in this Event Hub instance.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-eventhubsconsumergroupsname) | string | The name of the consumer group. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`userMetadata`](#parameter-eventhubsconsumergroupsusermetadata) | string | User Metadata is a placeholder to store user-defined string data with maximum length 1024. e.g. it can be used to store descriptive data, such as list of teams and their contact information also user-defined configuration settings can be stored. |
+
+### Parameter: `eventhubs.consumergroups.name`
+
+The name of the consumer group.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `eventhubs.consumergroups.userMetadata`
+
+User Metadata is a placeholder to store user-defined string data with maximum length 1024. e.g. it can be used to store descriptive data, such as list of teams and their contact information also user-defined configuration settings can be stored.
+
+- Required: No
+- Type: string
+
+### Parameter: `eventhubs.lock`
+
+The lock settings of the service.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`kind`](#parameter-eventhubslockkind) | string | Specify the type of lock. |
+| [`name`](#parameter-eventhubslockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-eventhubslocknotes) | string | Specify the notes of the lock. |
+
+### Parameter: `eventhubs.lock.kind`
+
+Specify the type of lock.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'CanNotDelete'
+    'None'
+    'ReadOnly'
+  ]
+  ```
+
+### Parameter: `eventhubs.lock.name`
+
+Specify the name of lock.
+
+- Required: No
+- Type: string
+
+### Parameter: `eventhubs.lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
+### Parameter: `eventhubs.messageRetentionInDays`
+
+Number of days to retain the events for this Event Hub, value should be 1 to 7 days. Will be automatically set to infinite retention if cleanup policy is set to "Compact".
+
+- Required: No
+- Type: int
+- MinValue: 1
+- MaxValue: 90
+
+### Parameter: `eventhubs.partitionCount`
+
+Number of partitions created for the Event Hub, allowed values are from 1 to 32 partitions.
+
+- Required: No
+- Type: int
+- MinValue: 1
+- MaxValue: 32
+
+### Parameter: `eventhubs.retentionDescriptionCleanupPolicy`
+
+Retention cleanup policy. Enumerates the possible values for cleanup policy.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Compact'
+    'Delete'
+  ]
+  ```
+
+### Parameter: `eventhubs.retentionDescriptionEnabled`
+
+A value that indicates whether to enable retention description properties. If it is set to true the messageRetentionInDays property is ignored.
+
+- Required: No
+- Type: bool
+
+### Parameter: `eventhubs.retentionDescriptionRetentionTimeInHours`
+
+Retention time in hours. Number of hours to retain the events for this Event Hub. This value is only used when cleanupPolicy is Delete and it overrides the messageRetentionInDays. If cleanupPolicy is Compact the returned value of this property is Long.MaxValue.
+
+- Required: No
+- Type: int
+- MinValue: 1
+- MaxValue: 2160
+
+### Parameter: `eventhubs.retentionDescriptionTombstoneRetentionTimeInHours`
+
+Retention cleanup policy. Number of hours to retain the tombstone markers of a compacted Event Hub. This value is only used when cleanupPolicy is Compact. Consumer must complete reading the tombstone marker within this specified amount of time if consumer begins from starting offset to ensure they get a valid snapshot for the specific key described by the tombstone marker within the compacted Event Hub.
+
+- Required: No
+- Type: int
+- MinValue: 1
+- MaxValue: 2160
+
+### Parameter: `eventhubs.roleAssignments`
+
+Array of role assignments to create.
+
+- Required: No
+- Type: array
+- Roles configurable by name:
+  - `'Azure Event Hubs Data Owner'`
+  - `'Azure Event Hubs Data Receiver'`
+  - `'Azure Event Hubs Data Sender'`
+  - `'Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`principalId`](#parameter-eventhubsroleassignmentsprincipalid) | string | The principal ID of the principal (user/group/identity) to assign the role to. |
+| [`roleDefinitionIdOrName`](#parameter-eventhubsroleassignmentsroledefinitionidorname) | string | The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`condition`](#parameter-eventhubsroleassignmentscondition) | string | The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase "foo_storage_container". |
+| [`conditionVersion`](#parameter-eventhubsroleassignmentsconditionversion) | string | Version of the condition. |
+| [`delegatedManagedIdentityResourceId`](#parameter-eventhubsroleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
+| [`description`](#parameter-eventhubsroleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-eventhubsroleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
+| [`principalType`](#parameter-eventhubsroleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
+
+### Parameter: `eventhubs.roleAssignments.principalId`
+
+The principal ID of the principal (user/group/identity) to assign the role to.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `eventhubs.roleAssignments.roleDefinitionIdOrName`
+
+The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `eventhubs.roleAssignments.condition`
+
+The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase "foo_storage_container".
+
+- Required: No
+- Type: string
+
+### Parameter: `eventhubs.roleAssignments.conditionVersion`
+
+Version of the condition.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    '2.0'
+  ]
+  ```
+
+### Parameter: `eventhubs.roleAssignments.delegatedManagedIdentityResourceId`
+
+The Resource Id of the delegated managed identity resource.
+
+- Required: No
+- Type: string
+
+### Parameter: `eventhubs.roleAssignments.description`
+
+The description of the role assignment.
+
+- Required: No
+- Type: string
+
+### Parameter: `eventhubs.roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
+### Parameter: `eventhubs.roleAssignments.principalType`
+
+The principal type of the assigned principal ID.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Device'
+    'ForeignGroup'
+    'Group'
+    'ServicePrincipal'
+    'User'
+  ]
+  ```
+
+### Parameter: `eventhubs.status`
+
+Enumerates the possible values for the status of the Event Hub.
+
+- Required: No
+- Type: string
 
 ### Parameter: `isAutoInflateEnabled`
 
@@ -1247,6 +2348,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -1270,6 +2372,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `managedIdentities`
 
 The managed identity definition for this resource.
@@ -1281,22 +2390,22 @@ The managed identity definition for this resource.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`systemAssigned`](#parameter-managedidentitiessystemassigned) | bool | Enables system assigned managed identity on the resource. |
-| [`userAssignedResourceIds`](#parameter-managedidentitiesuserassignedresourceids) | array | The resource ID(s) to assign to the resource. |
+| [`systemAssigned`](#parameter-managedidentitiessystemassigned) | bool | Enables system assigned managed identity on the resource. Mutually exclusive with `userAssignedResourceId`. |
+| [`userAssignedResourceId`](#parameter-managedidentitiesuserassignedresourceid) | string | The resource ID to assign to the resource. Mutually exclusive with `systemAssigned`. |
 
 ### Parameter: `managedIdentities.systemAssigned`
 
-Enables system assigned managed identity on the resource.
+Enables system assigned managed identity on the resource. Mutually exclusive with `userAssignedResourceId`.
 
 - Required: No
 - Type: bool
 
-### Parameter: `managedIdentities.userAssignedResourceIds`
+### Parameter: `managedIdentities.userAssignedResourceId`
 
-The resource ID(s) to assign to the resource.
+The resource ID to assign to the resource. Mutually exclusive with `systemAssigned`.
 
 - Required: No
-- Type: array
+- Type: string
 
 ### Parameter: `maximumThroughputUnits`
 
@@ -1305,6 +2414,8 @@ Upper limit of throughput units when AutoInflate is enabled, value should be wit
 - Required: No
 - Type: int
 - Default: `1`
+- MinValue: 0
+- MaxValue: 20
 
 ### Parameter: `minimumTlsVersion`
 
@@ -1328,7 +2439,94 @@ Configure networking options. This object contains IPs/Subnets to allow or restr
 
 - Required: No
 - Type: object
-- Default: `{}`
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`defaultAction`](#parameter-networkrulesetsdefaultaction) | string | Default Action for Network Rule Set. Default is "Allow". It will not be set if publicNetworkAccess is "Disabled". Otherwise, it will be set to "Deny" if ipRules or virtualNetworkRules are being used. |
+| [`ipRules`](#parameter-networkrulesetsiprules) | array | An array of objects for the public IP ranges you want to allow via the Event Hub Namespace firewall. Supports IPv4 address or CIDR. It will not be set if publicNetworkAccess is "Disabled". Otherwise, when used, defaultAction will be set to "Deny". |
+| [`networkRuleSetName`](#parameter-networkrulesetsnetworkrulesetname) | string | The name of the network ruleset. Defaults to 'default'. |
+| [`publicNetworkAccess`](#parameter-networkrulesetspublicnetworkaccess) | string | This determines if traffic is allowed over public network. Default is "Enabled". If set to "Disabled", traffic to this namespace will be restricted over Private Endpoints only and network rules will not be applied. |
+| [`trustedServiceAccessEnabled`](#parameter-networkrulesetstrustedserviceaccessenabled) | bool | Value that indicates whether Trusted Service Access is enabled or not. |
+| [`virtualNetworkRules`](#parameter-networkrulesetsvirtualnetworkrules) | array | An array of subnet resource ID objects that this Event Hub Namespace is exposed to via Service Endpoints. You can enable the `ignoreMissingVnetServiceEndpoint` if you wish to add this virtual network to Event Hub Namespace but do not have an existing service endpoint. It will not be set if publicNetworkAccess is "Disabled". Otherwise, when used, defaultAction will be set to "Deny". |
+
+### Parameter: `networkRuleSets.defaultAction`
+
+Default Action for Network Rule Set. Default is "Allow". It will not be set if publicNetworkAccess is "Disabled". Otherwise, it will be set to "Deny" if ipRules or virtualNetworkRules are being used.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Allow'
+    'Deny'
+  ]
+  ```
+
+### Parameter: `networkRuleSets.ipRules`
+
+An array of objects for the public IP ranges you want to allow via the Event Hub Namespace firewall. Supports IPv4 address or CIDR. It will not be set if publicNetworkAccess is "Disabled". Otherwise, when used, defaultAction will be set to "Deny".
+
+- Required: No
+- Type: array
+
+### Parameter: `networkRuleSets.networkRuleSetName`
+
+The name of the network ruleset. Defaults to 'default'.
+
+- Required: No
+- Type: string
+
+### Parameter: `networkRuleSets.publicNetworkAccess`
+
+This determines if traffic is allowed over public network. Default is "Enabled". If set to "Disabled", traffic to this namespace will be restricted over Private Endpoints only and network rules will not be applied.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Disabled'
+    'Enabled'
+  ]
+  ```
+
+### Parameter: `networkRuleSets.trustedServiceAccessEnabled`
+
+Value that indicates whether Trusted Service Access is enabled or not.
+
+- Required: No
+- Type: bool
+
+### Parameter: `networkRuleSets.virtualNetworkRules`
+
+An array of subnet resource ID objects that this Event Hub Namespace is exposed to via Service Endpoints. You can enable the `ignoreMissingVnetServiceEndpoint` if you wish to add this virtual network to Event Hub Namespace but do not have an existing service endpoint. It will not be set if publicNetworkAccess is "Disabled". Otherwise, when used, defaultAction will be set to "Deny".
+
+- Required: No
+- Type: array
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`ignoreMissingVnetServiceEndpoint`](#parameter-networkrulesetsvirtualnetworkrulesignoremissingvnetserviceendpoint) | bool | Value that indicates whether to ignore missing Vnet Service Endpoint. |
+| [`subnetResourceId`](#parameter-networkrulesetsvirtualnetworkrulessubnetresourceid) | string | The resource Id of a Virtual Network Subnet. |
+
+### Parameter: `networkRuleSets.virtualNetworkRules.ignoreMissingVnetServiceEndpoint`
+
+Value that indicates whether to ignore missing Vnet Service Endpoint.
+
+- Required: No
+- Type: bool
+
+### Parameter: `networkRuleSets.virtualNetworkRules.subnetResourceId`
+
+The resource Id of a Virtual Network Subnet.
+
+- Required: No
+- Type: string
 
 ### Parameter: `privateEndpoints`
 
@@ -1347,21 +2545,22 @@ Configuration details for private endpoints. For security reasons, it is recomme
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`applicationSecurityGroupResourceIds`](#parameter-privateendpointsapplicationsecuritygroupresourceids) | array | Application security groups in which the private endpoint IP configuration is included. |
+| [`applicationSecurityGroupResourceIds`](#parameter-privateendpointsapplicationsecuritygroupresourceids) | array | Application security groups in which the Private Endpoint IP configuration is included. |
 | [`customDnsConfigs`](#parameter-privateendpointscustomdnsconfigs) | array | Custom DNS configurations. |
-| [`customNetworkInterfaceName`](#parameter-privateendpointscustomnetworkinterfacename) | string | The custom name of the network interface attached to the private endpoint. |
+| [`customNetworkInterfaceName`](#parameter-privateendpointscustomnetworkinterfacename) | string | The custom name of the network interface attached to the Private Endpoint. |
 | [`enableTelemetry`](#parameter-privateendpointsenabletelemetry) | bool | Enable/Disable usage telemetry for module. |
-| [`ipConfigurations`](#parameter-privateendpointsipconfigurations) | array | A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints. |
+| [`ipConfigurations`](#parameter-privateendpointsipconfigurations) | array | A list of IP configurations of the Private Endpoint. This will be used to map to the first-party Service endpoints. |
 | [`isManualConnection`](#parameter-privateendpointsismanualconnection) | bool | If Manual Private Link Connection is required. |
-| [`location`](#parameter-privateendpointslocation) | string | The location to deploy the private endpoint to. |
+| [`location`](#parameter-privateendpointslocation) | string | The location to deploy the Private Endpoint to. |
 | [`lock`](#parameter-privateendpointslock) | object | Specify the type of lock. |
 | [`manualConnectionRequestMessage`](#parameter-privateendpointsmanualconnectionrequestmessage) | string | A message passed to the owner of the remote resource with the manual connection request. |
-| [`name`](#parameter-privateendpointsname) | string | The name of the private endpoint. |
-| [`privateDnsZoneGroupName`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided. |
-| [`privateDnsZoneResourceIds`](#parameter-privateendpointsprivatednszoneresourceids) | array | The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones. |
+| [`name`](#parameter-privateendpointsname) | string | The name of the Private Endpoint. |
+| [`privateDnsZoneGroup`](#parameter-privateendpointsprivatednszonegroup) | object | The private DNS Zone Group to configure for the Private Endpoint. |
+| [`privateLinkServiceConnectionName`](#parameter-privateendpointsprivatelinkserviceconnectionname) | string | The name of the private link connection to create. |
+| [`resourceGroupResourceId`](#parameter-privateendpointsresourcegroupresourceid) | string | The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used. |
 | [`roleAssignments`](#parameter-privateendpointsroleassignments) | array | Array of role assignments to create. |
-| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the private endpoint for. For example "vault", "mysqlServer" or "dataFactory". |
-| [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/resource groups in this deployment. |
+| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the Private Endpoint for. For example "vault" for a Key Vault Private Endpoint. |
+| [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/Resource Groups in this deployment. |
 
 ### Parameter: `privateEndpoints.subnetResourceId`
 
@@ -1372,7 +2571,7 @@ Resource ID of the subnet where the endpoint needs to be created.
 
 ### Parameter: `privateEndpoints.applicationSecurityGroupResourceIds`
 
-Application security groups in which the private endpoint IP configuration is included.
+Application security groups in which the Private Endpoint IP configuration is included.
 
 - Required: No
 - Type: array
@@ -1388,15 +2587,13 @@ Custom DNS configurations.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | Fqdn that resolves to private endpoint IP address. |
 | [`ipAddresses`](#parameter-privateendpointscustomdnsconfigsipaddresses) | array | A list of private IP addresses of the private endpoint. |
 
-### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+**Optional parameters**
 
-Fqdn that resolves to private endpoint IP address.
-
-- Required: No
-- Type: string
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | FQDN that resolves to private endpoint IP address. |
 
 ### Parameter: `privateEndpoints.customDnsConfigs.ipAddresses`
 
@@ -1405,9 +2602,16 @@ A list of private IP addresses of the private endpoint.
 - Required: Yes
 - Type: array
 
+### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+
+FQDN that resolves to private endpoint IP address.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.customNetworkInterfaceName`
 
-The custom name of the network interface attached to the private endpoint.
+The custom name of the network interface attached to the Private Endpoint.
 
 - Required: No
 - Type: string
@@ -1421,7 +2625,7 @@ Enable/Disable usage telemetry for module.
 
 ### Parameter: `privateEndpoints.ipConfigurations`
 
-A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints.
+A list of IP configurations of the Private Endpoint. This will be used to map to the first-party Service endpoints.
 
 - Required: No
 - Type: array
@@ -1485,7 +2689,7 @@ If Manual Private Link Connection is required.
 
 ### Parameter: `privateEndpoints.location`
 
-The location to deploy the private endpoint to.
+The location to deploy the Private Endpoint to.
 
 - Required: No
 - Type: string
@@ -1503,6 +2707,7 @@ Specify the type of lock.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-privateendpointslockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-privateendpointslockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-privateendpointslocknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `privateEndpoints.lock.kind`
 
@@ -1526,6 +2731,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.manualConnectionRequestMessage`
 
 A message passed to the owner of the remote resource with the manual connection request.
@@ -1535,24 +2747,83 @@ A message passed to the owner of the remote resource with the manual connection 
 
 ### Parameter: `privateEndpoints.name`
 
-The name of the private endpoint.
+The name of the Private Endpoint.
 
 - Required: No
 - Type: string
 
-### Parameter: `privateEndpoints.privateDnsZoneGroupName`
+### Parameter: `privateEndpoints.privateDnsZoneGroup`
 
-The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided.
-
-- Required: No
-- Type: string
-
-### Parameter: `privateEndpoints.privateDnsZoneResourceIds`
-
-The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones.
+The private DNS Zone Group to configure for the Private Endpoint.
 
 - Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneGroupConfigs`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigs) | array | The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the Private DNS Zone Group. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs`
+
+The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones.
+
+- Required: Yes
 - Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneResourceId`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsprivatednszoneresourceid) | string | The resource id of the private DNS zone. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsname) | string | The name of the private DNS Zone Group config. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.privateDnsZoneResourceId`
+
+The resource id of the private DNS zone.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.name`
+
+The name of the private DNS Zone Group config.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.name`
+
+The name of the Private DNS Zone Group.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.privateLinkServiceConnectionName`
+
+The name of the private link connection to create.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.resourceGroupResourceId`
+
+The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used.
+
+- Required: No
+- Type: string
 
 ### Parameter: `privateEndpoints.roleAssignments`
 
@@ -1560,6 +2831,17 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'DNS Resolver Contributor'`
+  - `'DNS Zone Contributor'`
+  - `'Domain Services Contributor'`
+  - `'Domain Services Reader'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Private DNS Zone Contributor'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
 
 **Required parameters**
 
@@ -1576,6 +2858,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-privateendpointsroleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-privateendpointsroleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-privateendpointsroleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-privateendpointsroleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-privateendpointsroleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `privateEndpoints.roleAssignments.principalId`
@@ -1626,6 +2909,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1645,14 +2935,14 @@ The principal type of the assigned principal ID.
 
 ### Parameter: `privateEndpoints.service`
 
-The subresource to deploy the private endpoint for. For example "vault", "mysqlServer" or "dataFactory".
+The subresource to deploy the Private Endpoint for. For example "vault" for a Key Vault Private Endpoint.
 
 - Required: No
 - Type: string
 
 ### Parameter: `privateEndpoints.tags`
 
-Tags to be applied on all resources/resource groups in this deployment.
+Tags to be applied on all resources/Resource Groups in this deployment.
 
 - Required: No
 - Type: object
@@ -1688,6 +2978,15 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Azure Event Hubs Data Owner'`
+  - `'Azure Event Hubs Data Receiver'`
+  - `'Azure Event Hubs Data Sender'`
+  - `'Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -1704,6 +3003,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -1754,6 +3054,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1771,13 +3078,72 @@ The principal type of the assigned principal ID.
   ]
   ```
 
+### Parameter: `secretsExportConfiguration`
+
+Key vault reference and secret settings for the module's secrets export.
+
+- Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`keyVaultResourceId`](#parameter-secretsexportconfigurationkeyvaultresourceid) | string | The resource ID of the key vault where to store the secrets of this module. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`rootPrimaryConnectionStringName`](#parameter-secretsexportconfigurationrootprimaryconnectionstringname) | string | The rootPrimaryConnectionStringName secret name to create. |
+| [`rootPrimaryKeyName`](#parameter-secretsexportconfigurationrootprimarykeyname) | string | The rootPrimaryKeyName secret name to create. |
+| [`rootSecondaryConnectionStringName`](#parameter-secretsexportconfigurationrootsecondaryconnectionstringname) | string | The rootSecondaryConnectionStringName secret name to create. |
+| [`rootSecondaryKeyName`](#parameter-secretsexportconfigurationrootsecondarykeyname) | string | The rootSecondaryKeyName secret name to create. |
+
+### Parameter: `secretsExportConfiguration.keyVaultResourceId`
+
+The resource ID of the key vault where to store the secrets of this module.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `secretsExportConfiguration.rootPrimaryConnectionStringName`
+
+The rootPrimaryConnectionStringName secret name to create.
+
+- Required: No
+- Type: string
+
+### Parameter: `secretsExportConfiguration.rootPrimaryKeyName`
+
+The rootPrimaryKeyName secret name to create.
+
+- Required: No
+- Type: string
+
+### Parameter: `secretsExportConfiguration.rootSecondaryConnectionStringName`
+
+The rootSecondaryConnectionStringName secret name to create.
+
+- Required: No
+- Type: string
+
+### Parameter: `secretsExportConfiguration.rootSecondaryKeyName`
+
+The rootSecondaryKeyName secret name to create.
+
+- Required: No
+- Type: string
+
 ### Parameter: `skuCapacity`
 
-The Event Hub's throughput units for Basic or Standard tiers, where value should be 0 to 20 throughput units. The Event Hubs premium units for Premium tier, where value should be 0 to 10 premium units.
+The Event Hubs throughput units for Basic or Standard tiers, where value should be 0 to 20 throughput units. The Event Hubs premium units for Premium tier, where value should be 0 to 10 premium units.
 
 - Required: No
 - Type: int
 - Default: `1`
+- MinValue: 1
+- MaxValue: 20
 
 ### Parameter: `skuName`
 
@@ -1808,18 +3174,23 @@ Switch to make the Event Hub Namespace zone redundant.
 
 - Required: No
 - Type: bool
-- Default: `False`
-
+- Default: `True`
 
 ## Outputs
 
 | Output | Type | Description |
 | :-- | :-- | :-- |
 | `eventHubResourceIds` | array | The Resources IDs of the EventHubs within this eventspace. |
+| `exportedSecrets` |  | A hashtable of references to the secrets exported to the provided Key Vault. The key of each reference is each secret's name. |
 | `location` | string | The location the resource was deployed into. |
 | `name` | string | The name of the eventspace. |
+| `primaryConnectionString` | securestring | The namespace's primary connection string. |
+| `primaryKey` | securestring | The namespace's primary key. |
+| `privateEndpoints` | array | The private endpoints of the eventspace. |
 | `resourceGroupName` | string | The resource group where the namespace is deployed. |
 | `resourceId` | string | The resource ID of the eventspace. |
+| `secondaryConnectionString` | securestring | The namespace's secondary connection string. |
+| `secondaryKey` | securestring | The namespace's secondary key. |
 | `systemAssignedMIPrincipalId` | string | The principal ID of the system assigned identity. |
 
 ## Cross-referenced modules
@@ -1828,8 +3199,9 @@ This section gives you an overview of all local-referenced module files (i.e., o
 
 | Reference | Type |
 | :-- | :-- |
-| `br/public:avm/res/network/private-endpoint:0.4.0` | Remote reference |
+| `br/public:avm/res/network/private-endpoint:0.11.1` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

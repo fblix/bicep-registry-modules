@@ -11,9 +11,6 @@ metadata description = 'This instance deploys the module with a base set of para
 @maxLength(90)
 param resourceGroupName string = 'dep-${namePrefix}-web.serverfarms-${serviceShort}-rg'
 
-@description('Optional. The location to deploy resources to.')
-param resourceLocation string = deployment().location
-
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 param serviceShort string = 'wsfmin'
 
@@ -21,7 +18,7 @@ param serviceShort string = 'wsfmin'
 param namePrefix string = '#_namePrefix_#'
 
 #disable-next-line no-hardcoded-location // Just a value to avoid ongoing capacity challenges
-var tempLocation = 'eastus'
+var enforcedLocation = 'australiaeast'
 
 // ============ //
 // Dependencies //
@@ -29,9 +26,9 @@ var tempLocation = 'eastus'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
-  location: tempLocation
+  location: enforcedLocation
 }
 
 // ============== //
@@ -42,17 +39,9 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 module testDeployment '../../../main.bicep' = [
   for iteration in ['init', 'idem']: {
     scope: resourceGroup
-    name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
+    name: '${uniqueString(deployment().name, enforcedLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: tempLocation
-      sku: {
-        name: 'P1v3'
-        tier: 'Premium'
-        size: 'P1v3'
-        family: 'P'
-        capacity: 3
-      }
     }
   }
 ]

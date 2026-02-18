@@ -12,8 +12,9 @@ metadata description = 'This instance deploys the module in alignment with the b
 // e.g., for a module 'network/private-endpoint' you could use 'dep-dev-network.privateendpoints-${serviceShort}-rg'
 param resourceGroupName string = 'dep-${namePrefix}-netapp.netappaccounts-${serviceShort}-rg'
 
-@description('Optional. The location to deploy resources to.')
-param resourceLocation string = deployment().location
+// enforcing location due to quote restrictions
+#disable-next-line no-hardcoded-location
+var enforcedLocation = 'australiaeast'
 
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 // e.g., for a module 'network/private-endpoint' you could use 'npe' as a prefix and then 'waf' as a suffix for the waf-aligned test
@@ -28,23 +29,25 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
-  location: resourceLocation
+  location: enforcedLocation
+  tags: {
+    service: 'netapp'
+  }
 }
 
 // ============== //
 // Test Execution //
 // ============== //
 
-@batchSize(1)
-module testDeployment '../../../main.bicep' = [
-  for iteration in ['init', 'idem']: {
-    scope: resourceGroup
-    name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
-    params: {
-      name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
+module testDeployment '../../../main.bicep' = {
+  scope: resourceGroup
+  name: '${uniqueString(deployment().name, enforcedLocation)}-test-${serviceShort}'
+  params: {
+    name: '${namePrefix}${serviceShort}001'
+    tags: {
+      service: 'netapp'
     }
   }
-]
+}

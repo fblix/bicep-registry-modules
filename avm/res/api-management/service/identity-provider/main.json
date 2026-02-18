@@ -1,15 +1,15 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
   "contentVersion": "1.0.0.0",
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "6944159515007886666"
+      "version": "0.37.4.10188",
+      "templateHash": "488153495468500989"
     },
     "name": "API Management Service Identity Providers",
-    "description": "This module deploys an API Management Service Identity Provider.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys an API Management Service Identity Provider."
   },
   "parameters": {
     "apiManagementServiceName": {
@@ -20,10 +20,13 @@
     },
     "allowedTenants": {
       "type": "array",
-      "defaultValue": [],
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.ApiManagement/service/identityProviders@2024-05-01#properties/properties/properties/allowedTenants"
+        },
         "description": "Optional. List of Allowed Tenants when configuring Azure Active Directory login. - string."
-      }
+      },
+      "defaultValue": []
     },
     "authority": {
       "type": "string",
@@ -37,6 +40,17 @@
       "defaultValue": "",
       "metadata": {
         "description": "Conditional. Client ID of the Application in the external Identity Provider. Required if identity provider is used."
+      }
+    },
+    "clientLibrary": {
+      "type": "string",
+      "nullable": true,
+      "allowedValues": [
+        "ADAL",
+        "MSAL-2"
+      ],
+      "metadata": {
+        "description": "Optional. The client library to be used in the developer portal. Only applies to AAD and AAD B2C Identity Provider."
       }
     },
     "clientSecret": {
@@ -101,15 +115,48 @@
       "metadata": {
         "description": "Required. Identity provider name."
       }
+    },
+    "enableTelemetry": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable/Disable usage telemetry for module."
+      }
     }
   },
   "variables": {
     "isAadB2C": "[equals(parameters('type'), 'aadB2C')]"
   },
-  "resources": [
-    {
+  "resources": {
+    "service": {
+      "existing": true,
+      "type": "Microsoft.ApiManagement/service",
+      "apiVersion": "2024-05-01",
+      "name": "[parameters('apiManagementServiceName')]"
+    },
+    "avmTelemetry": {
+      "condition": "[parameters('enableTelemetry')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2024-03-01",
+      "name": "[format('46d3xbcp.res.apimgmt-identityprovider.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name), 0, 4))]",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [],
+          "outputs": {
+            "telemetry": {
+              "type": "String",
+              "value": "For more information, see https://aka.ms/avm/TelemetryInfo"
+            }
+          }
+        }
+      }
+    },
+    "identityProvider": {
       "type": "Microsoft.ApiManagement/service/identityProviders",
-      "apiVersion": "2021-08-01",
+      "apiVersion": "2024-05-01",
       "name": "[format('{0}/{1}', parameters('apiManagementServiceName'), parameters('name'))]",
       "properties": {
         "type": "[parameters('type')]",
@@ -121,10 +168,11 @@
         "profileEditingPolicyName": "[if(variables('isAadB2C'), parameters('profileEditingPolicyName'), null())]",
         "passwordResetPolicyName": "[if(variables('isAadB2C'), parameters('passwordResetPolicyName'), null())]",
         "clientId": "[parameters('clientId')]",
+        "clientLibrary": "[parameters('clientLibrary')]",
         "clientSecret": "[parameters('clientSecret')]"
       }
     }
-  ],
+  },
   "outputs": {
     "resourceId": {
       "type": "string",

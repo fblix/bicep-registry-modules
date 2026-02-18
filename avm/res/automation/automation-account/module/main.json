@@ -5,12 +5,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "8037849223912660600"
+      "version": "0.37.4.10188",
+      "templateHash": "76263396795506547"
     },
     "name": "Automation Account Modules",
-    "description": "This module deploys an Azure Automation Account Module.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys an Azure Automation Account Module."
   },
   "parameters": {
     "name": {
@@ -57,12 +56,12 @@
     "automationAccount": {
       "existing": true,
       "type": "Microsoft.Automation/automationAccounts",
-      "apiVersion": "2022-08-08",
+      "apiVersion": "2024-10-23",
       "name": "[parameters('automationAccountName')]"
     },
     "module": {
       "type": "Microsoft.Automation/automationAccounts/modules",
-      "apiVersion": "2022-08-08",
+      "apiVersion": "2024-10-23",
       "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('name'))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -71,10 +70,7 @@
           "uri": "[if(not(equals(parameters('version'), 'latest')), format('{0}/{1}/{2}', parameters('uri'), parameters('name'), parameters('version')), format('{0}/{1}', parameters('uri'), parameters('name')))]",
           "version": "[if(not(equals(parameters('version'), 'latest')), parameters('version'), null())]"
         }
-      },
-      "dependsOn": [
-        "automationAccount"
-      ]
+      }
     }
   },
   "outputs": {
@@ -104,7 +100,7 @@
       "metadata": {
         "description": "The location the resource was deployed into."
       },
-      "value": "[reference('module', '2022-08-08', 'full').location]"
+      "value": "[reference('module', '2024-10-23', 'full').location]"
     }
   }
 }

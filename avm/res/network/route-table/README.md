@@ -2,6 +2,14 @@
 
 This module deploys a User Defined Route Table (UDR).
 
+You can reference the module as follows:
+```bicep
+module routeTable 'br/public:avm/res/network/route-table:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
@@ -13,11 +21,11 @@ This module deploys a User Defined Route Table (UDR).
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Network/routeTables` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/routeTables) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Network/routeTables` | 2024-07-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_routetables.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-07-01/routeTables)</li></ul> |
 
 ## Usage examples
 
@@ -35,6 +43,8 @@ The following section provides usage examples for the module, which were used to
 
 This instance deploys the module with the minimum set of required parameters.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
 
 <details>
 
@@ -42,12 +52,8 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module routeTable 'br/public:avm/res/network/route-table:<version>' = {
-  name: 'routeTableDeployment'
   params: {
-    // Required parameters
     name: 'nrtmin001'
-    // Non-required parameters
-    location: '<location>'
   }
 }
 ```
@@ -57,23 +63,31 @@ module routeTable 'br/public:avm/res/network/route-table:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    // Required parameters
     "name": {
       "value": "nrtmin001"
-    },
-    // Non-required parameters
-    "location": {
-      "value": "<location>"
     }
   }
 }
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/route-table:<version>'
+
+param name = 'nrtmin001'
 ```
 
 </details>
@@ -83,6 +97,8 @@ module routeTable 'br/public:avm/res/network/route-table:<version>' = {
 
 This instance deploys the module with most of its features enabled.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
+
 
 <details>
 
@@ -90,7 +106,6 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module routeTable 'br/public:avm/res/network/route-table:<version>' = {
-  name: 'routeTableDeployment'
   params: {
     // Required parameters
     name: 'nrtmax001'
@@ -102,11 +117,13 @@ module routeTable 'br/public:avm/res/network/route-table:<version>' = {
     }
     roleAssignments: [
       {
+        name: 'de4b134c-7087-480d-892f-ce6629720d29'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -141,7 +158,7 @@ module routeTable 'br/public:avm/res/network/route-table:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -165,11 +182,13 @@ module routeTable 'br/public:avm/res/network/route-table:<version>' = {
     "roleAssignments": {
       "value": [
         {
+          "name": "de4b134c-7087-480d-892f-ce6629720d29",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -207,9 +226,65 @@ module routeTable 'br/public:avm/res/network/route-table:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/route-table:<version>'
+
+// Required parameters
+param name = 'nrtmax001'
+// Non-required parameters
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param roleAssignments = [
+  {
+    name: 'de4b134c-7087-480d-892f-ce6629720d29'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param routes = [
+  {
+    name: 'default'
+    properties: {
+      addressPrefix: '0.0.0.0/0'
+      nextHopIpAddress: '172.16.0.20'
+      nextHopType: 'VirtualAppliance'
+    }
+  }
+]
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
+
 ### Example 3: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -218,16 +293,10 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module routeTable 'br/public:avm/res/network/route-table:<version>' = {
-  name: 'routeTableDeployment'
   params: {
     // Required parameters
     name: 'nrtwaf001'
     // Non-required parameters
-    location: '<location>'
-    lock: {
-      kind: 'CanNotDelete'
-      name: 'myCustomLockName'
-    }
     routes: [
       {
         name: 'default'
@@ -252,7 +321,7 @@ module routeTable 'br/public:avm/res/network/route-table:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -264,15 +333,6 @@ module routeTable 'br/public:avm/res/network/route-table:<version>' = {
       "value": "nrtwaf001"
     },
     // Non-required parameters
-    "location": {
-      "value": "<location>"
-    },
-    "lock": {
-      "value": {
-        "kind": "CanNotDelete",
-        "name": "myCustomLockName"
-      }
-    },
     "routes": {
       "value": [
         {
@@ -299,6 +359,35 @@ module routeTable 'br/public:avm/res/network/route-table:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/route-table:<version>'
+
+// Required parameters
+param name = 'nrtwaf001'
+// Non-required parameters
+param routes = [
+  {
+    name: 'default'
+    properties: {
+      addressPrefix: '0.0.0.0/0'
+      nextHopIpAddress: '172.16.0.20'
+      nextHopType: 'VirtualAppliance'
+    }
+  }
+]
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -364,6 +453,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -387,12 +477,26 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments`
 
 Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -409,6 +513,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -459,6 +564,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -483,86 +595,12 @@ An array of routes to be established within the hub route table.
 - Required: No
 - Type: array
 
-**Required parameters**
-
-| Parameter | Type | Description |
-| :-- | :-- | :-- |
-| [`name`](#parameter-routesname) | string | Name of the route. |
-| [`properties`](#parameter-routesproperties) | object | Properties of the route. |
-
-### Parameter: `routes.name`
-
-Name of the route.
-
-- Required: Yes
-- Type: string
-
-### Parameter: `routes.properties`
-
-Properties of the route.
-
-- Required: Yes
-- Type: object
-
-**Required parameters**
-
-| Parameter | Type | Description |
-| :-- | :-- | :-- |
-| [`nextHopType`](#parameter-routespropertiesnexthoptype) | string | The type of Azure hop the packet should be sent to. |
-
-**Optional parameters**
-
-| Parameter | Type | Description |
-| :-- | :-- | :-- |
-| [`addressPrefix`](#parameter-routespropertiesaddressprefix) | string | The destination CIDR to which the route applies. |
-| [`hasBgpOverride`](#parameter-routespropertieshasbgpoverride) | bool | A value indicating whether this route overrides overlapping BGP routes regardless of LPM. |
-| [`nextHopIpAddress`](#parameter-routespropertiesnexthopipaddress) | string | The IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is VirtualAppliance. |
-
-### Parameter: `routes.properties.nextHopType`
-
-The type of Azure hop the packet should be sent to.
-
-- Required: Yes
-- Type: string
-- Allowed:
-  ```Bicep
-  [
-    'Internet'
-    'None'
-    'VirtualAppliance'
-    'VirtualNetworkGateway'
-    'VnetLocal'
-  ]
-  ```
-
-### Parameter: `routes.properties.addressPrefix`
-
-The destination CIDR to which the route applies.
-
-- Required: No
-- Type: string
-
-### Parameter: `routes.properties.hasBgpOverride`
-
-A value indicating whether this route overrides overlapping BGP routes regardless of LPM.
-
-- Required: No
-- Type: bool
-
-### Parameter: `routes.properties.nextHopIpAddress`
-
-The IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is VirtualAppliance.
-
-- Required: No
-- Type: string
-
 ### Parameter: `tags`
 
 Tags of the resource.
 
 - Required: No
 - Type: object
-
 
 ## Outputs
 
@@ -575,8 +613,12 @@ Tags of the resource.
 
 ## Cross-referenced modules
 
-_None_
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.6.0` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

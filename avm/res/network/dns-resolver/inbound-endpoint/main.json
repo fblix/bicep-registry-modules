@@ -5,12 +5,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "13768999645959207906"
+      "version": "0.38.5.1644",
+      "templateHash": "902733791124628074"
     },
     "name": "DNS Resolver Inbound Endpoint",
-    "description": "This module deploys a DNS Resolver Inbound Endpoint.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a DNS Resolver Inbound Endpoint."
   },
   "parameters": {
     "dnsResolverName": {
@@ -29,10 +28,13 @@
     },
     "tags": {
       "type": "object",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Network/dnsResolvers/inboundEndpoints@2025-05-01#properties/tags"
+        },
         "description": "Optional. Tags of the resource."
-      }
+      },
+      "nullable": true
     },
     "subnetResourceId": {
       "type": "string",
@@ -65,12 +67,12 @@
     "dnsResolver": {
       "existing": true,
       "type": "Microsoft.Network/dnsResolvers",
-      "apiVersion": "2022-07-01",
+      "apiVersion": "2025-05-01",
       "name": "[parameters('dnsResolverName')]"
     },
     "inboundEndpoint": {
       "type": "Microsoft.Network/dnsResolvers/inboundEndpoints",
-      "apiVersion": "2022-07-01",
+      "apiVersion": "2025-05-01",
       "name": "[format('{0}/{1}', parameters('dnsResolverName'), parameters('name'))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -84,10 +86,7 @@
             "privateIpAllocationMethod": "[parameters('privateIpAllocationMethod')]"
           }
         ]
-      },
-      "dependsOn": [
-        "dnsResolver"
-      ]
+      }
     }
   },
   "outputs": {

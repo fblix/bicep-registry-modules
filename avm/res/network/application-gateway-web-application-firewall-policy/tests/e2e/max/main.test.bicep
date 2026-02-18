@@ -15,7 +15,7 @@ param resourceGroupName string = 'dep-${namePrefix}-network.applicationGatewayWe
 param resourceLocation string = deployment().location
 
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
-param serviceShort string = 'nagwafpmax'
+param serviceShort string = 'nagwafptstmax'
 
 @description('Optional. A token to inject into the name of each resource.')
 param namePrefix string = '#_namePrefix_#'
@@ -47,6 +47,9 @@ module testDeployment '../../../main.bicep' = [
         fileUploadLimitInMb: 10
         state: 'Enabled'
         mode: 'Prevention'
+        customBlockResponseBody: 'PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=='
+        customBlockResponseStatusCode: 403
+        jsChallengeCookieExpirationInMins: 60
       }
       managedRules: {
         managedRuleSets: [

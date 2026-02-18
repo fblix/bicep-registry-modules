@@ -23,7 +23,7 @@ param namePrefix string = '#_namePrefix_#'
 // General resources
 // =================
 
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -31,7 +31,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 // Diagnostics
 // ===========
 
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -39,7 +39,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}01'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}01'
-    location: resourceLocation
   }
 }
 
@@ -52,7 +51,6 @@ module testDeployment '../../../main.bicep' = {
   name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}'
   params: {
     name: '${namePrefix}${serviceShort}002'
-    location: resourceLocation
     diagnosticSettings: [
       {
         eventHubName: diagnosticDependencies.outputs.eventHubNamespaceEventHubName
@@ -67,7 +65,4 @@ module testDeployment '../../../main.bicep' = {
       Role: 'DeploymentValidation'
     }
   }
-  dependsOn: [
-    diagnosticDependencies
-  ]
 }

@@ -23,7 +23,7 @@ param namePrefix string = '#_namePrefix_#'
 // General resources
 // =================
 
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -32,7 +32,6 @@ module nestedDependencies 'dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
   params: {
-    location: resourceLocation
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
   }
 }
@@ -40,7 +39,7 @@ module nestedDependencies 'dependencies.bicep' = {
 // Diagnostics
 // ===========
 
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -48,7 +47,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}01'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}01'
-    location: resourceLocation
   }
 }
 
@@ -176,7 +174,7 @@ module testDeployment '../../../main.bicep' = [
       ]
       hostPoolReferences: [
         {
-          hostPoolArmPath: nestedDependencies.outputs.hostPoolId
+          hostPoolResourceId: nestedDependencies.outputs.hostPoolResourceId
           scalingPlanEnabled: true
         }
       ]
@@ -200,11 +198,13 @@ module testDeployment '../../../main.bicep' = [
       }
       roleAssignments: [
         {
+          name: 'c2c1c560-2169-405a-a8dc-7427e403e5ac'
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
         {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'

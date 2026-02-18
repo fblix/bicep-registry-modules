@@ -7,14 +7,12 @@ This module deploys a Recovery Services Vault Backup Config.
 - [Resource Types](#Resource-Types)
 - [Parameters](#Parameters)
 - [Outputs](#Outputs)
-- [Cross-referenced modules](#Cross-referenced-modules)
-- [Data Collection](#Data-Collection)
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.RecoveryServices/vaults/backupconfig` | [2023-01-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.RecoveryServices/2023-01-01/vaults/backupconfig) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.RecoveryServices/vaults/backupconfig` | 2023-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.recoveryservices_vaults_backupconfig.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.RecoveryServices/2023-01-01/vaults/backupconfig)</li></ul> |
 
 ## Parameters
 
@@ -147,7 +145,6 @@ Once a machine is registered against a resource, the storageTypeState is always 
   ]
   ```
 
-
 ## Outputs
 
 | Output | Type | Description |
@@ -155,11 +152,3 @@ Once a machine is registered against a resource, the storageTypeState is always 
 | `name` | string | The name of the backup config. |
 | `resourceGroupName` | string | The name of the resource group the backup config was created in. |
 | `resourceId` | string | The resource ID of the backup config. |
-
-## Cross-referenced modules
-
-_None_
-
-## Data Collection
-
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

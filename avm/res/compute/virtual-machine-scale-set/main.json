@@ -5,36 +5,396 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "15325819648954627762"
+      "version": "0.37.4.10188",
+      "templateHash": "4328225862716010669"
     },
     "name": "Virtual Machine Scale Sets",
-    "description": "This module deploys a Virtual Machine Scale Set.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a Virtual Machine Scale Set."
   },
   "definitions": {
-    "managedIdentitiesType": {
+    "extensionHealthConfigType": {
       "type": "object",
       "properties": {
-        "systemAssigned": {
+        "enabled": {
+          "type": "bool",
+          "metadata": {
+            "description": "Required. Enable or disable the Health Config extension."
+          }
+        },
+        "typeHandlerVersion": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specifies the version of the script handler. Defaults to `2.0`."
+          }
+        },
+        "autoUpgradeMinorVersion": {
           "type": "bool",
           "nullable": true,
           "metadata": {
-            "description": "Optional. Enables system assigned managed identity on the resource."
+            "description": "Optional. Indicates whether the extension should use a newer minor version if one is available at deployment time. Once deployed, however, the extension will not upgrade minor versions unless redeployed, even with this property set to true. Defaults to `false`."
           }
         },
-        "userAssignedResourceIds": {
+        "enableAutomaticUpgrade": {
+          "type": "bool",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available. Defaults to `true`."
+          }
+        },
+        "protocol": {
+          "type": "string",
+          "allowedValues": [
+            "http",
+            "https",
+            "tcp"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The protocol to connect with. Defaults to `http`."
+          }
+        },
+        "port": {
+          "type": "int",
+          "nullable": true,
+          "metadata": {
+            "description": "Conditional. The port to connect to. Defaults to `80`. Required if `protocol` is `tcp`."
+          }
+        },
+        "requestPath": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The path of the request. Not allowed if `protocol` is `tcp`."
+          }
+        },
+        "intervalInSeconds": {
+          "type": "int",
+          "nullable": true,
+          "minValue": 5,
+          "maxValue": 60,
+          "metadata": {
+            "description": "Optional. This is the interval between each health probe. For example, if intervalInSeconds == 5, a probe will be sent to the local application endpoint once every 5 seconds. Defaults to `5`."
+          }
+        },
+        "numberOfProbes": {
+          "type": "int",
+          "nullable": true,
+          "minValue": 1,
+          "maxValue": 24,
+          "metadata": {
+            "description": "Optional. This is the number of consecutive probes required for the health status to change. For example, if numberOfProbles == 3, you will need 3 consecutive \"Healthy\" signals to change the health status from \"Unhealthy\" into \"Healthy\" state. The same requirement applies to change health status into \"Unhealthy\" state. Defaults to `1`."
+          }
+        },
+        "gracePeriod": {
+          "type": "int",
+          "nullable": true,
+          "maxValue": 14400,
+          "metadata": {
+            "description": "Optional. The grace period for newly created instances. Defaults to `intervalInSeconds` x `numberOfProbes`."
+          }
+        },
+        "provisionAfterExtensions": {
           "type": "array",
           "items": {
             "type": "string"
           },
           "nullable": true,
           "metadata": {
-            "description": "Optional. The resource ID(s) to assign to the resource."
+            "description": "Optional. Collection of extension names after which this extension needs to be provisioned."
           }
         }
       },
-      "nullable": true
+      "metadata": {
+        "__bicep_export!": true,
+        "description": "The type of the health config extension."
+      }
+    },
+    "nicConfigurationType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name of the NIC configuration. If not provided, a name is generated using the `nicSuffic` and an incremental counter."
+          }
+        },
+        "nicSuffix": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The suffix to add to each NIC configuration name if no `name` was provided."
+          }
+        },
+        "enableAcceleratedNetworking": {
+          "type": "bool",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specifies whether the network interface is accelerated networking-enabled. Defaults to `true`."
+          }
+        },
+        "ipConfigurations": {
+          "type": "array",
+          "metadata": {
+            "description": "Required. Specifies the IP configurations of the network interface."
+          }
+        },
+        "networkSecurityGroupResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The resource ID of a network security group to associate with the NIC."
+          }
+        }
+      },
+      "metadata": {
+        "__bicep_export!": true,
+        "description": "The type of a NIC configuration."
+      }
+    },
+    "extensionCustomScriptConfigType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name of the virtual machine extension. Defaults to `CustomScriptExtension`."
+          }
+        },
+        "typeHandlerVersion": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specifies the version of the script handler. Defaults to `1.10` for Windows and `2.1` for Linux."
+          }
+        },
+        "autoUpgradeMinorVersion": {
+          "type": "bool",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Indicates whether the extension should use a newer minor version if one is available at deployment time. Once deployed, however, the extension will not upgrade minor versions unless redeployed, even with this property set to true. Defaults to `true`."
+          }
+        },
+        "forceUpdateTag": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. How the extension handler should be forced to update even if the extension configuration has not changed."
+          }
+        },
+        "settings": {
+          "type": "object",
+          "properties": {
+            "commandToExecute": {
+              "type": "string",
+              "nullable": true,
+              "metadata": {
+                "description": "Conditional. The entry point script to run. If the command contains any credentials, use the same property of the `protectedSettings` instead. Required if `protectedSettings.commandToExecute` is not provided."
+              }
+            },
+            "fileUris": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. URLs for files to be downloaded. If URLs are sensitive, for example, if they contain keys, this field should be specified in `protectedSettings`."
+              }
+            }
+          },
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The configuration of the custom script extension. Note: You can provide any property either in the `settings` or `protectedSettings` but not both. If your property contains secrets, use `protectedSettings`."
+          }
+        },
+        "protectedSettings": {
+          "type": "secureObject",
+          "properties": {
+            "commandToExecute": {
+              "type": "string",
+              "nullable": true,
+              "metadata": {
+                "description": "Conditional. The entry point script to run. Use this property if your command contains secrets such as passwords or if your file URIs are sensitive. Required if `settings.commandToExecute` is not provided."
+              }
+            },
+            "storageAccountName": {
+              "type": "string",
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. The name of storage account. If you specify storage credentials, all fileUris values must be URLs for Azure blobs.."
+              }
+            },
+            "storageAccountKey": {
+              "type": "string",
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. The access key of the storage account."
+              }
+            },
+            "managedIdentityResourceId": {
+              "type": "string",
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. The managed identity for downloading files. Must not be used in conjunction with the `storageAccountName` or `storageAccountKey` property. If you want to use the VM's system assigned identity, set the `value` to an empty string."
+              }
+            },
+            "fileUris": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. URLs for files to be downloaded."
+              }
+            }
+          },
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The configuration of the custom script extension. Note: You can provide any property either in the `settings` or `protectedSettings` but not both. If your property contains secrets, use `protectedSettings`."
+          }
+        },
+        "supressFailures": {
+          "type": "bool",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Indicates whether failures stemming from the extension will be suppressed (Operational failures such as not connecting to the VM will not be suppressed regardless of this value). Defaults to `false`."
+          }
+        },
+        "enableAutomaticUpgrade": {
+          "type": "bool",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available. Defaults to `false`."
+          }
+        },
+        "tags": {
+          "type": "object",
+          "metadata": {
+            "__bicep_resource_derived_type!": {
+              "source": "Microsoft.Compute/virtualMachines/extensions@2024-11-01#properties/tags"
+            },
+            "description": "Optional. Tags of the resource."
+          },
+          "nullable": true
+        },
+        "protectedSettingsFromKeyVault": {
+          "type": "object",
+          "metadata": {
+            "__bicep_resource_derived_type!": {
+              "source": "Microsoft.Compute/virtualMachines/extensions@2024-11-01#properties/properties/properties/protectedSettingsFromKeyVault"
+            },
+            "description": "Optional. The extensions protected settings that are passed by reference, and consumed from key vault."
+          },
+          "nullable": true
+        },
+        "provisionAfterExtensions": {
+          "type": "array",
+          "metadata": {
+            "__bicep_resource_derived_type!": {
+              "source": "Microsoft.Compute/virtualMachines/extensions@2024-11-01#properties/properties/properties/provisionAfterExtensions"
+            },
+            "description": "Optional. Collection of extension names after which this extension needs to be provisioned."
+          },
+          "nullable": true
+        }
+      },
+      "metadata": {
+        "__bicep_export!": true,
+        "description": "The type of a 'CustomScriptExtension' extension."
+      }
+    },
+    "diagnosticSettingMetricsOnlyType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name of diagnostic setting."
+          }
+        },
+        "metricCategories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": "string",
+                "metadata": {
+                  "description": "Required. Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to `AllMetrics` to collect all metrics."
+                }
+              },
+              "enabled": {
+                "type": "bool",
+                "nullable": true,
+                "metadata": {
+                  "description": "Optional. Enable or disable the category explicitly. Default is `true`."
+                }
+              }
+            }
+          },
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name of metrics that will be streamed. \"allMetrics\" includes all possible metrics for the resource. Set to `[]` to disable metric collection."
+          }
+        },
+        "logAnalyticsDestinationType": {
+          "type": "string",
+          "allowedValues": [
+            "AzureDiagnostics",
+            "Dedicated"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. A string indicating whether the export to Log Analytics should use the default destination type, i.e. AzureDiagnostics, or use a destination type."
+          }
+        },
+        "workspaceResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
+          }
+        },
+        "storageAccountResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
+          }
+        },
+        "eventHubAuthorizationRuleResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
+          }
+        },
+        "eventHubName": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
+          }
+        },
+        "marketplacePartnerResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs."
+          }
+        }
+      },
+      "metadata": {
+        "description": "An AVM-aligned type for a diagnostic setting. To be used if only metrics are supported by the resource provider.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.6.1"
+        }
+      }
     },
     "lockType": {
       "type": "object",
@@ -57,162 +417,124 @@
           "metadata": {
             "description": "Optional. Specify the type of lock."
           }
+        },
+        "notes": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specify the notes of the lock."
+          }
         }
       },
-      "nullable": true
+      "metadata": {
+        "description": "An AVM-aligned type for a lock.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.6.0"
+        }
+      }
+    },
+    "managedIdentityAllType": {
+      "type": "object",
+      "properties": {
+        "systemAssigned": {
+          "type": "bool",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Enables system assigned managed identity on the resource."
+          }
+        },
+        "userAssignedResourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The resource ID(s) to assign to the resource. Required if a user assigned identity is used for encryption."
+          }
+        }
+      },
+      "metadata": {
+        "description": "An AVM-aligned type for a managed identity configuration. To be used if both a system-assigned & user-assigned identities are supported by the resource provider.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.6.1"
+        }
+      }
     },
     "roleAssignmentType": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "roleDefinitionIdOrName": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'."
-            }
-          },
-          "principalId": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. The principal ID of the principal (user/group/identity) to assign the role to."
-            }
-          },
-          "principalType": {
-            "type": "string",
-            "allowedValues": [
-              "Device",
-              "ForeignGroup",
-              "Group",
-              "ServicePrincipal",
-              "User"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The principal type of the assigned principal ID."
-            }
-          },
-          "description": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The description of the role assignment."
-            }
-          },
-          "condition": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase \"foo_storage_container\"."
-            }
-          },
-          "conditionVersion": {
-            "type": "string",
-            "allowedValues": [
-              "2.0"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Version of the condition."
-            }
-          },
-          "delegatedManagedIdentityResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The Resource Id of the delegated managed identity resource."
-            }
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name (as GUID) of the role assignment. If not provided, a GUID will be generated."
+          }
+        },
+        "roleDefinitionIdOrName": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'."
+          }
+        },
+        "principalId": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The principal ID of the principal (user/group/identity) to assign the role to."
+          }
+        },
+        "principalType": {
+          "type": "string",
+          "allowedValues": [
+            "Device",
+            "ForeignGroup",
+            "Group",
+            "ServicePrincipal",
+            "User"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The principal type of the assigned principal ID."
+          }
+        },
+        "description": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The description of the role assignment."
+          }
+        },
+        "condition": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase \"foo_storage_container\"."
+          }
+        },
+        "conditionVersion": {
+          "type": "string",
+          "allowedValues": [
+            "2.0"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Version of the condition."
+          }
+        },
+        "delegatedManagedIdentityResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The Resource Id of the delegated managed identity resource."
           }
         }
       },
-      "nullable": true
-    },
-    "diagnosticSettingType": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The name of diagnostic setting."
-            }
-          },
-          "metricCategories": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "category": {
-                  "type": "string",
-                  "metadata": {
-                    "description": "Required. Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to `AllMetrics` to collect all metrics."
-                  }
-                },
-                "enabled": {
-                  "type": "bool",
-                  "nullable": true,
-                  "metadata": {
-                    "description": "Optional. Enable or disable the category explicitly. Default is `true`."
-                  }
-                }
-              }
-            },
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The name of metrics that will be streamed. \"allMetrics\" includes all possible metrics for the resource. Set to `[]` to disable metric collection."
-            }
-          },
-          "logAnalyticsDestinationType": {
-            "type": "string",
-            "allowedValues": [
-              "AzureDiagnostics",
-              "Dedicated"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. A string indicating whether the export to Log Analytics should use the default destination type, i.e. AzureDiagnostics, or use a destination type."
-            }
-          },
-          "workspaceResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
-            }
-          },
-          "storageAccountResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
-            }
-          },
-          "eventHubAuthorizationRuleResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
-            }
-          },
-          "eventHubName": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub."
-            }
-          },
-          "marketplacePartnerResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs."
-            }
-          }
+      "metadata": {
+        "description": "An AVM-aligned type for a role assignment.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.6.1"
         }
-      },
-      "nullable": true
+      }
     }
   },
   "parameters": {
@@ -265,23 +587,32 @@
     },
     "plan": {
       "type": "object",
-      "defaultValue": {},
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Compute/virtualMachineScaleSets@2024-11-01#properties/plan"
+        },
         "description": "Optional. Specifies information about the marketplace image used to create the virtual machine. This element is only used for marketplace images. Before you can use a marketplace image from an API, you must enable the image for programmatic use."
-      }
+      },
+      "nullable": true
     },
     "osDisk": {
       "type": "object",
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Compute/virtualMachineScaleSets@2024-11-01#properties/properties/properties/virtualMachineProfile/properties/storageProfile/properties/osDisk"
+        },
         "description": "Required. Specifies the OS disk. For security reasons, it is recommended to specify DiskEncryptionSet into the osDisk object. Restrictions: DiskEncryptionSet cannot be enabled if Azure Disk Encryption (guest-VM encryption using bitlocker/DM-Crypt) is enabled on your VM Scale sets."
       }
     },
     "dataDisks": {
       "type": "array",
-      "defaultValue": [],
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Compute/virtualMachineScaleSets@2024-11-01#properties/properties/properties/virtualMachineProfile/properties/storageProfile/properties/dataDisks"
+        },
         "description": "Optional. Specifies the data disks. For security reasons, it is recommended to specify DiskEncryptionSet into the dataDisk object. Restrictions: DiskEncryptionSet cannot be enabled if Azure Disk Encryption (guest-VM encryption using bitlocker/DM-Crypt) is enabled on your VM Scale sets."
-      }
+      },
+      "defaultValue": []
     },
     "ultraSSDEnabled": {
       "type": "bool",
@@ -298,9 +629,8 @@
     },
     "adminPassword": {
       "type": "securestring",
-      "defaultValue": "",
       "metadata": {
-        "description": "Optional. When specifying a Windows Virtual Machine, this value should be passed."
+        "description": "Required. When specifying a Windows Virtual Machine, this value should be passed."
       }
     },
     "customData": {
@@ -311,7 +641,11 @@
       }
     },
     "roleAssignments": {
-      "$ref": "#/definitions/roleAssignmentType",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/roleAssignmentType"
+      },
+      "nullable": true,
       "metadata": {
         "description": "Optional. Array of role assignments to create."
       }
@@ -325,16 +659,18 @@
     },
     "proximityPlacementGroupResourceId": {
       "type": "string",
-      "defaultValue": "",
+      "nullable": true,
       "metadata": {
         "description": "Optional. Resource ID of a proximity placement group."
       }
     },
     "nicConfigurations": {
       "type": "array",
-      "defaultValue": [],
+      "items": {
+        "$ref": "#/definitions/nicConfigurationType"
+      },
       "metadata": {
-        "description": "Required. Configures NICs and PIPs."
+        "description": "Required. Configures NICs and PIPs. The first item in the list is considered the `primary` configuration."
       }
     },
     "vmPriority": {
@@ -357,19 +693,18 @@
       }
     },
     "maxPriceForLowPriorityVm": {
-      "type": "string",
-      "defaultValue": "",
+      "type": "int",
+      "nullable": true,
       "metadata": {
         "description": "Optional. Specifies the maximum price you are willing to pay for a low priority VM/VMSS. This price is in US Dollars."
       }
     },
     "licenseType": {
       "type": "string",
-      "defaultValue": "",
+      "nullable": true,
       "allowedValues": [
         "Windows_Client",
-        "Windows_Server",
-        ""
+        "Windows_Server"
       ],
       "metadata": {
         "description": "Optional. Specifies that the image or disk that is being used was licensed on-premises. This element is only used for images that contain the Windows Server operating system."
@@ -383,7 +718,7 @@
       }
     },
     "extensionDomainJoinConfig": {
-      "type": "object",
+      "type": "secureObject",
       "defaultValue": {
         "enabled": false
       },
@@ -403,13 +738,14 @@
     "extensionMonitoringAgentConfig": {
       "type": "object",
       "defaultValue": {
-        "enabled": false
+        "enabled": false,
+        "autoUpgradeMinorVersion": true
       },
       "metadata": {
         "description": "Optional. The configuration for the [Monitoring Agent] extension. Must at least contain the [\"enabled\": true] property to be executed."
       }
     },
-    "monitoringWorkspaceId": {
+    "monitoringWorkspaceResourceId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
@@ -443,6 +779,18 @@
         "description": "Optional. The configuration for the [Azure Disk Encryption] extension. Must at least contain the [\"enabled\": true] property to be executed. Restrictions: Cannot be enabled on disks that have encryption at host enabled. Managed disks encrypted using Azure Disk Encryption cannot be encrypted using customer-managed keys."
       }
     },
+    "extensionHealthConfig": {
+      "$ref": "#/definitions/extensionHealthConfigType",
+      "defaultValue": {
+        "enabled": true,
+        "protocol": "http",
+        "port": 80,
+        "requestPath": "/"
+      },
+      "metadata": {
+        "description": "Optional. Turned on by default. The configuration for the [Application Health Monitoring] extension. Must at least contain the [\"enabled\": true] property to be executed."
+      }
+    },
     "extensionDSCConfig": {
       "type": "object",
       "defaultValue": {
@@ -453,13 +801,10 @@
       }
     },
     "extensionCustomScriptConfig": {
-      "type": "object",
-      "defaultValue": {
-        "enabled": false,
-        "fileData": []
-      },
+      "$ref": "#/definitions/extensionCustomScriptConfigType",
+      "nullable": true,
       "metadata": {
-        "description": "Optional. The configuration for the [Custom Script] extension. Must at least contain the [\"enabled\": true] property to be executed."
+        "description": "Optional. The configuration for the [Custom Script] extension."
       }
     },
     "bootDiagnosticStorageAccountUri": {
@@ -471,19 +816,31 @@
     },
     "bootDiagnosticStorageAccountName": {
       "type": "string",
-      "defaultValue": "",
+      "nullable": true,
       "metadata": {
-        "description": "Optional. Storage account used to store boot diagnostic information. Boot diagnostics will be disabled if no value is provided."
+        "description": "Optional. The name of the boot diagnostic storage account. Provide this if you want to use your own storage account for security reasons instead of the recommended Microsoft Managed Storage Account."
+      }
+    },
+    "bootDiagnosticEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Enable boot diagnostics to use default managed or secure storage. Defaults set to false."
       }
     },
     "diagnosticSettings": {
-      "$ref": "#/definitions/diagnosticSettingType",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/diagnosticSettingMetricsOnlyType"
+      },
+      "nullable": true,
       "metadata": {
         "description": "Optional. The diagnostic settings of the service."
       }
     },
     "lock": {
       "$ref": "#/definitions/lockType",
+      "nullable": true,
       "metadata": {
         "description": "Optional. The lock settings of the service."
       }
@@ -498,6 +855,34 @@
       ],
       "metadata": {
         "description": "Optional. Specifies the mode of an upgrade to virtual machines in the scale set.' Manual - You control the application of updates to virtual machines in the scale set. You do this by using the manualUpgrade action. ; Automatic - All virtual machines in the scale set are automatically updated at the same time. - Automatic, Manual, Rolling."
+      }
+    },
+    "enableCrossZoneUpgrade": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Allow VMSS to ignore AZ boundaries when constructing upgrade batches. Take into consideration the Update Domain and maxBatchInstancePercent to determine the batch size."
+      }
+    },
+    "maxSurge": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Create new virtual machines to upgrade the scale set, rather than updating the existing virtual machines. Existing virtual machines will be deleted once the new virtual machines are created for each batch."
+      }
+    },
+    "prioritizeUnhealthyInstances": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Upgrade all unhealthy instances in a scale set before any healthy instances."
+      }
+    },
+    "rollbackFailedInstancesOnPolicyBreach": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional. Rollback failed instances to previous model if the Rolling Upgrade policy is violated."
       }
     },
     "maxBatchInstancePercent": {
@@ -544,7 +929,7 @@
     },
     "automaticRepairsPolicyEnabled": {
       "type": "bool",
-      "defaultValue": false,
+      "defaultValue": true,
       "metadata": {
         "description": "Optional. Specifies whether automatic repairs should be enabled on the virtual machine scale set."
       }
@@ -565,6 +950,17 @@
         "description": "Optional. Specifies the computer name prefix for all of the virtual machines in the scale set."
       }
     },
+    "orchestrationMode": {
+      "type": "string",
+      "defaultValue": "Flexible",
+      "allowedValues": [
+        "Flexible",
+        "Uniform"
+      ],
+      "metadata": {
+        "description": "Optional. Specifies the orchestration mode for the virtual machine scale set."
+      }
+    },
     "provisionVMAgent": {
       "type": "bool",
       "defaultValue": true,
@@ -579,26 +975,77 @@
         "description": "Optional. Indicates whether Automatic Updates is enabled for the Windows virtual machine. Default value is true. For virtual machine scale sets, this property can be updated and updates will take effect on OS reprovisioning."
       }
     },
+    "patchMode": {
+      "type": "string",
+      "defaultValue": "AutomaticByPlatform",
+      "allowedValues": [
+        "AutomaticByPlatform",
+        "AutomaticByOS",
+        "Manual",
+        "ImageDefault",
+        ""
+      ],
+      "metadata": {
+        "description": "Optional. VM guest patching orchestration mode. 'AutomaticByOS' & 'Manual' are for Windows only, 'ImageDefault' for Linux only. Refer to 'https://learn.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching'."
+      }
+    },
+    "bypassPlatformSafetyChecksOnUserSchedule": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enables customer to schedule patching without accidental upgrades."
+      }
+    },
+    "rebootSetting": {
+      "type": "string",
+      "defaultValue": "IfRequired",
+      "allowedValues": [
+        "Always",
+        "IfRequired",
+        "Never",
+        "Unknown"
+      ],
+      "metadata": {
+        "description": "Optional. Specifies the reboot setting for all AutomaticByPlatform patch installation operations."
+      }
+    },
+    "patchAssessmentMode": {
+      "type": "string",
+      "defaultValue": "ImageDefault",
+      "allowedValues": [
+        "AutomaticByPlatform",
+        "ImageDefault"
+      ],
+      "metadata": {
+        "description": "Optional. VM guest patching assessment mode. Set it to 'AutomaticByPlatform' to enable automatically check for updates every 24 hours."
+      }
+    },
     "timeZone": {
       "type": "string",
-      "defaultValue": "",
+      "nullable": true,
       "metadata": {
         "description": "Optional. Specifies the time zone of the virtual machine. e.g. 'Pacific Standard Time'. Possible values can be `TimeZoneInfo.id` value from time zones returned by `TimeZoneInfo.GetSystemTimeZones`."
       }
     },
     "additionalUnattendContent": {
       "type": "array",
-      "defaultValue": [],
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Compute/virtualMachineScaleSets@2024-07-01#properties/properties/properties/virtualMachineProfile/properties/osProfile/properties/windowsConfiguration/properties/additionalUnattendContent"
+        },
         "description": "Optional. Specifies additional base-64 encoded XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup. - AdditionalUnattendContent object."
-      }
+      },
+      "nullable": true
     },
     "winRM": {
       "type": "object",
-      "defaultValue": {},
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Compute/virtualMachineScaleSets@2024-07-01#properties/properties/properties/virtualMachineProfile/properties/osProfile/properties/windowsConfiguration/properties/winRM"
+        },
         "description": "Optional. Specifies the Windows Remote Management listeners. This enables remote Windows PowerShell. - WinRMConfiguration object."
-      }
+      },
+      "nullable": true
     },
     "disablePasswordAuthentication": {
       "type": "bool",
@@ -609,24 +1056,33 @@
     },
     "publicKeys": {
       "type": "array",
-      "defaultValue": [],
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Compute/virtualMachineScaleSets@2024-07-01#properties/properties/properties/virtualMachineProfile/properties/osProfile/properties/linuxConfiguration/properties/ssh/properties/publicKeys"
+        },
         "description": "Optional. The list of SSH public keys used to authenticate with linux based VMs."
-      }
+      },
+      "nullable": true
     },
     "secrets": {
       "type": "array",
-      "defaultValue": [],
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Compute/virtualMachineScaleSets@2024-07-01#properties/properties/properties/virtualMachineProfile/properties/osProfile/properties/secrets"
+        },
         "description": "Optional. Specifies set of certificates that should be installed onto the virtual machines in the scale set."
-      }
+      },
+      "defaultValue": []
     },
     "scheduledEventsProfile": {
       "type": "object",
-      "defaultValue": {},
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Compute/virtualMachineScaleSets@2024-07-01#properties/properties/properties/virtualMachineProfile/properties/scheduledEventsProfile"
+        },
         "description": "Optional. Specifies Scheduled Event related configurations."
-      }
+      },
+      "defaultValue": {}
     },
     "overprovision": {
       "type": "bool",
@@ -658,13 +1114,16 @@
     },
     "scaleInPolicy": {
       "type": "object",
+      "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Compute/virtualMachineScaleSets@2024-07-01#properties/properties/properties/scaleInPolicy"
+        },
+        "description": "Optional. Specifies the scale-in policy that decides which virtual machines are chosen for removal when a Virtual Machine Scale Set is scaled-in."
+      },
       "defaultValue": {
         "rules": [
           "Default"
         ]
-      },
-      "metadata": {
-        "description": "Optional. Specifies the scale-in policy that decides which virtual machines are chosen for removal when a Virtual Machine Scale Set is scaled-in."
       }
     },
     "skuName": {
@@ -682,7 +1141,15 @@
     },
     "availabilityZones": {
       "type": "array",
+      "items": {
+        "type": "int"
+      },
       "defaultValue": [
+        1,
+        2,
+        3
+      ],
+      "allowedValues": [
         1,
         2,
         3
@@ -693,10 +1160,13 @@
     },
     "tags": {
       "type": "object",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Compute/virtualMachineScaleSets@2024-07-01#properties/tags"
+        },
         "description": "Optional. Tags of the resource."
-      }
+      },
+      "nullable": true
     },
     "enableTelemetry": {
       "type": "bool",
@@ -715,22 +1185,9 @@
         "description": "Required. The chosen OS type."
       }
     },
-    "baseTime": {
-      "type": "string",
-      "defaultValue": "[utcNow('u')]",
-      "metadata": {
-        "description": "Generated. Do not provide a value! This date value is used to generate a registration token."
-      }
-    },
-    "sasTokenValidityLength": {
-      "type": "string",
-      "defaultValue": "PT8H",
-      "metadata": {
-        "description": "Optional. SAS token validity length to use to download files from storage accounts. Usage: 'PT8H' - valid for 8 hours; 'P5D' - valid for 5 days; 'P1Y' - valid for 1 year. When not provided, the SAS token will be valid for 8 hours."
-      }
-    },
     "managedIdentities": {
-      "$ref": "#/definitions/managedIdentitiesType",
+      "$ref": "#/definitions/managedIdentityAllType",
+      "nullable": true,
       "metadata": {
         "description": "Optional. The managed identity definition for this resource."
       }
@@ -739,38 +1196,42 @@
   "variables": {
     "copy": [
       {
-        "name": "publicKeysFormatted",
-        "count": "[length(parameters('publicKeys'))]",
+        "name": "networkInterfaceConfigurations",
+        "count": "[length(parameters('nicConfigurations'))]",
         "input": {
-          "path": "[parameters('publicKeys')[copyIndex('publicKeysFormatted')].path]",
-          "keyData": "[parameters('publicKeys')[copyIndex('publicKeysFormatted')].keyData]"
+          "name": "[coalesce(tryGet(parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')], 'name'), format('{0}{1}configuration-{2}', parameters('name'), tryGet(parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')], 'nicSuffix'), copyIndex('networkInterfaceConfigurations')))]",
+          "properties": {
+            "primary": "[if(equals(copyIndex('networkInterfaceConfigurations'), 0), true(), null())]",
+            "enableAcceleratedNetworking": "[coalesce(tryGet(parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')], 'enableAcceleratedNetworking'), true())]",
+            "networkSecurityGroup": "[if(contains(parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')], 'networkSecurityGroupResourceId'), createObject('id', parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')].networkSecurityGroupResourceId), null())]",
+            "ipConfigurations": "[parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')].ipConfigurations]"
+          }
         }
+      },
+      {
+        "name": "formattedRoleAssignments",
+        "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]",
+        "input": "[union(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')], createObject('roleDefinitionId', coalesce(tryGet(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName), if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName)))))]"
       }
     ],
     "linuxConfiguration": {
       "disablePasswordAuthentication": "[parameters('disablePasswordAuthentication')]",
       "ssh": {
-        "publicKeys": "[variables('publicKeysFormatted')]"
+        "publicKeys": "[parameters('publicKeys')]"
       },
-      "provisionVMAgent": "[parameters('provisionVMAgent')]"
+      "provisionVMAgent": "[parameters('provisionVMAgent')]",
+      "patchSettings": "[if(and(parameters('provisionVMAgent'), or(equals(toLower(parameters('patchMode')), toLower('AutomaticByPlatform')), equals(toLower(parameters('patchMode')), toLower('ImageDefault')))), createObject('patchMode', parameters('patchMode'), 'assessmentMode', parameters('patchAssessmentMode'), 'automaticByPlatformSettings', if(equals(toLower(parameters('patchMode')), toLower('AutomaticByPlatform')), createObject('bypassPlatformSafetyChecksOnUserSchedule', parameters('bypassPlatformSafetyChecksOnUserSchedule'), 'rebootSetting', parameters('rebootSetting')), null())), null())]"
     },
     "windowsConfiguration": {
       "provisionVMAgent": "[parameters('provisionVMAgent')]",
       "enableAutomaticUpdates": "[parameters('enableAutomaticUpdates')]",
-      "timeZone": "[if(empty(parameters('timeZone')), null(), parameters('timeZone'))]",
-      "additionalUnattendContent": "[if(empty(parameters('additionalUnattendContent')), null(), parameters('additionalUnattendContent'))]",
-      "winRM": "[if(not(empty(parameters('winRM'))), createObject('listeners', parameters('winRM')), null())]"
-    },
-    "accountSasProperties": {
-      "signedServices": "b",
-      "signedPermission": "r",
-      "signedExpiry": "[dateTimeAdd(parameters('baseTime'), parameters('sasTokenValidityLength'))]",
-      "signedResourceTypes": "o",
-      "signedProtocol": "https"
+      "patchSettings": "[if(and(parameters('provisionVMAgent'), or(or(equals(toLower(parameters('patchMode')), toLower('AutomaticByPlatform')), equals(toLower(parameters('patchMode')), toLower('AutomaticByOS'))), equals(toLower(parameters('patchMode')), toLower('Manual')))), createObject('patchMode', parameters('patchMode'), 'assessmentMode', parameters('patchAssessmentMode'), 'automaticByPlatformSettings', if(equals(toLower(parameters('patchMode')), toLower('AutomaticByPlatform')), createObject('bypassPlatformSafetyChecksOnUserSchedule', parameters('bypassPlatformSafetyChecksOnUserSchedule'), 'rebootSetting', parameters('rebootSetting')), null())), null())]",
+      "timeZone": "[parameters('timeZone')]",
+      "additionalUnattendContent": "[parameters('additionalUnattendContent')]",
+      "winRM": "[parameters('winRM')]"
     },
     "formattedUserAssignedIdentities": "[reduce(map(coalesce(tryGet(parameters('managedIdentities'), 'userAssignedResourceIds'), createArray()), lambda('id', createObject(format('{0}', lambdaVariables('id')), createObject()))), createObject(), lambda('cur', 'next', union(lambdaVariables('cur'), lambdaVariables('next'))))]",
-    "identity": "[if(not(empty(parameters('managedIdentities'))), createObject('type', if(coalesce(tryGet(parameters('managedIdentities'), 'systemAssigned'), false()), if(not(empty(coalesce(tryGet(parameters('managedIdentities'), 'userAssignedResourceIds'), createObject()))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(coalesce(tryGet(parameters('managedIdentities'), 'userAssignedResourceIds'), createObject()))), 'UserAssigned', null())), 'userAssignedIdentities', if(not(empty(variables('formattedUserAssignedIdentities'))), variables('formattedUserAssignedIdentities'), null())), null())]",
-    "enableReferencedModulesTelemetry": false,
+    "identity": "[if(not(empty(parameters('managedIdentities'))), createObject('type', if(coalesce(tryGet(parameters('managedIdentities'), 'systemAssigned'), false()), if(not(empty(coalesce(tryGet(parameters('managedIdentities'), 'userAssignedResourceIds'), createObject()))), 'SystemAssigned, UserAssigned', 'SystemAssigned'), if(not(empty(coalesce(tryGet(parameters('managedIdentities'), 'userAssignedResourceIds'), createObject()))), 'UserAssigned', null())), 'userAssignedIdentities', if(not(empty(variables('formattedUserAssignedIdentities'))), variables('formattedUserAssignedIdentities'), null())), null())]",
     "builtInRoleNames": {
       "Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
       "Data Operator for Managed Disks": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '959f8984-c045-4866-89c7-12bf9737be2e')]",
@@ -784,7 +1245,7 @@
       "Disk Snapshot Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7efff54f-a5b4-42b5-a1c5-5411624893ce')]",
       "Owner": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
       "Reader": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
-      "Role Based Access Control Administrator (Preview)": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
+      "Role Based Access Control Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
       "User Access Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9')]",
       "Virtual Machine Administrator Login": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '1c0163c0-47e6-4577-8991-ea5c82e286e4')]",
       "Virtual Machine Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '9980e02c-c2be-4d73-94e8-173b1dc7cf3c')]",
@@ -796,7 +1257,7 @@
     "avmTelemetry": {
       "condition": "[parameters('enableTelemetry')]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2023-07-01",
+      "apiVersion": "2024-03-01",
       "name": "[format('46d3xbcp.res.compute-virtualmachinescaleset.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
       "properties": {
         "mode": "Incremental",
@@ -815,22 +1276,18 @@
     },
     "vmss": {
       "type": "Microsoft.Compute/virtualMachineScaleSets",
-      "apiVersion": "2022-11-01",
+      "apiVersion": "2024-11-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "identity": "[variables('identity')]",
-      "zones": "[parameters('availabilityZones')]",
+      "zones": "[map(parameters('availabilityZones'), lambda('zone', format('{0}', lambdaVariables('zone'))))]",
       "properties": {
+        "orchestrationMode": "[parameters('orchestrationMode')]",
         "proximityPlacementGroup": "[if(not(empty(parameters('proximityPlacementGroupResourceId'))), createObject('id', parameters('proximityPlacementGroupResourceId')), null())]",
         "upgradePolicy": {
           "mode": "[parameters('upgradePolicyMode')]",
-          "rollingUpgradePolicy": {
-            "maxBatchInstancePercent": "[parameters('maxBatchInstancePercent')]",
-            "maxUnhealthyInstancePercent": "[parameters('maxUnhealthyInstancePercent')]",
-            "maxUnhealthyUpgradedInstancePercent": "[parameters('maxUnhealthyUpgradedInstancePercent')]",
-            "pauseTimeBetweenBatches": "[parameters('pauseTimeBetweenBatches')]"
-          },
+          "rollingUpgradePolicy": "[if(equals(parameters('upgradePolicyMode'), 'Rolling'), createObject('enableCrossZoneUpgrade', parameters('enableCrossZoneUpgrade'), 'maxBatchInstancePercent', parameters('maxBatchInstancePercent'), 'maxSurge', parameters('maxSurge'), 'maxUnhealthyInstancePercent', parameters('maxUnhealthyInstancePercent'), 'maxUnhealthyUpgradedInstancePercent', parameters('maxUnhealthyUpgradedInstancePercent'), 'pauseTimeBetweenBatches', parameters('pauseTimeBetweenBatches'), 'prioritizeUnhealthyInstances', parameters('prioritizeUnhealthyInstances'), 'rollbackFailedInstancesOnPolicyBreach', parameters('rollbackFailedInstancesOnPolicyBreach')), null())]",
           "automaticOSUpgradePolicy": {
             "enableAutomaticOSUpgrade": "[parameters('enableAutomaticOSUpgrade')]",
             "disableAutomaticRollback": "[parameters('disableAutomaticRollback')]"
@@ -844,7 +1301,7 @@
           "osProfile": {
             "computerNamePrefix": "[parameters('vmNamePrefix')]",
             "adminUsername": "[parameters('adminUsername')]",
-            "adminPassword": "[if(not(empty(parameters('adminPassword'))), parameters('adminPassword'), null())]",
+            "adminPassword": "[parameters('adminPassword')]",
             "customData": "[if(not(empty(parameters('customData'))), base64(parameters('customData')), null())]",
             "windowsConfiguration": "[if(equals(parameters('osType'), 'Windows'), variables('windowsConfiguration'), null())]",
             "linuxConfiguration": "[if(equals(parameters('osType'), 'Linux'), variables('linuxConfiguration'), null())]",
@@ -856,72 +1313,26 @@
             "uefiSettings": "[if(equals(parameters('securityType'), 'TrustedLaunch'), createObject('secureBootEnabled', parameters('secureBootEnabled'), 'vTpmEnabled', parameters('vTpmEnabled')), null())]"
           },
           "storageProfile": {
-            "copy": [
-              {
-                "name": "dataDisks",
-                "count": "[length(parameters('dataDisks'))]",
-                "input": {
-                  "lun": "[copyIndex('dataDisks')]",
-                  "diskSizeGB": "[parameters('dataDisks')[copyIndex('dataDisks')].diskSizeGB]",
-                  "createOption": "[parameters('dataDisks')[copyIndex('dataDisks')].createOption]",
-                  "caching": "[parameters('dataDisks')[copyIndex('dataDisks')].caching]",
-                  "writeAcceleratorEnabled": "[if(contains(parameters('osDisk'), 'writeAcceleratorEnabled'), parameters('osDisk').writeAcceleratorEnabled, null())]",
-                  "managedDisk": {
-                    "storageAccountType": "[parameters('dataDisks')[copyIndex('dataDisks')].managedDisk.storageAccountType]",
-                    "diskEncryptionSet": "[if(contains(parameters('dataDisks')[copyIndex('dataDisks')].managedDisk, 'diskEncryptionSet'), createObject('id', parameters('dataDisks')[copyIndex('dataDisks')].managedDisk.diskEncryptionSet.id), null())]"
-                  },
-                  "diskIOPSReadWrite": "[if(contains(parameters('osDisk'), 'diskIOPSReadWrite'), parameters('dataDisks')[copyIndex('dataDisks')].diskIOPSReadWrite, null())]",
-                  "diskMBpsReadWrite": "[if(contains(parameters('osDisk'), 'diskMBpsReadWrite'), parameters('dataDisks')[copyIndex('dataDisks')].diskMBpsReadWrite, null())]"
-                }
-              }
-            ],
             "imageReference": "[parameters('imageReference')]",
-            "osDisk": {
-              "createOption": "[parameters('osDisk').createOption]",
-              "diskSizeGB": "[parameters('osDisk').diskSizeGB]",
-              "caching": "[if(contains(parameters('osDisk'), 'caching'), parameters('osDisk').caching, null())]",
-              "writeAcceleratorEnabled": "[if(contains(parameters('osDisk'), 'writeAcceleratorEnabled'), parameters('osDisk').writeAcceleratorEnabled, null())]",
-              "diffDiskSettings": "[if(contains(parameters('osDisk'), 'diffDiskSettings'), parameters('osDisk').diffDiskSettings, null())]",
-              "osType": "[if(contains(parameters('osDisk'), 'osType'), parameters('osDisk').osType, null())]",
-              "image": "[if(contains(parameters('osDisk'), 'image'), parameters('osDisk').image, null())]",
-              "vhdContainers": "[if(contains(parameters('osDisk'), 'vhdContainers'), parameters('osDisk').vhdContainers, null())]",
-              "managedDisk": {
-                "storageAccountType": "[parameters('osDisk').managedDisk.storageAccountType]",
-                "diskEncryptionSet": "[if(contains(parameters('osDisk').managedDisk, 'diskEncryptionSet'), createObject('id', parameters('osDisk').managedDisk.diskEncryptionSet.id), null())]"
-              }
-            }
+            "osDisk": "[parameters('osDisk')]",
+            "dataDisks": "[parameters('dataDisks')]"
           },
-          "networkProfile": {
-            "copy": [
-              {
-                "name": "networkInterfaceConfigurations",
-                "count": "[length(parameters('nicConfigurations'))]",
-                "input": {
-                  "name": "[format('{0}{1}configuration-{2}', parameters('name'), parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')].nicSuffix, copyIndex('networkInterfaceConfigurations'))]",
-                  "properties": {
-                    "primary": "[if(equals(copyIndex('networkInterfaceConfigurations'), 0), true(), null())]",
-                    "enableAcceleratedNetworking": "[if(contains(parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')], 'enableAcceleratedNetworking'), parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')].enableAcceleratedNetworking, true())]",
-                    "networkSecurityGroup": "[if(contains(parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')], 'nsgId'), createObject('id', parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')].nsgId), null())]",
-                    "ipConfigurations": "[parameters('nicConfigurations')[copyIndex('networkInterfaceConfigurations')].ipConfigurations]"
-                  }
-                }
-              }
-            ]
-          },
+          "networkProfile": "[union(if(equals(parameters('orchestrationMode'), 'Flexible'), createObject('networkApiVersion', '2020-11-01'), createObject()), createObject('networkInterfaceConfigurations', variables('networkInterfaceConfigurations')))]",
           "diagnosticsProfile": {
             "bootDiagnostics": {
-              "enabled": "[not(empty(parameters('bootDiagnosticStorageAccountName')))]",
+              "enabled": "[if(not(empty(parameters('bootDiagnosticStorageAccountName'))), true(), parameters('bootDiagnosticEnabled'))]",
               "storageUri": "[if(not(empty(parameters('bootDiagnosticStorageAccountName'))), format('https://{0}{1}', parameters('bootDiagnosticStorageAccountName'), parameters('bootDiagnosticStorageAccountUri')), null())]"
             }
           },
-          "licenseType": "[if(empty(parameters('licenseType')), null(), parameters('licenseType'))]",
+          "extensionProfile": "[if(coalesce(tryGet(parameters('extensionHealthConfig'), 'enabled'), false()), createObject('extensions', createArray(createObject('name', 'HealthExtension', 'properties', createObject('publisher', 'Microsoft.ManagedServices', 'type', if(equals(parameters('osType'), 'Windows'), 'ApplicationHealthWindows', 'ApplicationHealthLinux'), 'typeHandlerVersion', coalesce(tryGet(parameters('extensionHealthConfig'), 'typeHandlerVersion'), '2.0'), 'autoUpgradeMinorVersion', coalesce(tryGet(parameters('extensionHealthConfig'), 'autoUpgradeMinorVersion'), false()), 'settings', createObject('protocol', coalesce(tryGet(parameters('extensionHealthConfig'), 'protocol'), 'http'), 'port', coalesce(tryGet(parameters('extensionHealthConfig'), 'port'), 80), 'requestPath', coalesce(tryGet(parameters('extensionHealthConfig'), 'requestPath'), if(and(contains(parameters('extensionHealthConfig'), 'protocol'), not(equals(tryGet(parameters('extensionHealthConfig'), 'protocol'), 'tcp'))), '/', '')), 'intervalInSeconds', coalesce(tryGet(parameters('extensionHealthConfig'), 'intervalInSeconds'), 5), 'numberOfProbes', coalesce(tryGet(parameters('extensionHealthConfig'), 'numberOfProbes'), 1), 'gracePeriod', coalesce(tryGet(parameters('extensionHealthConfig'), 'gracePeriod'), mul(coalesce(tryGet(parameters('extensionHealthConfig'), 'intervalInSeconds'), 5), coalesce(tryGet(parameters('extensionHealthConfig'), 'numberOfProbes'), 1)))), 'provisionAfterExtensions', tryGet(parameters('extensionHealthConfig'), 'provisionAfterExtensions'))))), null())]",
+          "licenseType": "[parameters('licenseType')]",
           "priority": "[parameters('vmPriority')]",
           "evictionPolicy": "[if(parameters('enableEvictionPolicy'), 'Deallocate', null())]",
-          "billingProfile": "[if(and(not(empty(parameters('vmPriority'))), not(empty(parameters('maxPriceForLowPriorityVm')))), createObject('maxPrice', parameters('maxPriceForLowPriorityVm')), null())]",
+          "billingProfile": "[if(and(not(empty(parameters('vmPriority'))), not(equals(null(), parameters('maxPriceForLowPriorityVm')))), createObject('maxPrice', parameters('maxPriceForLowPriorityVm')), null())]",
           "scheduledEventsProfile": "[parameters('scheduledEventsProfile')]"
         },
-        "overprovision": "[parameters('overprovision')]",
-        "doNotRunExtensionsOnOverprovisionedVMs": "[parameters('doNotRunExtensionsOnOverprovisionedVMs')]",
+        "overprovision": "[if(equals(parameters('orchestrationMode'), 'Uniform'), parameters('overprovision'), null())]",
+        "doNotRunExtensionsOnOverprovisionedVMs": "[if(equals(parameters('orchestrationMode'), 'Uniform'), parameters('doNotRunExtensionsOnOverprovisionedVMs'), null())]",
         "zoneBalance": "[if(equals(parameters('zoneBalance'), 'true'), parameters('zoneBalance'), null())]",
         "platformFaultDomainCount": "[parameters('scaleSetFaultDomain')]",
         "singlePlacementGroup": "[parameters('singlePlacementGroup')]",
@@ -934,16 +1345,25 @@
         "name": "[parameters('skuName')]",
         "capacity": "[parameters('skuCapacity')]"
       },
-      "plan": "[if(not(empty(parameters('plan'))), parameters('plan'), null())]"
+      "plan": "[parameters('plan')]"
     },
     "vmss_logAnalyticsWorkspace": {
-      "condition": "[not(empty(parameters('monitoringWorkspaceId')))]",
+      "condition": "[not(empty(parameters('monitoringWorkspaceResourceId')))]",
       "existing": true,
       "type": "Microsoft.OperationalInsights/workspaces",
-      "apiVersion": "2021-06-01",
-      "subscriptionId": "[split(if(not(empty(parameters('monitoringWorkspaceId'))), parameters('monitoringWorkspaceId'), '//'), '/')[2]]",
-      "resourceGroup": "[split(if(not(empty(parameters('monitoringWorkspaceId'))), parameters('monitoringWorkspaceId'), '////'), '/')[4]]",
-      "name": "[last(split(if(not(empty(parameters('monitoringWorkspaceId'))), parameters('monitoringWorkspaceId'), 'law'), '/'))]"
+      "apiVersion": "2025-02-01",
+      "subscriptionId": "[split(if(not(empty(parameters('monitoringWorkspaceResourceId'))), parameters('monitoringWorkspaceResourceId'), '//'), '/')[2]]",
+      "resourceGroup": "[split(if(not(empty(parameters('monitoringWorkspaceResourceId'))), parameters('monitoringWorkspaceResourceId'), '////'), '/')[4]]",
+      "name": "[last(split(if(not(empty(parameters('monitoringWorkspaceResourceId'))), parameters('monitoringWorkspaceResourceId'), 'law'), '/'))]"
+    },
+    "cseIdentity": {
+      "condition": "[not(empty(tryGet(tryGet(parameters('extensionCustomScriptConfig'), 'protectedSettings'), 'managedIdentityResourceId')))]",
+      "existing": true,
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2024-11-30",
+      "subscriptionId": "[split(parameters('extensionCustomScriptConfig').protectedSettings.managedIdentityResourceId, '/')[2]]",
+      "resourceGroup": "[split(parameters('extensionCustomScriptConfig').protectedSettings.managedIdentityResourceId, '/')[4]]",
+      "name": "[last(split(parameters('extensionCustomScriptConfig').protectedSettings.managedIdentityResourceId, '/'))]"
     },
     "vmss_lock": {
       "condition": "[and(not(empty(coalesce(parameters('lock'), createObject()))), not(equals(tryGet(parameters('lock'), 'kind'), 'None')))]",
@@ -953,7 +1373,7 @@
       "name": "[coalesce(tryGet(parameters('lock'), 'name'), format('lock-{0}', parameters('name')))]",
       "properties": {
         "level": "[coalesce(tryGet(parameters('lock'), 'kind'), '')]",
-        "notes": "[if(equals(tryGet(parameters('lock'), 'kind'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot delete or modify the resource or child resources.')]"
+        "notes": "[coalesce(tryGet(parameters('lock'), 'notes'), if(equals(tryGet(parameters('lock'), 'kind'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot delete or modify the resource or child resources.'))]"
       },
       "dependsOn": [
         "vmss"
@@ -994,20 +1414,20 @@
     "vmss_roleAssignments": {
       "copy": {
         "name": "vmss_roleAssignments",
-        "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]"
+        "count": "[length(coalesce(variables('formattedRoleAssignments'), createArray()))]"
       },
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
       "scope": "[format('Microsoft.Compute/virtualMachineScaleSets/{0}', parameters('name'))]",
-      "name": "[guid(resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('name')), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId, coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)]",
+      "name": "[coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'name'), guid(resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('name')), coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId, coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId))]",
       "properties": {
-        "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName), variables('builtInRoleNames')[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName], if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)))]",
-        "principalId": "[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId]",
-        "description": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'description')]",
-        "principalType": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'principalType')]",
-        "condition": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition')]",
-        "conditionVersion": "[if(not(empty(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
-        "delegatedManagedIdentityResourceId": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
+        "roleDefinitionId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId]",
+        "principalId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId]",
+        "description": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'description')]",
+        "principalType": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'principalType')]",
+        "condition": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition')]",
+        "conditionVersion": "[if(not(empty(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
+        "delegatedManagedIdentityResourceId": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
       },
       "dependsOn": [
         "vmss"
@@ -1036,9 +1456,15 @@
           "type": {
             "value": "JsonADDomainExtension"
           },
-          "typeHandlerVersion": "[if(contains(parameters('extensionDomainJoinConfig'), 'typeHandlerVersion'), createObject('value', parameters('extensionDomainJoinConfig').typeHandlerVersion), createObject('value', '1.3'))]",
-          "autoUpgradeMinorVersion": "[if(contains(parameters('extensionDomainJoinConfig'), 'autoUpgradeMinorVersion'), createObject('value', parameters('extensionDomainJoinConfig').autoUpgradeMinorVersion), createObject('value', true()))]",
-          "enableAutomaticUpgrade": "[if(contains(parameters('extensionDomainJoinConfig'), 'enableAutomaticUpgrade'), createObject('value', parameters('extensionDomainJoinConfig').enableAutomaticUpgrade), createObject('value', false()))]",
+          "typeHandlerVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionDomainJoinConfig'), 'typeHandlerVersion'), '1.3')]"
+          },
+          "autoUpgradeMinorVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionDomainJoinConfig'), 'autoUpgradeMinorVersion'), true())]"
+          },
+          "enableAutomaticUpgrade": {
+            "value": "[coalesce(tryGet(parameters('extensionDomainJoinConfig'), 'enableAutomaticUpgrade'), false())]"
+          },
           "settings": {
             "value": "[parameters('extensionDomainJoinConfig').settings]"
           },
@@ -1046,20 +1472,23 @@
             "value": {
               "Password": "[parameters('extensionDomainJoinPassword')]"
             }
+          },
+          "provisionAfterExtensions": {
+            "value": "[tryGet(parameters('extensionDomainJoinConfig'), 'provisionAfterExtensions')]"
           }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
           "contentVersion": "1.0.0.0",
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "8948100547542268397"
+              "version": "0.37.4.10188",
+              "templateHash": "1457477458264476892"
             },
             "name": "Virtual Machine Scale Set Extensions",
-            "description": "This module deploys a Virtual Machine Scale Set Extension.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a Virtual Machine Scale Set Extension."
           },
           "parameters": {
             "virtualMachineScaleSetName": {
@@ -1100,21 +1529,21 @@
             },
             "forceUpdateTag": {
               "type": "string",
-              "defaultValue": "",
+              "nullable": true,
               "metadata": {
                 "description": "Optional. How the extension handler should be forced to update even if the extension configuration has not changed."
               }
             },
             "settings": {
               "type": "object",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific settings."
               }
             },
             "protectedSettings": {
               "type": "secureObject",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific protected settings."
               }
@@ -1131,12 +1560,38 @@
               "metadata": {
                 "description": "Required. Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available."
               }
+            },
+            "protectedSettingsFromKeyVault": {
+              "type": "object",
+              "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Compute/virtualMachineScaleSets/extensions@2024-11-01#properties/properties/properties/protectedSettingsFromKeyVault"
+                },
+                "description": "Optional. The extensions protected settings that are passed by reference, and consumed from key vault."
+              },
+              "nullable": true
+            },
+            "provisionAfterExtensions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. Collection of extension names after which this extension needs to be provisioned."
+              }
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "virtualMachineScaleSet": {
+              "existing": true,
+              "type": "Microsoft.Compute/virtualMachineScaleSets",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('virtualMachineScaleSetName')]"
+            },
+            "extension": {
               "type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
-              "apiVersion": "2022-11-01",
+              "apiVersion": "2024-11-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineScaleSetName'), parameters('name'))]",
               "properties": {
                 "publisher": "[parameters('publisher')]",
@@ -1144,13 +1599,15 @@
                 "typeHandlerVersion": "[parameters('typeHandlerVersion')]",
                 "autoUpgradeMinorVersion": "[parameters('autoUpgradeMinorVersion')]",
                 "enableAutomaticUpgrade": "[parameters('enableAutomaticUpgrade')]",
-                "forceUpdateTag": "[if(not(empty(parameters('forceUpdateTag'))), parameters('forceUpdateTag'), null())]",
-                "settings": "[if(not(empty(parameters('settings'))), parameters('settings'), null())]",
-                "protectedSettings": "[if(not(empty(parameters('protectedSettings'))), parameters('protectedSettings'), null())]",
-                "suppressFailures": "[parameters('supressFailures')]"
+                "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                "settings": "[parameters('settings')]",
+                "protectedSettings": "[parameters('protectedSettings')]",
+                "suppressFailures": "[parameters('supressFailures')]",
+                "protectedSettingsFromKeyVault": "[parameters('protectedSettingsFromKeyVault')]",
+                "provisionAfterExtensions": "[parameters('provisionAfterExtensions')]"
               }
             }
-          ],
+          },
           "outputs": {
             "name": {
               "type": "string",
@@ -1203,25 +1660,34 @@
           "type": {
             "value": "IaaSAntimalware"
           },
-          "typeHandlerVersion": "[if(contains(parameters('extensionAntiMalwareConfig'), 'typeHandlerVersion'), createObject('value', parameters('extensionAntiMalwareConfig').typeHandlerVersion), createObject('value', '1.3'))]",
-          "autoUpgradeMinorVersion": "[if(contains(parameters('extensionAntiMalwareConfig'), 'autoUpgradeMinorVersion'), createObject('value', parameters('extensionAntiMalwareConfig').autoUpgradeMinorVersion), createObject('value', true()))]",
-          "enableAutomaticUpgrade": "[if(contains(parameters('extensionAntiMalwareConfig'), 'enableAutomaticUpgrade'), createObject('value', parameters('extensionAntiMalwareConfig').enableAutomaticUpgrade), createObject('value', false()))]",
+          "typeHandlerVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionAntiMalwareConfig'), 'typeHandlerVersion'), '1.3')]"
+          },
+          "autoUpgradeMinorVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionAntiMalwareConfig'), 'autoUpgradeMinorVersion'), true())]"
+          },
+          "enableAutomaticUpgrade": {
+            "value": "[coalesce(tryGet(parameters('extensionAntiMalwareConfig'), 'enableAutomaticUpgrade'), false())]"
+          },
           "settings": {
             "value": "[parameters('extensionAntiMalwareConfig').settings]"
+          },
+          "provisionAfterExtensions": {
+            "value": "[tryGet(parameters('extensionAntiMalwareConfig'), 'provisionAfterExtensions')]"
           }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
           "contentVersion": "1.0.0.0",
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "8948100547542268397"
+              "version": "0.37.4.10188",
+              "templateHash": "1457477458264476892"
             },
             "name": "Virtual Machine Scale Set Extensions",
-            "description": "This module deploys a Virtual Machine Scale Set Extension.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a Virtual Machine Scale Set Extension."
           },
           "parameters": {
             "virtualMachineScaleSetName": {
@@ -1262,21 +1728,21 @@
             },
             "forceUpdateTag": {
               "type": "string",
-              "defaultValue": "",
+              "nullable": true,
               "metadata": {
                 "description": "Optional. How the extension handler should be forced to update even if the extension configuration has not changed."
               }
             },
             "settings": {
               "type": "object",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific settings."
               }
             },
             "protectedSettings": {
               "type": "secureObject",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific protected settings."
               }
@@ -1293,12 +1759,38 @@
               "metadata": {
                 "description": "Required. Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available."
               }
+            },
+            "protectedSettingsFromKeyVault": {
+              "type": "object",
+              "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Compute/virtualMachineScaleSets/extensions@2024-11-01#properties/properties/properties/protectedSettingsFromKeyVault"
+                },
+                "description": "Optional. The extensions protected settings that are passed by reference, and consumed from key vault."
+              },
+              "nullable": true
+            },
+            "provisionAfterExtensions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. Collection of extension names after which this extension needs to be provisioned."
+              }
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "virtualMachineScaleSet": {
+              "existing": true,
+              "type": "Microsoft.Compute/virtualMachineScaleSets",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('virtualMachineScaleSetName')]"
+            },
+            "extension": {
               "type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
-              "apiVersion": "2022-11-01",
+              "apiVersion": "2024-11-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineScaleSetName'), parameters('name'))]",
               "properties": {
                 "publisher": "[parameters('publisher')]",
@@ -1306,13 +1798,15 @@
                 "typeHandlerVersion": "[parameters('typeHandlerVersion')]",
                 "autoUpgradeMinorVersion": "[parameters('autoUpgradeMinorVersion')]",
                 "enableAutomaticUpgrade": "[parameters('enableAutomaticUpgrade')]",
-                "forceUpdateTag": "[if(not(empty(parameters('forceUpdateTag'))), parameters('forceUpdateTag'), null())]",
-                "settings": "[if(not(empty(parameters('settings'))), parameters('settings'), null())]",
-                "protectedSettings": "[if(not(empty(parameters('protectedSettings'))), parameters('protectedSettings'), null())]",
-                "suppressFailures": "[parameters('supressFailures')]"
+                "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                "settings": "[parameters('settings')]",
+                "protectedSettings": "[parameters('protectedSettings')]",
+                "suppressFailures": "[parameters('supressFailures')]",
+                "protectedSettingsFromKeyVault": "[parameters('protectedSettingsFromKeyVault')]",
+                "provisionAfterExtensions": "[parameters('provisionAfterExtensions')]"
               }
             }
-          ],
+          },
           "outputs": {
             "name": {
               "type": "string",
@@ -1364,33 +1858,40 @@
             "value": "Microsoft.Azure.Monitor"
           },
           "type": "[if(equals(parameters('osType'), 'Windows'), createObject('value', 'AzureMonitorWindowsAgent'), createObject('value', 'AzureMonitorLinuxAgent'))]",
-          "typeHandlerVersion": "[if(contains(parameters('extensionMonitoringAgentConfig'), 'typeHandlerVersion'), createObject('value', parameters('extensionMonitoringAgentConfig').typeHandlerVersion), if(equals(parameters('osType'), 'Windows'), createObject('value', '1.22'), createObject('value', '1.29')))]",
-          "autoUpgradeMinorVersion": "[if(contains(parameters('extensionMonitoringAgentConfig'), 'autoUpgradeMinorVersion'), createObject('value', parameters('extensionMonitoringAgentConfig').autoUpgradeMinorVersion), createObject('value', true()))]",
-          "enableAutomaticUpgrade": "[if(contains(parameters('extensionMonitoringAgentConfig'), 'enableAutomaticUpgrade'), createObject('value', parameters('extensionMonitoringAgentConfig').enableAutomaticUpgrade), createObject('value', false()))]",
+          "typeHandlerVersion": "[if(not(equals(tryGet(parameters('extensionMonitoringAgentConfig'), 'typeHandlerVersion'), null())), createObject('value', parameters('extensionMonitoringAgentConfig').typeHandlerVersion), if(equals(parameters('osType'), 'Windows'), createObject('value', '1.22'), createObject('value', '1.29')))]",
+          "autoUpgradeMinorVersion": {
+            "value": "[coalesce(parameters('extensionMonitoringAgentConfig').autoUpgradeMinorVersion, true())]"
+          },
+          "enableAutomaticUpgrade": {
+            "value": "[coalesce(tryGet(parameters('extensionMonitoringAgentConfig'), 'enableAutomaticUpgrade'), false())]"
+          },
           "settings": {
             "value": {
-              "workspaceId": "[if(not(empty(parameters('monitoringWorkspaceId'))), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(if(not(empty(parameters('monitoringWorkspaceId'))), parameters('monitoringWorkspaceId'), '//'), '/')[2], split(if(not(empty(parameters('monitoringWorkspaceId'))), parameters('monitoringWorkspaceId'), '////'), '/')[4]), 'Microsoft.OperationalInsights/workspaces', last(split(if(not(empty(parameters('monitoringWorkspaceId'))), parameters('monitoringWorkspaceId'), 'law'), '/'))), '2021-06-01').customerId, '')]",
+              "workspaceId": "[if(not(empty(parameters('monitoringWorkspaceResourceId'))), reference('vmss_logAnalyticsWorkspace').customerId, '')]",
               "GCS_AUTO_CONFIG": "[if(equals(parameters('osType'), 'Linux'), true(), null())]"
             }
           },
           "protectedSettings": {
             "value": {
-              "workspaceKey": "[if(not(empty(parameters('monitoringWorkspaceId'))), listKeys(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(if(not(empty(parameters('monitoringWorkspaceId'))), parameters('monitoringWorkspaceId'), '//'), '/')[2], split(if(not(empty(parameters('monitoringWorkspaceId'))), parameters('monitoringWorkspaceId'), '////'), '/')[4]), 'Microsoft.OperationalInsights/workspaces', last(split(if(not(empty(parameters('monitoringWorkspaceId'))), parameters('monitoringWorkspaceId'), 'law'), '/'))), '2021-06-01').primarySharedKey, '')]"
+              "workspaceKey": "[if(not(empty(parameters('monitoringWorkspaceResourceId'))), listKeys('vmss_logAnalyticsWorkspace', '2025-02-01').primarySharedKey, '')]"
             }
+          },
+          "provisionAfterExtensions": {
+            "value": "[tryGet(parameters('extensionMonitoringAgentConfig'), 'provisionAfterExtensions')]"
           }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
           "contentVersion": "1.0.0.0",
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "8948100547542268397"
+              "version": "0.37.4.10188",
+              "templateHash": "1457477458264476892"
             },
             "name": "Virtual Machine Scale Set Extensions",
-            "description": "This module deploys a Virtual Machine Scale Set Extension.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a Virtual Machine Scale Set Extension."
           },
           "parameters": {
             "virtualMachineScaleSetName": {
@@ -1431,21 +1932,21 @@
             },
             "forceUpdateTag": {
               "type": "string",
-              "defaultValue": "",
+              "nullable": true,
               "metadata": {
                 "description": "Optional. How the extension handler should be forced to update even if the extension configuration has not changed."
               }
             },
             "settings": {
               "type": "object",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific settings."
               }
             },
             "protectedSettings": {
               "type": "secureObject",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific protected settings."
               }
@@ -1462,12 +1963,38 @@
               "metadata": {
                 "description": "Required. Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available."
               }
+            },
+            "protectedSettingsFromKeyVault": {
+              "type": "object",
+              "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Compute/virtualMachineScaleSets/extensions@2024-11-01#properties/properties/properties/protectedSettingsFromKeyVault"
+                },
+                "description": "Optional. The extensions protected settings that are passed by reference, and consumed from key vault."
+              },
+              "nullable": true
+            },
+            "provisionAfterExtensions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. Collection of extension names after which this extension needs to be provisioned."
+              }
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "virtualMachineScaleSet": {
+              "existing": true,
+              "type": "Microsoft.Compute/virtualMachineScaleSets",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('virtualMachineScaleSetName')]"
+            },
+            "extension": {
               "type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
-              "apiVersion": "2022-11-01",
+              "apiVersion": "2024-11-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineScaleSetName'), parameters('name'))]",
               "properties": {
                 "publisher": "[parameters('publisher')]",
@@ -1475,13 +2002,15 @@
                 "typeHandlerVersion": "[parameters('typeHandlerVersion')]",
                 "autoUpgradeMinorVersion": "[parameters('autoUpgradeMinorVersion')]",
                 "enableAutomaticUpgrade": "[parameters('enableAutomaticUpgrade')]",
-                "forceUpdateTag": "[if(not(empty(parameters('forceUpdateTag'))), parameters('forceUpdateTag'), null())]",
-                "settings": "[if(not(empty(parameters('settings'))), parameters('settings'), null())]",
-                "protectedSettings": "[if(not(empty(parameters('protectedSettings'))), parameters('protectedSettings'), null())]",
-                "suppressFailures": "[parameters('supressFailures')]"
+                "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                "settings": "[parameters('settings')]",
+                "protectedSettings": "[parameters('protectedSettings')]",
+                "suppressFailures": "[parameters('supressFailures')]",
+                "protectedSettingsFromKeyVault": "[parameters('protectedSettingsFromKeyVault')]",
+                "provisionAfterExtensions": "[parameters('provisionAfterExtensions')]"
               }
             }
-          ],
+          },
           "outputs": {
             "name": {
               "type": "string",
@@ -1534,22 +2063,31 @@
             "value": "Microsoft.Azure.Monitoring.DependencyAgent"
           },
           "type": "[if(equals(parameters('osType'), 'Windows'), createObject('value', 'DependencyAgentWindows'), createObject('value', 'DependencyAgentLinux'))]",
-          "typeHandlerVersion": "[if(contains(parameters('extensionDependencyAgentConfig'), 'typeHandlerVersion'), createObject('value', parameters('extensionDependencyAgentConfig').typeHandlerVersion), createObject('value', '9.5'))]",
-          "autoUpgradeMinorVersion": "[if(contains(parameters('extensionDependencyAgentConfig'), 'autoUpgradeMinorVersion'), createObject('value', parameters('extensionDependencyAgentConfig').autoUpgradeMinorVersion), createObject('value', true()))]",
-          "enableAutomaticUpgrade": "[if(contains(parameters('extensionDependencyAgentConfig'), 'enableAutomaticUpgrade'), createObject('value', parameters('extensionDependencyAgentConfig').enableAutomaticUpgrade), createObject('value', true()))]"
+          "typeHandlerVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionDependencyAgentConfig'), 'typeHandlerVersion'), '9.5')]"
+          },
+          "autoUpgradeMinorVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionDependencyAgentConfig'), 'autoUpgradeMinorVersion'), true())]"
+          },
+          "enableAutomaticUpgrade": {
+            "value": "[coalesce(tryGet(parameters('extensionDependencyAgentConfig'), 'enableAutomaticUpgrade'), true())]"
+          },
+          "provisionAfterExtensions": {
+            "value": "[tryGet(parameters('extensionDependencyAgentConfig'), 'provisionAfterExtensions')]"
+          }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
           "contentVersion": "1.0.0.0",
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "8948100547542268397"
+              "version": "0.37.4.10188",
+              "templateHash": "1457477458264476892"
             },
             "name": "Virtual Machine Scale Set Extensions",
-            "description": "This module deploys a Virtual Machine Scale Set Extension.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a Virtual Machine Scale Set Extension."
           },
           "parameters": {
             "virtualMachineScaleSetName": {
@@ -1590,21 +2128,21 @@
             },
             "forceUpdateTag": {
               "type": "string",
-              "defaultValue": "",
+              "nullable": true,
               "metadata": {
                 "description": "Optional. How the extension handler should be forced to update even if the extension configuration has not changed."
               }
             },
             "settings": {
               "type": "object",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific settings."
               }
             },
             "protectedSettings": {
               "type": "secureObject",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific protected settings."
               }
@@ -1621,12 +2159,38 @@
               "metadata": {
                 "description": "Required. Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available."
               }
+            },
+            "protectedSettingsFromKeyVault": {
+              "type": "object",
+              "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Compute/virtualMachineScaleSets/extensions@2024-11-01#properties/properties/properties/protectedSettingsFromKeyVault"
+                },
+                "description": "Optional. The extensions protected settings that are passed by reference, and consumed from key vault."
+              },
+              "nullable": true
+            },
+            "provisionAfterExtensions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. Collection of extension names after which this extension needs to be provisioned."
+              }
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "virtualMachineScaleSet": {
+              "existing": true,
+              "type": "Microsoft.Compute/virtualMachineScaleSets",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('virtualMachineScaleSetName')]"
+            },
+            "extension": {
               "type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
-              "apiVersion": "2022-11-01",
+              "apiVersion": "2024-11-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineScaleSetName'), parameters('name'))]",
               "properties": {
                 "publisher": "[parameters('publisher')]",
@@ -1634,13 +2198,15 @@
                 "typeHandlerVersion": "[parameters('typeHandlerVersion')]",
                 "autoUpgradeMinorVersion": "[parameters('autoUpgradeMinorVersion')]",
                 "enableAutomaticUpgrade": "[parameters('enableAutomaticUpgrade')]",
-                "forceUpdateTag": "[if(not(empty(parameters('forceUpdateTag'))), parameters('forceUpdateTag'), null())]",
-                "settings": "[if(not(empty(parameters('settings'))), parameters('settings'), null())]",
-                "protectedSettings": "[if(not(empty(parameters('protectedSettings'))), parameters('protectedSettings'), null())]",
-                "suppressFailures": "[parameters('supressFailures')]"
+                "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                "settings": "[parameters('settings')]",
+                "protectedSettings": "[parameters('protectedSettings')]",
+                "suppressFailures": "[parameters('supressFailures')]",
+                "protectedSettingsFromKeyVault": "[parameters('protectedSettingsFromKeyVault')]",
+                "provisionAfterExtensions": "[parameters('provisionAfterExtensions')]"
               }
             }
-          ],
+          },
           "outputs": {
             "name": {
               "type": "string",
@@ -1692,22 +2258,31 @@
             "value": "Microsoft.Azure.NetworkWatcher"
           },
           "type": "[if(equals(parameters('osType'), 'Windows'), createObject('value', 'NetworkWatcherAgentWindows'), createObject('value', 'NetworkWatcherAgentLinux'))]",
-          "typeHandlerVersion": "[if(contains(parameters('extensionNetworkWatcherAgentConfig'), 'typeHandlerVersion'), createObject('value', parameters('extensionNetworkWatcherAgentConfig').typeHandlerVersion), createObject('value', '1.4'))]",
-          "autoUpgradeMinorVersion": "[if(contains(parameters('extensionNetworkWatcherAgentConfig'), 'autoUpgradeMinorVersion'), createObject('value', parameters('extensionNetworkWatcherAgentConfig').autoUpgradeMinorVersion), createObject('value', true()))]",
-          "enableAutomaticUpgrade": "[if(contains(parameters('extensionNetworkWatcherAgentConfig'), 'enableAutomaticUpgrade'), createObject('value', parameters('extensionNetworkWatcherAgentConfig').enableAutomaticUpgrade), createObject('value', false()))]"
+          "typeHandlerVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionNetworkWatcherAgentConfig'), 'typeHandlerVersion'), '1.4')]"
+          },
+          "autoUpgradeMinorVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionNetworkWatcherAgentConfig'), 'autoUpgradeMinorVersion'), true())]"
+          },
+          "enableAutomaticUpgrade": {
+            "value": "[coalesce(tryGet(parameters('extensionNetworkWatcherAgentConfig'), 'enableAutomaticUpgrade'), false())]"
+          },
+          "provisionAfterExtensions": {
+            "value": "[tryGet(parameters('extensionNetworkWatcherAgentConfig'), 'provisionAfterExtensions')]"
+          }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
           "contentVersion": "1.0.0.0",
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "8948100547542268397"
+              "version": "0.37.4.10188",
+              "templateHash": "1457477458264476892"
             },
             "name": "Virtual Machine Scale Set Extensions",
-            "description": "This module deploys a Virtual Machine Scale Set Extension.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a Virtual Machine Scale Set Extension."
           },
           "parameters": {
             "virtualMachineScaleSetName": {
@@ -1748,21 +2323,21 @@
             },
             "forceUpdateTag": {
               "type": "string",
-              "defaultValue": "",
+              "nullable": true,
               "metadata": {
                 "description": "Optional. How the extension handler should be forced to update even if the extension configuration has not changed."
               }
             },
             "settings": {
               "type": "object",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific settings."
               }
             },
             "protectedSettings": {
               "type": "secureObject",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific protected settings."
               }
@@ -1779,12 +2354,38 @@
               "metadata": {
                 "description": "Required. Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available."
               }
+            },
+            "protectedSettingsFromKeyVault": {
+              "type": "object",
+              "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Compute/virtualMachineScaleSets/extensions@2024-11-01#properties/properties/properties/protectedSettingsFromKeyVault"
+                },
+                "description": "Optional. The extensions protected settings that are passed by reference, and consumed from key vault."
+              },
+              "nullable": true
+            },
+            "provisionAfterExtensions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. Collection of extension names after which this extension needs to be provisioned."
+              }
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "virtualMachineScaleSet": {
+              "existing": true,
+              "type": "Microsoft.Compute/virtualMachineScaleSets",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('virtualMachineScaleSetName')]"
+            },
+            "extension": {
               "type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
-              "apiVersion": "2022-11-01",
+              "apiVersion": "2024-11-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineScaleSetName'), parameters('name'))]",
               "properties": {
                 "publisher": "[parameters('publisher')]",
@@ -1792,13 +2393,15 @@
                 "typeHandlerVersion": "[parameters('typeHandlerVersion')]",
                 "autoUpgradeMinorVersion": "[parameters('autoUpgradeMinorVersion')]",
                 "enableAutomaticUpgrade": "[parameters('enableAutomaticUpgrade')]",
-                "forceUpdateTag": "[if(not(empty(parameters('forceUpdateTag'))), parameters('forceUpdateTag'), null())]",
-                "settings": "[if(not(empty(parameters('settings'))), parameters('settings'), null())]",
-                "protectedSettings": "[if(not(empty(parameters('protectedSettings'))), parameters('protectedSettings'), null())]",
-                "suppressFailures": "[parameters('supressFailures')]"
+                "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                "settings": "[parameters('settings')]",
+                "protectedSettings": "[parameters('protectedSettings')]",
+                "suppressFailures": "[parameters('supressFailures')]",
+                "protectedSettingsFromKeyVault": "[parameters('protectedSettingsFromKeyVault')]",
+                "provisionAfterExtensions": "[parameters('provisionAfterExtensions')]"
               }
             }
-          ],
+          },
           "outputs": {
             "name": {
               "type": "string",
@@ -1852,24 +2455,37 @@
           "type": {
             "value": "DSC"
           },
-          "typeHandlerVersion": "[if(contains(parameters('extensionDSCConfig'), 'typeHandlerVersion'), createObject('value', parameters('extensionDSCConfig').typeHandlerVersion), createObject('value', '2.77'))]",
-          "autoUpgradeMinorVersion": "[if(contains(parameters('extensionDSCConfig'), 'autoUpgradeMinorVersion'), createObject('value', parameters('extensionDSCConfig').autoUpgradeMinorVersion), createObject('value', true()))]",
-          "enableAutomaticUpgrade": "[if(contains(parameters('extensionDSCConfig'), 'enableAutomaticUpgrade'), createObject('value', parameters('extensionDSCConfig').enableAutomaticUpgrade), createObject('value', false()))]",
-          "settings": "[if(contains(parameters('extensionDSCConfig'), 'settings'), createObject('value', parameters('extensionDSCConfig').settings), createObject('value', createObject()))]",
-          "protectedSettings": "[if(contains(parameters('extensionDSCConfig'), 'protectedSettings'), createObject('value', parameters('extensionDSCConfig').protectedSettings), createObject('value', createObject()))]"
+          "typeHandlerVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionDSCConfig'), 'typeHandlerVersion'), '2.77')]"
+          },
+          "autoUpgradeMinorVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionDSCConfig'), 'autoUpgradeMinorVersion'), true())]"
+          },
+          "enableAutomaticUpgrade": {
+            "value": "[coalesce(tryGet(parameters('extensionDSCConfig'), 'enableAutomaticUpgrade'), false())]"
+          },
+          "settings": {
+            "value": "[coalesce(tryGet(parameters('extensionDSCConfig'), 'settings'), createObject())]"
+          },
+          "protectedSettings": {
+            "value": "[coalesce(tryGet(parameters('extensionDSCConfig'), 'protectedSettings'), createObject())]"
+          },
+          "provisionAfterExtensions": {
+            "value": "[tryGet(parameters('extensionDSCConfig'), 'provisionAfterExtensions')]"
+          }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
           "contentVersion": "1.0.0.0",
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "8948100547542268397"
+              "version": "0.37.4.10188",
+              "templateHash": "1457477458264476892"
             },
             "name": "Virtual Machine Scale Set Extensions",
-            "description": "This module deploys a Virtual Machine Scale Set Extension.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a Virtual Machine Scale Set Extension."
           },
           "parameters": {
             "virtualMachineScaleSetName": {
@@ -1910,21 +2526,21 @@
             },
             "forceUpdateTag": {
               "type": "string",
-              "defaultValue": "",
+              "nullable": true,
               "metadata": {
                 "description": "Optional. How the extension handler should be forced to update even if the extension configuration has not changed."
               }
             },
             "settings": {
               "type": "object",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific settings."
               }
             },
             "protectedSettings": {
               "type": "secureObject",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific protected settings."
               }
@@ -1941,12 +2557,38 @@
               "metadata": {
                 "description": "Required. Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available."
               }
+            },
+            "protectedSettingsFromKeyVault": {
+              "type": "object",
+              "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Compute/virtualMachineScaleSets/extensions@2024-11-01#properties/properties/properties/protectedSettingsFromKeyVault"
+                },
+                "description": "Optional. The extensions protected settings that are passed by reference, and consumed from key vault."
+              },
+              "nullable": true
+            },
+            "provisionAfterExtensions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. Collection of extension names after which this extension needs to be provisioned."
+              }
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "virtualMachineScaleSet": {
+              "existing": true,
+              "type": "Microsoft.Compute/virtualMachineScaleSets",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('virtualMachineScaleSetName')]"
+            },
+            "extension": {
               "type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
-              "apiVersion": "2022-11-01",
+              "apiVersion": "2024-11-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineScaleSetName'), parameters('name'))]",
               "properties": {
                 "publisher": "[parameters('publisher')]",
@@ -1954,13 +2596,15 @@
                 "typeHandlerVersion": "[parameters('typeHandlerVersion')]",
                 "autoUpgradeMinorVersion": "[parameters('autoUpgradeMinorVersion')]",
                 "enableAutomaticUpgrade": "[parameters('enableAutomaticUpgrade')]",
-                "forceUpdateTag": "[if(not(empty(parameters('forceUpdateTag'))), parameters('forceUpdateTag'), null())]",
-                "settings": "[if(not(empty(parameters('settings'))), parameters('settings'), null())]",
-                "protectedSettings": "[if(not(empty(parameters('protectedSettings'))), parameters('protectedSettings'), null())]",
-                "suppressFailures": "[parameters('supressFailures')]"
+                "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                "settings": "[parameters('settings')]",
+                "protectedSettings": "[parameters('protectedSettings')]",
+                "suppressFailures": "[parameters('supressFailures')]",
+                "protectedSettingsFromKeyVault": "[parameters('protectedSettingsFromKeyVault')]",
+                "provisionAfterExtensions": "[parameters('provisionAfterExtensions')]"
               }
             }
-          ],
+          },
           "outputs": {
             "name": {
               "type": "string",
@@ -1992,7 +2636,7 @@
       ]
     },
     "vmss_customScriptExtension": {
-      "condition": "[parameters('extensionCustomScriptConfig').enabled]",
+      "condition": "[not(empty(parameters('extensionCustomScriptConfig')))]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[format('{0}-VMSS-CustomScriptExtension', uniqueString(deployment().name, parameters('location')))]",
@@ -2006,38 +2650,50 @@
             "value": "[parameters('name')]"
           },
           "name": {
-            "value": "CustomScriptExtension"
+            "value": "[coalesce(tryGet(parameters('extensionCustomScriptConfig'), 'name'), 'CustomScriptExtension')]"
           },
           "publisher": "[if(equals(parameters('osType'), 'Windows'), createObject('value', 'Microsoft.Compute'), createObject('value', 'Microsoft.Azure.Extensions'))]",
           "type": "[if(equals(parameters('osType'), 'Windows'), createObject('value', 'CustomScriptExtension'), createObject('value', 'CustomScript'))]",
-          "typeHandlerVersion": "[if(contains(parameters('extensionCustomScriptConfig'), 'typeHandlerVersion'), createObject('value', parameters('extensionCustomScriptConfig').typeHandlerVersion), if(equals(parameters('osType'), 'Windows'), createObject('value', '1.10'), createObject('value', '2.1')))]",
-          "autoUpgradeMinorVersion": "[if(contains(parameters('extensionCustomScriptConfig'), 'autoUpgradeMinorVersion'), createObject('value', parameters('extensionCustomScriptConfig').autoUpgradeMinorVersion), createObject('value', true()))]",
-          "enableAutomaticUpgrade": "[if(contains(parameters('extensionCustomScriptConfig'), 'enableAutomaticUpgrade'), createObject('value', parameters('extensionCustomScriptConfig').enableAutomaticUpgrade), createObject('value', false()))]",
-          "settings": {
-            "value": {
-              "copy": [
-                {
-                  "name": "fileUris",
-                  "count": "[length(parameters('extensionCustomScriptConfig').fileData)]",
-                  "input": "[if(contains(parameters('extensionCustomScriptConfig').fileData[copyIndex('fileUris')], 'storageAccountId'), format('{0}?{1}', parameters('extensionCustomScriptConfig').fileData[copyIndex('fileUris')].uri, listAccountSas(parameters('extensionCustomScriptConfig').fileData[copyIndex('fileUris')].storageAccountId, '2019-04-01', variables('accountSasProperties')).accountSasToken), parameters('extensionCustomScriptConfig').fileData[copyIndex('fileUris')].uri)]"
-                }
-              ]
-            }
+          "typeHandlerVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionCustomScriptConfig'), 'typeHandlerVersion'), if(equals(parameters('osType'), 'Windows'), '1.10', '2.1'))]"
           },
-          "protectedSettings": "[if(contains(parameters('extensionCustomScriptConfig'), 'protectedSettings'), createObject('value', parameters('extensionCustomScriptConfig').protectedSettings), createObject('value', createObject()))]"
+          "autoUpgradeMinorVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionCustomScriptConfig'), 'autoUpgradeMinorVersion'), true())]"
+          },
+          "enableAutomaticUpgrade": {
+            "value": "[coalesce(tryGet(parameters('extensionCustomScriptConfig'), 'enableAutomaticUpgrade'), false())]"
+          },
+          "forceUpdateTag": {
+            "value": "[tryGet(parameters('extensionCustomScriptConfig'), 'forceUpdateTag')]"
+          },
+          "provisionAfterExtensions": {
+            "value": "[tryGet(parameters('extensionCustomScriptConfig'), 'provisionAfterExtensions')]"
+          },
+          "supressFailures": {
+            "value": "[coalesce(tryGet(parameters('extensionCustomScriptConfig'), 'supressFailures'), false())]"
+          },
+          "protectedSettingsFromKeyVault": {
+            "value": "[tryGet(parameters('extensionCustomScriptConfig'), 'protectedSettingsFromKeyVault')]"
+          },
+          "settings": {
+            "value": "[shallowMerge(createArray(if(not(empty(tryGet(tryGet(parameters('extensionCustomScriptConfig'), 'settings'), 'commandToExecute'))), createObject('commandToExecute', tryGet(tryGet(parameters('extensionCustomScriptConfig'), 'settings'), 'commandToExecute')), createObject()), if(not(empty(tryGet(tryGet(parameters('extensionCustomScriptConfig'), 'settings'), 'fileUris'))), createObject('fileUris', tryGet(parameters('extensionCustomScriptConfig'), 'settings', 'fileUris')), createObject())))]"
+          },
+          "protectedSettings": {
+            "value": "[shallowMerge(createArray(if(not(empty(tryGet(tryGet(parameters('extensionCustomScriptConfig'), 'protectedSettings'), 'commandToExecute'))), createObject('commandToExecute', tryGet(parameters('extensionCustomScriptConfig').protectedSettings, 'commandToExecute')), createObject()), if(not(empty(tryGet(tryGet(parameters('extensionCustomScriptConfig'), 'protectedSettings'), 'storageAccountName'))), createObject('storageAccountName', parameters('extensionCustomScriptConfig').protectedSettings.storageAccountName), createObject()), if(not(empty(tryGet(tryGet(parameters('extensionCustomScriptConfig'), 'protectedSettings'), 'storageAccountKey'))), createObject('storageAccountKey', parameters('extensionCustomScriptConfig').protectedSettings.storageAccountKey), createObject()), if(not(empty(tryGet(tryGet(parameters('extensionCustomScriptConfig'), 'protectedSettings'), 'fileUris'))), createObject('fileUris', parameters('extensionCustomScriptConfig').protectedSettings.fileUris), createObject()), if(not(equals(tryGet(tryGet(parameters('extensionCustomScriptConfig'), 'protectedSettings'), 'managedIdentityResourceId'), null())), createObject('managedIdentity', if(not(empty(tryGet(parameters('extensionCustomScriptConfig').protectedSettings, 'managedIdentityResourceId'))), createObject('clientId', reference('cseIdentity').clientId), createObject())), createObject())))]"
+          }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
           "contentVersion": "1.0.0.0",
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "8948100547542268397"
+              "version": "0.37.4.10188",
+              "templateHash": "1457477458264476892"
             },
             "name": "Virtual Machine Scale Set Extensions",
-            "description": "This module deploys a Virtual Machine Scale Set Extension.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a Virtual Machine Scale Set Extension."
           },
           "parameters": {
             "virtualMachineScaleSetName": {
@@ -2078,21 +2734,21 @@
             },
             "forceUpdateTag": {
               "type": "string",
-              "defaultValue": "",
+              "nullable": true,
               "metadata": {
                 "description": "Optional. How the extension handler should be forced to update even if the extension configuration has not changed."
               }
             },
             "settings": {
               "type": "object",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific settings."
               }
             },
             "protectedSettings": {
               "type": "secureObject",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific protected settings."
               }
@@ -2109,12 +2765,38 @@
               "metadata": {
                 "description": "Required. Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available."
               }
+            },
+            "protectedSettingsFromKeyVault": {
+              "type": "object",
+              "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Compute/virtualMachineScaleSets/extensions@2024-11-01#properties/properties/properties/protectedSettingsFromKeyVault"
+                },
+                "description": "Optional. The extensions protected settings that are passed by reference, and consumed from key vault."
+              },
+              "nullable": true
+            },
+            "provisionAfterExtensions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. Collection of extension names after which this extension needs to be provisioned."
+              }
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "virtualMachineScaleSet": {
+              "existing": true,
+              "type": "Microsoft.Compute/virtualMachineScaleSets",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('virtualMachineScaleSetName')]"
+            },
+            "extension": {
               "type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
-              "apiVersion": "2022-11-01",
+              "apiVersion": "2024-11-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineScaleSetName'), parameters('name'))]",
               "properties": {
                 "publisher": "[parameters('publisher')]",
@@ -2122,13 +2804,15 @@
                 "typeHandlerVersion": "[parameters('typeHandlerVersion')]",
                 "autoUpgradeMinorVersion": "[parameters('autoUpgradeMinorVersion')]",
                 "enableAutomaticUpgrade": "[parameters('enableAutomaticUpgrade')]",
-                "forceUpdateTag": "[if(not(empty(parameters('forceUpdateTag'))), parameters('forceUpdateTag'), null())]",
-                "settings": "[if(not(empty(parameters('settings'))), parameters('settings'), null())]",
-                "protectedSettings": "[if(not(empty(parameters('protectedSettings'))), parameters('protectedSettings'), null())]",
-                "suppressFailures": "[parameters('supressFailures')]"
+                "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                "settings": "[parameters('settings')]",
+                "protectedSettings": "[parameters('protectedSettings')]",
+                "suppressFailures": "[parameters('supressFailures')]",
+                "protectedSettingsFromKeyVault": "[parameters('protectedSettingsFromKeyVault')]",
+                "provisionAfterExtensions": "[parameters('provisionAfterExtensions')]"
               }
             }
-          ],
+          },
           "outputs": {
             "name": {
               "type": "string",
@@ -2155,6 +2839,7 @@
         }
       },
       "dependsOn": [
+        "cseIdentity",
         "vmss",
         "vmss_desiredStateConfigurationExtension"
       ]
@@ -2180,26 +2865,37 @@
             "value": "Microsoft.Azure.Security"
           },
           "type": "[if(equals(parameters('osType'), 'Windows'), createObject('value', 'AzureDiskEncryption'), createObject('value', 'AzureDiskEncryptionForLinux'))]",
-          "typeHandlerVersion": "[if(contains(parameters('extensionAzureDiskEncryptionConfig'), 'typeHandlerVersion'), createObject('value', parameters('extensionAzureDiskEncryptionConfig').typeHandlerVersion), if(equals(parameters('osType'), 'Windows'), createObject('value', '2.2'), createObject('value', '1.1')))]",
-          "autoUpgradeMinorVersion": "[if(contains(parameters('extensionAzureDiskEncryptionConfig'), 'autoUpgradeMinorVersion'), createObject('value', parameters('extensionAzureDiskEncryptionConfig').autoUpgradeMinorVersion), createObject('value', true()))]",
-          "enableAutomaticUpgrade": "[if(contains(parameters('extensionAzureDiskEncryptionConfig'), 'enableAutomaticUpgrade'), createObject('value', parameters('extensionAzureDiskEncryptionConfig').enableAutomaticUpgrade), createObject('value', false()))]",
-          "forceUpdateTag": "[if(contains(parameters('extensionAzureDiskEncryptionConfig'), 'forceUpdateTag'), createObject('value', parameters('extensionAzureDiskEncryptionConfig').forceUpdateTag), createObject('value', '1.0'))]",
+          "typeHandlerVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionAzureDiskEncryptionConfig'), 'typeHandlerVersion'), if(equals(parameters('osType'), 'Windows'), '2.2', '1.1'))]"
+          },
+          "autoUpgradeMinorVersion": {
+            "value": "[coalesce(tryGet(parameters('extensionAzureDiskEncryptionConfig'), 'autoUpgradeMinorVersion'), true())]"
+          },
+          "enableAutomaticUpgrade": {
+            "value": "[coalesce(tryGet(parameters('extensionAzureDiskEncryptionConfig'), 'enableAutomaticUpgrade'), false())]"
+          },
+          "forceUpdateTag": {
+            "value": "[coalesce(tryGet(parameters('extensionAzureDiskEncryptionConfig'), 'forceUpdateTag'), '1.0')]"
+          },
           "settings": {
             "value": "[parameters('extensionAzureDiskEncryptionConfig').settings]"
+          },
+          "provisionAfterExtensions": {
+            "value": "[tryGet(parameters('extensionAzureDiskEncryptionConfig'), 'provisionAfterExtensions')]"
           }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
           "contentVersion": "1.0.0.0",
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.54.24096",
-              "templateHash": "8948100547542268397"
+              "version": "0.37.4.10188",
+              "templateHash": "1457477458264476892"
             },
             "name": "Virtual Machine Scale Set Extensions",
-            "description": "This module deploys a Virtual Machine Scale Set Extension.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a Virtual Machine Scale Set Extension."
           },
           "parameters": {
             "virtualMachineScaleSetName": {
@@ -2240,21 +2936,21 @@
             },
             "forceUpdateTag": {
               "type": "string",
-              "defaultValue": "",
+              "nullable": true,
               "metadata": {
                 "description": "Optional. How the extension handler should be forced to update even if the extension configuration has not changed."
               }
             },
             "settings": {
               "type": "object",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific settings."
               }
             },
             "protectedSettings": {
               "type": "secureObject",
-              "defaultValue": {},
+              "nullable": true,
               "metadata": {
                 "description": "Optional. Any object that contains the extension specific protected settings."
               }
@@ -2271,12 +2967,38 @@
               "metadata": {
                 "description": "Required. Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available."
               }
+            },
+            "protectedSettingsFromKeyVault": {
+              "type": "object",
+              "metadata": {
+                "__bicep_resource_derived_type!": {
+                  "source": "Microsoft.Compute/virtualMachineScaleSets/extensions@2024-11-01#properties/properties/properties/protectedSettingsFromKeyVault"
+                },
+                "description": "Optional. The extensions protected settings that are passed by reference, and consumed from key vault."
+              },
+              "nullable": true
+            },
+            "provisionAfterExtensions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "metadata": {
+                "description": "Optional. Collection of extension names after which this extension needs to be provisioned."
+              }
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "virtualMachineScaleSet": {
+              "existing": true,
+              "type": "Microsoft.Compute/virtualMachineScaleSets",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('virtualMachineScaleSetName')]"
+            },
+            "extension": {
               "type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
-              "apiVersion": "2022-11-01",
+              "apiVersion": "2024-11-01",
               "name": "[format('{0}/{1}', parameters('virtualMachineScaleSetName'), parameters('name'))]",
               "properties": {
                 "publisher": "[parameters('publisher')]",
@@ -2284,13 +3006,15 @@
                 "typeHandlerVersion": "[parameters('typeHandlerVersion')]",
                 "autoUpgradeMinorVersion": "[parameters('autoUpgradeMinorVersion')]",
                 "enableAutomaticUpgrade": "[parameters('enableAutomaticUpgrade')]",
-                "forceUpdateTag": "[if(not(empty(parameters('forceUpdateTag'))), parameters('forceUpdateTag'), null())]",
-                "settings": "[if(not(empty(parameters('settings'))), parameters('settings'), null())]",
-                "protectedSettings": "[if(not(empty(parameters('protectedSettings'))), parameters('protectedSettings'), null())]",
-                "suppressFailures": "[parameters('supressFailures')]"
+                "forceUpdateTag": "[parameters('forceUpdateTag')]",
+                "settings": "[parameters('settings')]",
+                "protectedSettings": "[parameters('protectedSettings')]",
+                "suppressFailures": "[parameters('supressFailures')]",
+                "protectedSettingsFromKeyVault": "[parameters('protectedSettingsFromKeyVault')]",
+                "provisionAfterExtensions": "[parameters('provisionAfterExtensions')]"
               }
             }
-          ],
+          },
           "outputs": {
             "name": {
               "type": "string",
@@ -2346,17 +3070,18 @@
     },
     "systemAssignedMIPrincipalId": {
       "type": "string",
+      "nullable": true,
       "metadata": {
         "description": "The principal ID of the system assigned identity."
       },
-      "value": "[coalesce(tryGet(tryGet(reference('vmss', '2022-11-01', 'full'), 'identity'), 'principalId'), '')]"
+      "value": "[tryGet(tryGet(reference('vmss', '2024-11-01', 'full'), 'identity'), 'principalId')]"
     },
     "location": {
       "type": "string",
       "metadata": {
         "description": "The location the resource was deployed into."
       },
-      "value": "[reference('vmss', '2022-11-01', 'full').location]"
+      "value": "[reference('vmss', '2024-11-01', 'full').location]"
     }
   }
 }

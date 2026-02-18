@@ -1,6 +1,5 @@
 metadata name = 'Automation Account Runbooks'
 metadata description = 'This module deploys an Azure Automation Account Runbook.'
-metadata owner = 'Azure/module-maintainers'
 
 @sys.description('Required. Name of the Automation Account runbook.')
 param name string
@@ -13,7 +12,11 @@ param automationAccountName string
   'GraphPowerShell'
   'GraphPowerShellWorkflow'
   'PowerShell'
+  'PowerShell72'
   'PowerShellWorkflow'
+  'Python2'
+  'Python3'
+  'Script'
 ])
 @sys.description('Required. The type of the runbook.')
 param type string
@@ -50,18 +53,14 @@ var accountSasProperties = {
   signedProtocol: 'https'
 }
 
-resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' existing = {
+resource automationAccount 'Microsoft.Automation/automationAccounts@2024-10-23' existing = {
   name: automationAccountName
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing =
-  if (!empty(scriptStorageAccountResourceId)) {
-    name: last(split((scriptStorageAccountResourceId ?? 'dummyVault'), '/'))
-    scope: resourceGroup(
-      split((scriptStorageAccountResourceId ?? '//'), '/')[2],
-      split((scriptStorageAccountResourceId ?? '////'), '/')[4]
-    )
-  }
+resource storageAccount 'Microsoft.Storage/storageAccounts@2025-01-01' existing = if (!empty(scriptStorageAccountResourceId)) {
+  name: last(split(scriptStorageAccountResourceId!, '/'))
+  scope: resourceGroup(split(scriptStorageAccountResourceId!, '/')[2], split(scriptStorageAccountResourceId!, '/')[4])
+}
 
 var publishContentLink = empty(uri)
   ? null
@@ -69,12 +68,12 @@ var publishContentLink = empty(uri)
       uri: !empty(uri)
         ? (empty(scriptStorageAccountResourceId)
             ? uri
-            : '${uri}?${storageAccount.listAccountSas('2021-04-01', accountSasProperties).accountSasToken}')
+            : '${uri}?${storageAccount!.listAccountSas('2021-04-01', accountSasProperties).accountSasToken}')
         : null
       version: !empty(version) ? version : null
     }
 
-resource runbook 'Microsoft.Automation/automationAccounts/runbooks@2022-08-08' = {
+resource runbook 'Microsoft.Automation/automationAccounts/runbooks@2023-11-01' = {
   name: name
   parent: automationAccount
   location: location

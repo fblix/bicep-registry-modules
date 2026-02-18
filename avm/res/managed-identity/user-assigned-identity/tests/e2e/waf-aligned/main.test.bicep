@@ -30,7 +30,7 @@ param enforcedLocation string = 'westeurope'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-11-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -47,6 +47,7 @@ module testDeployment '../../../main.bicep' = [
     params: {
       name: '${namePrefix}${serviceShort}001'
       location: enforcedLocation
+      isolationScope: 'Regional'
       lock: {
         kind: 'CanNotDelete'
         name: 'myCustomLockName'

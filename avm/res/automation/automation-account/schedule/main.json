@@ -4,12 +4,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "10057879847143996563"
+      "version": "0.37.4.10188",
+      "templateHash": "4389837751138730963"
     },
     "name": "Automation Account Schedules",
-    "description": "This module deploys an Azure Automation Account Schedule.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys an Azure Automation Account Schedule."
   },
   "parameters": {
     "name": {
@@ -95,7 +94,7 @@
   "resources": [
     {
       "type": "Microsoft.Automation/automationAccounts/schedules",
-      "apiVersion": "2022-08-08",
+      "apiVersion": "2024-10-23",
       "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('name'))]",
       "properties": {
         "advancedSchedule": "[if(not(empty(parameters('advancedSchedule'))), parameters('advancedSchedule'), null())]",

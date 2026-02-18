@@ -4,12 +4,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "11000394867797752922"
+      "version": "0.39.26.7824",
+      "templateHash": "4116748364582130588"
     },
     "name": "Service Bus Namespace Queue Authorization Rules",
-    "description": "This module deploys a Service Bus Namespace Queue Authorization Rule.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a Service Bus Namespace Queue Authorization Rule."
   },
   "parameters": {
     "name": {
@@ -46,7 +45,7 @@
   "resources": [
     {
       "type": "Microsoft.ServiceBus/namespaces/queues/authorizationRules",
-      "apiVersion": "2022-10-01-preview",
+      "apiVersion": "2024-01-01",
       "name": "[format('{0}/{1}/{2}', parameters('namespaceName'), parameters('queueName'), parameters('name'))]",
       "properties": {
         "rights": "[parameters('rights')]"

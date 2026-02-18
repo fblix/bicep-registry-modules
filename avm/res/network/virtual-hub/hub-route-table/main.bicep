@@ -1,6 +1,5 @@
 metadata name = 'Virtual Hub Route Tables'
 metadata description = 'This module deploys a Virtual Hub Route Table.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. The route table name.')
 param name string
@@ -9,43 +8,21 @@ param name string
 param virtualHubName string
 
 @description('Optional. List of labels associated with this route table.')
-param labels array = []
+param labels array?
 
 @description('Optional. List of all routes.')
-param routes array = []
+param routes array?
 
-@description('Optional. Enable/Disable usage telemetry for module.')
-param enableTelemetry bool = true
-
-resource defaultTelemetry 'Microsoft.Resources/deployments@2021-04-01' =
-  if (enableTelemetry) {
-    name: '46d3xbcp.res.network-virtualhub.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name), 0, 4)}'
-    properties: {
-      mode: 'Incremental'
-      template: {
-        '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
-        contentVersion: '1.0.0.0'
-        resources: []
-        outputs: {
-          telemetry: {
-            type: 'String'
-            value: 'For more information, see https://aka.ms/avm/TelemetryInfo'
-          }
-        }
-      }
-    }
-  }
-
-resource virtualHub 'Microsoft.Network/virtualHubs@2022-11-01' existing = {
+resource virtualHub 'Microsoft.Network/virtualHubs@2025-01-01' existing = {
   name: virtualHubName
 }
 
-resource hubRouteTable 'Microsoft.Network/virtualHubs/hubRouteTables@2022-11-01' = {
+resource hubRouteTable 'Microsoft.Network/virtualHubs/hubRouteTables@2025-01-01' = {
   name: name
   parent: virtualHub
   properties: {
-    labels: !empty(labels) ? labels : null
-    routes: !empty(routes) ? routes : null
+    labels: labels
+    routes: routes
   }
 }
 

@@ -2,6 +2,14 @@
 
 This module deploys a Public IP Address.
 
+You can reference the module as follows:
+```bicep
+module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
@@ -13,12 +21,12 @@ This module deploys a Public IP Address.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
-| `Microsoft.Network/publicIPAddresses` | [2023-09-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/publicIPAddresses) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Insights/diagnosticSettings` | 2021-05-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.insights_diagnosticsettings.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings)</li></ul> |
+| `Microsoft.Network/publicIPAddresses` | 2025-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_publicipaddresses.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2025-01-01/publicIPAddresses)</li></ul> |
 
 ## Usage examples
 
@@ -30,11 +38,14 @@ The following section provides usage examples for the module, which were used to
 
 - [Using only defaults](#example-1-using-only-defaults)
 - [Using large parameter set](#example-2-using-large-parameter-set)
-- [WAF-aligned](#example-3-waf-aligned)
+- [Using only defaults](#example-3-using-only-defaults)
+- [WAF-aligned](#example-4-waf-aligned)
 
 ### Example 1: _Using only defaults_
 
 This instance deploys the module with the minimum set of required parameters.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
 
 
 <details>
@@ -43,12 +54,8 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' = {
-  name: 'publicIpAddressDeployment'
   params: {
-    // Required parameters
     name: 'npiamin001'
-    // Non-required parameters
-    location: '<location>'
   }
 }
 ```
@@ -58,23 +65,31 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    // Required parameters
     "name": {
       "value": "npiamin001"
-    },
-    // Non-required parameters
-    "location": {
-      "value": "<location>"
     }
   }
 }
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/public-ip-address:<version>'
+
+param name = 'npiamin001'
 ```
 
 </details>
@@ -84,6 +99,8 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
 
 This instance deploys the module with most of its features enabled.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
+
 
 <details>
 
@@ -91,12 +108,17 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' = {
-  name: 'publicIpAddressDeployment'
   params: {
     // Required parameters
     name: 'npiamax001'
     // Non-required parameters
+    availabilityZones: [
+      1
+      2
+      3
+    ]
     ddosSettings: '<ddosSettings>'
+    deleteOption: 'Detach'
     diagnosticSettings: [
       {
         eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
@@ -107,6 +129,12 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
       }
     ]
     dnsSettings: '<dnsSettings>'
+    ipTags: [
+      {
+        ipTagType: 'RoutingPreference'
+        tag: 'Internet'
+      }
+    ]
     location: '<location>'
     lock: {
       kind: 'CanNotDelete'
@@ -117,11 +145,13 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
     publicIpPrefixResourceId: '<publicIpPrefixResourceId>'
     roleAssignments: [
       {
+        name: '902f366b-ba61-4eb6-aa3a-786d317f2dbc'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -139,11 +169,6 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
       'hidden-title': 'This is visible in the resource name'
       Role: 'DeploymentValidation'
     }
-    zones: [
-      1
-      2
-      3
-    ]
   }
 }
 ```
@@ -153,7 +178,7 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -165,8 +190,18 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
       "value": "npiamax001"
     },
     // Non-required parameters
+    "availabilityZones": {
+      "value": [
+        1,
+        2,
+        3
+      ]
+    },
     "ddosSettings": {
       "value": "<ddosSettings>"
+    },
+    "deleteOption": {
+      "value": "Detach"
     },
     "diagnosticSettings": {
       "value": [
@@ -181,6 +216,14 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
     },
     "dnsSettings": {
       "value": "<dnsSettings>"
+    },
+    "ipTags": {
+      "value": [
+        {
+          "ipTagType": "RoutingPreference",
+          "tag": "Internet"
+        }
+      ]
     },
     "location": {
       "value": "<location>"
@@ -203,11 +246,13 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
     "roleAssignments": {
       "value": [
         {
+          "name": "902f366b-ba61-4eb6-aa3a-786d317f2dbc",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -231,13 +276,6 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
         "hidden-title": "This is visible in the resource name",
         "Role": "DeploymentValidation"
       }
-    },
-    "zones": {
-      "value": [
-        1,
-        2,
-        3
-      ]
     }
   }
 }
@@ -246,9 +284,83 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
 </details>
 <p>
 
-### Example 3: _WAF-aligned_
+<details>
 
-This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/public-ip-address:<version>'
+
+// Required parameters
+param name = 'npiamax001'
+// Non-required parameters
+param availabilityZones = [
+  1
+  2
+  3
+]
+param ddosSettings = '<ddosSettings>'
+param deleteOption = 'Detach'
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param dnsSettings = '<dnsSettings>'
+param ipTags = [
+  {
+    ipTagType: 'RoutingPreference'
+    tag: 'Internet'
+  }
+]
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param publicIPAddressVersion = 'IPv4'
+param publicIPAllocationMethod = 'Static'
+param publicIpPrefixResourceId = '<publicIpPrefixResourceId>'
+param roleAssignments = [
+  {
+    name: '902f366b-ba61-4eb6-aa3a-786d317f2dbc'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param skuName = 'Standard'
+param skuTier = 'Regional'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
+
+### Example 3: _Using only defaults_
+
+This instance deploys the module with the minimum set of required parameters.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/v2sku]
 
 
 <details>
@@ -257,11 +369,80 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' = {
-  name: 'publicIpAddressDeployment'
+  params: {
+    // Required parameters
+    name: 'npiav2001'
+    // Non-required parameters
+    skuName: 'StandardV2'
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via JSON parameters file</summary>
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Required parameters
+    "name": {
+      "value": "npiav2001"
+    },
+    // Non-required parameters
+    "skuName": {
+      "value": "StandardV2"
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/public-ip-address:<version>'
+
+// Required parameters
+param name = 'npiav2001'
+// Non-required parameters
+param skuName = 'StandardV2'
+```
+
+</details>
+<p>
+
+### Example 4: _WAF-aligned_
+
+This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
+
+
+<details>
+
+<summary>via Bicep module</summary>
+
+```bicep
+module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' = {
   params: {
     // Required parameters
     name: 'npiawaf001'
     // Non-required parameters
+    availabilityZones: [
+      1
+      2
+      3
+    ]
     ddosSettings: '<ddosSettings>'
     diagnosticSettings: [
       {
@@ -274,30 +455,9 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
     ]
     dnsSettings: '<dnsSettings>'
     location: '<location>'
-    lock: {
-      kind: 'CanNotDelete'
-      name: 'myCustomLockName'
-    }
     publicIPAddressVersion: 'IPv4'
     publicIPAllocationMethod: 'Static'
     publicIpPrefixResourceId: '<publicIpPrefixResourceId>'
-    roleAssignments: [
-      {
-        principalId: '<principalId>'
-        principalType: 'ServicePrincipal'
-        roleDefinitionIdOrName: 'Owner'
-      }
-      {
-        principalId: '<principalId>'
-        principalType: 'ServicePrincipal'
-        roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
-      }
-      {
-        principalId: '<principalId>'
-        principalType: 'ServicePrincipal'
-        roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
-      }
-    ]
     skuName: 'Standard'
     skuTier: 'Regional'
     tags: {
@@ -305,11 +465,6 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
       'hidden-title': 'This is visible in the resource name'
       Role: 'DeploymentValidation'
     }
-    zones: [
-      1
-      2
-      3
-    ]
   }
 }
 ```
@@ -319,7 +474,7 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -331,6 +486,13 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
       "value": "npiawaf001"
     },
     // Non-required parameters
+    "availabilityZones": {
+      "value": [
+        1,
+        2,
+        3
+      ]
+    },
     "ddosSettings": {
       "value": "<ddosSettings>"
     },
@@ -351,12 +513,6 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
     "location": {
       "value": "<location>"
     },
-    "lock": {
-      "value": {
-        "kind": "CanNotDelete",
-        "name": "myCustomLockName"
-      }
-    },
     "publicIPAddressVersion": {
       "value": "IPv4"
     },
@@ -365,25 +521,6 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
     },
     "publicIpPrefixResourceId": {
       "value": "<publicIpPrefixResourceId>"
-    },
-    "roleAssignments": {
-      "value": [
-        {
-          "principalId": "<principalId>",
-          "principalType": "ServicePrincipal",
-          "roleDefinitionIdOrName": "Owner"
-        },
-        {
-          "principalId": "<principalId>",
-          "principalType": "ServicePrincipal",
-          "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
-        },
-        {
-          "principalId": "<principalId>",
-          "principalType": "ServicePrincipal",
-          "roleDefinitionIdOrName": "<roleDefinitionIdOrName>"
-        }
-      ]
     },
     "skuName": {
       "value": "Standard"
@@ -397,13 +534,6 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
         "hidden-title": "This is visible in the resource name",
         "Role": "DeploymentValidation"
       }
-    },
-    "zones": {
-      "value": [
-        1,
-        2,
-        3
-      ]
     }
   }
 }
@@ -412,6 +542,47 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/public-ip-address:<version>'
+
+// Required parameters
+param name = 'npiawaf001'
+// Non-required parameters
+param availabilityZones = [
+  1
+  2
+  3
+]
+param ddosSettings = '<ddosSettings>'
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param dnsSettings = '<dnsSettings>'
+param location = '<location>'
+param publicIPAddressVersion = 'IPv4'
+param publicIPAllocationMethod = 'Static'
+param publicIpPrefixResourceId = '<publicIpPrefixResourceId>'
+param skuName = 'Standard'
+param skuTier = 'Regional'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -425,11 +596,14 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
+| [`availabilityZones`](#parameter-availabilityzones) | array | A list of availability zones denoting the IP allocated for the resource needs to come from. |
 | [`ddosSettings`](#parameter-ddossettings) | object | The DDoS protection plan configuration associated with the public IP address. |
+| [`deleteOption`](#parameter-deleteoption) | string | The delete option for the public IP address. |
 | [`diagnosticSettings`](#parameter-diagnosticsettings) | array | The diagnostic settings of the service. |
 | [`dnsSettings`](#parameter-dnssettings) | object | The DNS settings of the public IP address. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`idleTimeoutInMinutes`](#parameter-idletimeoutinminutes) | int | The idle timeout of the public IP address. |
+| [`ipTags`](#parameter-iptags) | array | The list of tags associated with the public IP address. |
 | [`location`](#parameter-location) | string | Location for all resources. |
 | [`lock`](#parameter-lock) | object | The lock settings of the service. |
 | [`publicIPAddressVersion`](#parameter-publicipaddressversion) | string | IP address version. |
@@ -439,7 +613,6 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
 | [`skuName`](#parameter-skuname) | string | Name of a public IP address SKU. |
 | [`skuTier`](#parameter-skutier) | string | Tier of a public IP address SKU. |
 | [`tags`](#parameter-tags) | object | Tags of the resource. |
-| [`zones`](#parameter-zones) | array | A list of availability zones denoting the IP allocated for the resource needs to come from. |
 
 ### Parameter: `name`
 
@@ -448,6 +621,29 @@ The name of the Public IP Address.
 - Required: Yes
 - Type: string
 
+### Parameter: `availabilityZones`
+
+A list of availability zones denoting the IP allocated for the resource needs to come from.
+
+- Required: No
+- Type: array
+- Default:
+  ```Bicep
+  [
+    1
+    2
+    3
+  ]
+  ```
+- Allowed:
+  ```Bicep
+  [
+    1
+    2
+    3
+  ]
+  ```
+
 ### Parameter: `ddosSettings`
 
 The DDoS protection plan configuration associated with the public IP address.
@@ -455,45 +651,12 @@ The DDoS protection plan configuration associated with the public IP address.
 - Required: No
 - Type: object
 
-**Required parameters**
+### Parameter: `deleteOption`
 
-| Parameter | Type | Description |
-| :-- | :-- | :-- |
-| [`ddosProtectionPlan`](#parameter-ddossettingsddosprotectionplan) | object | The DDoS protection plan associated with the public IP address. |
-| [`protectionMode`](#parameter-ddossettingsprotectionmode) | string | The DDoS protection policy customizations. |
+The delete option for the public IP address.
 
-### Parameter: `ddosSettings.ddosProtectionPlan`
-
-The DDoS protection plan associated with the public IP address.
-
-- Required: Yes
-- Type: object
-
-**Required parameters**
-
-| Parameter | Type | Description |
-| :-- | :-- | :-- |
-| [`id`](#parameter-ddossettingsddosprotectionplanid) | string | The resource ID of the DDOS protection plan associated with the public IP address. |
-
-### Parameter: `ddosSettings.ddosProtectionPlan.id`
-
-The resource ID of the DDOS protection plan associated with the public IP address.
-
-- Required: Yes
+- Required: No
 - Type: string
-
-### Parameter: `ddosSettings.protectionMode`
-
-The DDoS protection policy customizations.
-
-- Required: Yes
-- Type: string
-- Allowed:
-  ```Bicep
-  [
-    'Enabled'
-  ]
-  ```
 
 ### Parameter: `diagnosticSettings`
 
@@ -512,7 +675,7 @@ The diagnostic settings of the service.
 | [`logCategoriesAndGroups`](#parameter-diagnosticsettingslogcategoriesandgroups) | array | The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to `[]` to disable log collection. |
 | [`marketplacePartnerResourceId`](#parameter-diagnosticsettingsmarketplacepartnerresourceid) | string | The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs. |
 | [`metricCategories`](#parameter-diagnosticsettingsmetriccategories) | array | The name of metrics that will be streamed. "allMetrics" includes all possible metrics for the resource. Set to `[]` to disable metric collection. |
-| [`name`](#parameter-diagnosticsettingsname) | string | The name of diagnostic setting. |
+| [`name`](#parameter-diagnosticsettingsname) | string | The name of the diagnostic setting. |
 | [`storageAccountResourceId`](#parameter-diagnosticsettingsstorageaccountresourceid) | string | Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 | [`workspaceResourceId`](#parameter-diagnosticsettingsworkspaceresourceid) | string | Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 
@@ -622,7 +785,7 @@ Enable or disable the category explicitly. Default is `true`.
 
 ### Parameter: `diagnosticSettings.name`
 
-The name of diagnostic setting.
+The name of the diagnostic setting.
 
 - Required: No
 - Type: string
@@ -648,58 +811,6 @@ The DNS settings of the public IP address.
 - Required: No
 - Type: object
 
-**Required parameters**
-
-| Parameter | Type | Description |
-| :-- | :-- | :-- |
-| [`domainNameLabel`](#parameter-dnssettingsdomainnamelabel) | string | The domain name label. The concatenation of the domain name label and the regionalized DNS zone make up the fully qualified domain name associated with the public IP address. If a domain name label is specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system. |
-| [`domainNameLabelScope`](#parameter-dnssettingsdomainnamelabelscope) | string | The domain name label scope. If a domain name label and a domain name label scope are specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system with a hashed value includes in FQDN. |
-
-**Optional parameters**
-
-| Parameter | Type | Description |
-| :-- | :-- | :-- |
-| [`fqdn`](#parameter-dnssettingsfqdn) | string | The Fully Qualified Domain Name of the A DNS record associated with the public IP. This is the concatenation of the domainNameLabel and the regionalized DNS zone. |
-| [`reverseFqdn`](#parameter-dnssettingsreversefqdn) | string | The reverse FQDN. A user-visible, fully qualified domain name that resolves to this public IP address. If the reverseFqdn is specified, then a PTR DNS record is created pointing from the IP address in the in-addr.arpa domain to the reverse FQDN. |
-
-### Parameter: `dnsSettings.domainNameLabel`
-
-The domain name label. The concatenation of the domain name label and the regionalized DNS zone make up the fully qualified domain name associated with the public IP address. If a domain name label is specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system.
-
-- Required: Yes
-- Type: string
-
-### Parameter: `dnsSettings.domainNameLabelScope`
-
-The domain name label scope. If a domain name label and a domain name label scope are specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system with a hashed value includes in FQDN.
-
-- Required: Yes
-- Type: string
-- Allowed:
-  ```Bicep
-  [
-    ''
-    'NoReuse'
-    'ResourceGroupReuse'
-    'SubscriptionReuse'
-    'TenantReuse'
-  ]
-  ```
-
-### Parameter: `dnsSettings.fqdn`
-
-The Fully Qualified Domain Name of the A DNS record associated with the public IP. This is the concatenation of the domainNameLabel and the regionalized DNS zone.
-
-- Required: No
-- Type: string
-
-### Parameter: `dnsSettings.reverseFqdn`
-
-The reverse FQDN. A user-visible, fully qualified domain name that resolves to this public IP address. If the reverseFqdn is specified, then a PTR DNS record is created pointing from the IP address in the in-addr.arpa domain to the reverse FQDN.
-
-- Required: No
-- Type: string
-
 ### Parameter: `enableTelemetry`
 
 Enable/Disable usage telemetry for module.
@@ -715,6 +826,13 @@ The idle timeout of the public IP address.
 - Required: No
 - Type: int
 - Default: `4`
+
+### Parameter: `ipTags`
+
+The list of tags associated with the public IP address.
+
+- Required: No
+- Type: array
 
 ### Parameter: `location`
 
@@ -737,6 +855,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -760,6 +879,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `publicIPAddressVersion`
 
 IP address version.
@@ -767,13 +893,6 @@ IP address version.
 - Required: No
 - Type: string
 - Default: `'IPv4'`
-- Allowed:
-  ```Bicep
-  [
-    'IPv4'
-    'IPv6'
-  ]
-  ```
 
 ### Parameter: `publicIPAllocationMethod`
 
@@ -782,13 +901,6 @@ The public IP address allocation method.
 - Required: No
 - Type: string
 - Default: `'Static'`
-- Allowed:
-  ```Bicep
-  [
-    'Dynamic'
-    'Static'
-  ]
-  ```
 
 ### Parameter: `publicIpPrefixResourceId`
 
@@ -803,6 +915,17 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'DNS Resolver Contributor'`
+  - `'DNS Zone Contributor'`
+  - `'Domain Services Contributor'`
+  - `'Domain Services Reader'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Private DNS Zone Contributor'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
 
 **Required parameters**
 
@@ -819,6 +942,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -869,6 +993,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -893,13 +1024,6 @@ Name of a public IP address SKU.
 - Required: No
 - Type: string
 - Default: `'Standard'`
-- Allowed:
-  ```Bicep
-  [
-    'Basic'
-    'Standard'
-  ]
-  ```
 
 ### Parameter: `skuTier`
 
@@ -908,13 +1032,6 @@ Tier of a public IP address SKU.
 - Required: No
 - Type: string
 - Default: `'Regional'`
-- Allowed:
-  ```Bicep
-  [
-    'Global'
-    'Regional'
-  ]
-  ```
 
 ### Parameter: `tags`
 
@@ -922,30 +1039,6 @@ Tags of the resource.
 
 - Required: No
 - Type: object
-
-### Parameter: `zones`
-
-A list of availability zones denoting the IP allocated for the resource needs to come from.
-
-- Required: No
-- Type: array
-- Default:
-  ```Bicep
-  [
-    1
-    2
-    3
-  ]
-  ```
-- Allowed:
-  ```Bicep
-  [
-    1
-    2
-    3
-  ]
-  ```
-
 
 ## Outputs
 
@@ -959,8 +1052,12 @@ A list of availability zones denoting the IP allocated for the resource needs to
 
 ## Cross-referenced modules
 
-_None_
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

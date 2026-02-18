@@ -15,7 +15,7 @@ param resourceGroupName string = 'dep-${namePrefix}-insights.components-${servic
 param resourceLocation string = deployment().location
 
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
-param serviceShort string = 'icmax'
+param serviceShort string = 'icpmax'
 
 @description('Optional. A token to inject into the name of each resource.')
 param namePrefix string = '#_namePrefix_#'
@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -43,7 +43,7 @@ module nestedDependencies 'dependencies.bicep' = {
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -70,6 +70,9 @@ module testDeployment '../../../main.bicep' = {
     forceCustomerStorageForProfiler: true
     linkedStorageAccountResourceId: nestedDependencies.outputs.storageAccountResourceId
     workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
+    flowType: 'Redfield'
+    requestSource: 'Azure'
+    immediatePurgeDataOn30Days: true
     diagnosticSettings: [
       {
         name: 'customSetting'
@@ -84,13 +87,19 @@ module testDeployment '../../../main.bicep' = {
         workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
       }
     ]
+    lock: {
+      kind: 'CanNotDelete'
+      name: 'myCustomLockName'
+    }
     roleAssignments: [
       {
+        name: '8aacced3-3fce-41bc-a416-959df1acec57'
         roleDefinitionIdOrName: 'Owner'
         principalId: nestedDependencies.outputs.managedIdentityPrincipalId
         principalType: 'ServicePrincipal'
       }
       {
+        name: guid('Custom seed ${namePrefix}${serviceShort}')
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
         principalId: nestedDependencies.outputs.managedIdentityPrincipalId
         principalType: 'ServicePrincipal'

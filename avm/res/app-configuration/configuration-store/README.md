@@ -1,11 +1,14 @@
 # App Configuration Stores `[Microsoft.AppConfiguration/configurationStores]`
 
-> ⚠️THIS MODULE IS CURRENTLY ORPHANED.⚠️
-> 
-> - Only security and bug fixes are being handled by the AVM core team at present.
-> - If interested in becoming the module owner of this orphaned module (must be Microsoft FTE), please look for the related "orphaned module" GitHub issue [here](https://aka.ms/AVM/OrphanedModules)!
-
 This module deploys an App Configuration Store.
+
+You can reference the module as follows:
+```bicep
+module configurationStore 'br/public:avm/res/app-configuration/configuration-store:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
 
 ## Navigation
 
@@ -18,15 +21,16 @@ This module deploys an App Configuration Store.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.AppConfiguration/configurationStores` | [2023-03-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.AppConfiguration/2023-03-01/configurationStores) |
-| `Microsoft.AppConfiguration/configurationStores/keyValues` | [2023-03-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.AppConfiguration/2023-03-01/configurationStores/keyValues) |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
-| `Microsoft.Network/privateEndpoints` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints) |
-| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints/privateDnsZoneGroups) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.AppConfiguration/configurationStores` | 2025-02-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.appconfiguration_configurationstores.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.AppConfiguration/2025-02-01-preview/configurationStores)</li></ul> |
+| `Microsoft.AppConfiguration/configurationStores/keyValues` | 2025-02-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.appconfiguration_configurationstores_keyvalues.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.AppConfiguration/2025-02-01-preview/configurationStores/keyValues)</li></ul> |
+| `Microsoft.AppConfiguration/configurationStores/replicas` | 2025-02-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.appconfiguration_configurationstores_replicas.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.AppConfiguration/2025-02-01-preview/configurationStores/replicas)</li></ul> |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Insights/diagnosticSettings` | 2021-05-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.insights_diagnosticsettings.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings)</li></ul> |
+| `Microsoft.Network/privateEndpoints` | 2024-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/privateEndpoints)</li></ul> |
+| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | 2024-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints_privatednszonegroups.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/privateEndpoints/privateDnsZoneGroups)</li></ul> |
 
 ## Usage examples
 
@@ -46,6 +50,8 @@ The following section provides usage examples for the module, which were used to
 
 This instance deploys the module with the minimum set of required parameters.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
 
 <details>
 
@@ -53,12 +59,11 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module configurationStore 'br/public:avm/res/app-configuration/configuration-store:<version>' = {
-  name: 'configurationStoreDeployment'
   params: {
     // Required parameters
     name: 'accmin001'
     // Non-required parameters
-    location: '<location>'
+    enablePurgeProtection: false
   }
 }
 ```
@@ -68,7 +73,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -80,11 +85,27 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
       "value": "accmin001"
     },
     // Non-required parameters
-    "location": {
-      "value": "<location>"
+    "enablePurgeProtection": {
+      "value": false
     }
   }
 }
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/app-configuration/configuration-store:<version>'
+
+// Required parameters
+param name = 'accmin001'
+// Non-required parameters
+param enablePurgeProtection = false
 ```
 
 </details>
@@ -94,6 +115,8 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 
 This instance deploys the module using Customer-Managed-Keys using a User-Assigned Identity to access the Customer-Managed-Key secret.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/encr]
+
 
 <details>
 
@@ -101,7 +124,6 @@ This instance deploys the module using Customer-Managed-Keys using a User-Assign
 
 ```bicep
 module configurationStore 'br/public:avm/res/app-configuration/configuration-store:<version>' = {
-  name: 'configurationStoreDeployment'
   params: {
     // Required parameters
     name: 'accencr001'
@@ -112,7 +134,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
       keyVaultResourceId: '<keyVaultResourceId>'
       userAssignedIdentityResourceId: '<userAssignedIdentityResourceId>'
     }
-    disableLocalAuth: false
+    disableLocalAuth: '<disableLocalAuth>'
     enablePurgeProtection: false
     keyValues: [
       {
@@ -128,7 +150,6 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
         value: 'valueName'
       }
     ]
-    location: '<location>'
     managedIdentities: {
       userAssignedResourceIds: [
         '<managedIdentityResourceId>'
@@ -144,7 +165,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -167,7 +188,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
       }
     },
     "disableLocalAuth": {
-      "value": false
+      "value": "<disableLocalAuth>"
     },
     "enablePurgeProtection": {
       "value": false
@@ -188,9 +209,6 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
         }
       ]
     },
-    "location": {
-      "value": "<location>"
-    },
     "managedIdentities": {
       "value": {
         "userAssignedResourceIds": [
@@ -208,9 +226,54 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/app-configuration/configuration-store:<version>'
+
+// Required parameters
+param name = 'accencr001'
+// Non-required parameters
+param createMode = 'Default'
+param customerManagedKey = {
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+  userAssignedIdentityResourceId: '<userAssignedIdentityResourceId>'
+}
+param disableLocalAuth = '<disableLocalAuth>'
+param enablePurgeProtection = false
+param keyValues = [
+  {
+    contentType: 'contentType'
+    name: 'keyName'
+    roleAssignments: [
+      {
+        principalId: '<principalId>'
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'Reader'
+      }
+    ]
+    value: 'valueName'
+  }
+]
+param managedIdentities = {
+  userAssignedResourceIds: [
+    '<managedIdentityResourceId>'
+  ]
+}
+param softDeleteRetentionInDays = 1
+```
+
+</details>
+<p>
+
 ### Example 3: _Using large parameter set_
 
 This instance deploys the module with most of its features enabled.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
 
 
 <details>
@@ -219,7 +282,6 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module configurationStore 'br/public:avm/res/app-configuration/configuration-store:<version>' = {
-  name: 'configurationStoreDeployment'
   params: {
     // Required parameters
     name: 'accmax001'
@@ -239,7 +301,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
         workspaceResourceId: '<workspaceResourceId>'
       }
     ]
-    disableLocalAuth: false
+    disableLocalAuth: '<disableLocalAuth>'
     enablePurgeProtection: false
     keyValues: [
       {
@@ -247,9 +309,20 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
         name: 'keyName'
         roleAssignments: [
           {
+            name: '56e2c190-b31e-4518-84de-170b8a5c1b24'
             principalId: '<principalId>'
             principalType: 'ServicePrincipal'
-            roleDefinitionIdOrName: 'Reader'
+            roleDefinitionIdOrName: 'Owner'
+          }
+          {
+            principalId: '<principalId>'
+            principalType: 'ServicePrincipal'
+            roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+          }
+          {
+            principalId: '<principalId>'
+            principalType: 'ServicePrincipal'
+            roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
           }
         ]
         value: 'valueName'
@@ -270,13 +343,24 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
         '<managedIdentityResourceId>'
       ]
     }
+    replicaLocations: [
+      {
+        name: 'mycentralusreplica'
+        replicaLocation: 'centralus'
+      }
+      {
+        replicaLocation: 'westus'
+      }
+    ]
     roleAssignments: [
       {
+        name: '695044c2-3f1f-4843-970a-bed584b95a9a'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -302,7 +386,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -334,7 +418,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
       ]
     },
     "disableLocalAuth": {
-      "value": false
+      "value": "<disableLocalAuth>"
     },
     "enablePurgeProtection": {
       "value": false
@@ -346,9 +430,20 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
           "name": "keyName",
           "roleAssignments": [
             {
+              "name": "56e2c190-b31e-4518-84de-170b8a5c1b24",
               "principalId": "<principalId>",
               "principalType": "ServicePrincipal",
-              "roleDefinitionIdOrName": "Reader"
+              "roleDefinitionIdOrName": "Owner"
+            },
+            {
+              "principalId": "<principalId>",
+              "principalType": "ServicePrincipal",
+              "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
+            },
+            {
+              "principalId": "<principalId>",
+              "principalType": "ServicePrincipal",
+              "roleDefinitionIdOrName": "<roleDefinitionIdOrName>"
             }
           ],
           "value": "valueName"
@@ -376,14 +471,27 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
         ]
       }
     },
+    "replicaLocations": {
+      "value": [
+        {
+          "name": "mycentralusreplica",
+          "replicaLocation": "centralus"
+        },
+        {
+          "replicaLocation": "westus"
+        }
+      ]
+    },
     "roleAssignments": {
       "value": [
         {
+          "name": "695044c2-3f1f-4843-970a-bed584b95a9a",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -412,9 +520,117 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/app-configuration/configuration-store:<version>'
+
+// Required parameters
+param name = 'accmax001'
+// Non-required parameters
+param createMode = 'Default'
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    metricCategories: [
+      {
+        category: 'AllMetrics'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param disableLocalAuth = '<disableLocalAuth>'
+param enablePurgeProtection = false
+param keyValues = [
+  {
+    contentType: 'contentType'
+    name: 'keyName'
+    roleAssignments: [
+      {
+        name: '56e2c190-b31e-4518-84de-170b8a5c1b24'
+        principalId: '<principalId>'
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'Owner'
+      }
+      {
+        principalId: '<principalId>'
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+      }
+      {
+        principalId: '<principalId>'
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+      }
+    ]
+    value: 'valueName'
+  }
+  {
+    name: 'keyName2'
+    value: 'valueName2'
+  }
+]
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param managedIdentities = {
+  systemAssigned: true
+  userAssignedResourceIds: [
+    '<managedIdentityResourceId>'
+  ]
+}
+param replicaLocations = [
+  {
+    name: 'mycentralusreplica'
+    replicaLocation: 'centralus'
+  }
+  {
+    replicaLocation: 'westus'
+  }
+]
+param roleAssignments = [
+  {
+    name: '695044c2-3f1f-4843-970a-bed584b95a9a'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param softDeleteRetentionInDays = 1
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
+
 ### Example 4: _Private endpoint-enabled deployment_
 
 This instance deploys the module with private endpoints.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/pe]
 
 
 <details>
@@ -423,20 +639,21 @@ This instance deploys the module with private endpoints.
 
 ```bicep
 module configurationStore 'br/public:avm/res/app-configuration/configuration-store:<version>' = {
-  name: 'configurationStoreDeployment'
   params: {
     // Required parameters
     name: 'accpe001'
     // Non-required parameters
     createMode: 'Default'
-    disableLocalAuth: false
     enablePurgeProtection: false
-    location: '<location>'
     privateEndpoints: [
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         subnetResourceId: '<subnetResourceId>'
         tags: {
           Environment: 'Non-Prod'
@@ -445,9 +662,13 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
         }
       }
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         subnetResourceId: '<subnetResourceId>'
       }
     ]
@@ -461,7 +682,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -476,21 +697,19 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
     "createMode": {
       "value": "Default"
     },
-    "disableLocalAuth": {
-      "value": false
-    },
     "enablePurgeProtection": {
       "value": false
-    },
-    "location": {
-      "value": "<location>"
     },
     "privateEndpoints": {
       "value": [
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "subnetResourceId": "<subnetResourceId>",
           "tags": {
             "Environment": "Non-Prod",
@@ -499,9 +718,13 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
           }
         },
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "subnetResourceId": "<subnetResourceId>"
         }
       ]
@@ -516,9 +739,56 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/app-configuration/configuration-store:<version>'
+
+// Required parameters
+param name = 'accpe001'
+// Non-required parameters
+param createMode = 'Default'
+param enablePurgeProtection = false
+param privateEndpoints = [
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    subnetResourceId: '<subnetResourceId>'
+    tags: {
+      Environment: 'Non-Prod'
+      'hidden-title': 'This is visible in the resource name'
+      Role: 'DeploymentValidation'
+    }
+  }
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    subnetResourceId: '<subnetResourceId>'
+  }
+]
+param softDeleteRetentionInDays = 1
+```
+
+</details>
+<p>
+
 ### Example 5: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -527,7 +797,6 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module configurationStore 'br/public:avm/res/app-configuration/configuration-store:<version>' = {
-  name: 'configurationStoreDeployment'
   params: {
     // Required parameters
     name: 'accwaf001'
@@ -541,7 +810,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
         workspaceResourceId: '<workspaceResourceId>'
       }
     ]
-    disableLocalAuth: false
+    disableLocalAuth: '<disableLocalAuth>'
     enablePurgeProtection: false
     keyValues: [
       {
@@ -550,7 +819,14 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
         value: 'valueName'
       }
     ]
-    location: '<location>'
+    replicaLocations: [
+      {
+        replicaLocation: 'centralus'
+      }
+      {
+        replicaLocation: 'westus'
+      }
+    ]
     softDeleteRetentionInDays: 1
     tags: {
       Environment: 'Non-Prod'
@@ -566,7 +842,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -592,7 +868,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
       ]
     },
     "disableLocalAuth": {
-      "value": false
+      "value": "<disableLocalAuth>"
     },
     "enablePurgeProtection": {
       "value": false
@@ -606,8 +882,15 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
         }
       ]
     },
-    "location": {
-      "value": "<location>"
+    "replicaLocations": {
+      "value": [
+        {
+          "replicaLocation": "centralus"
+        },
+        {
+          "replicaLocation": "westus"
+        }
+      ]
     },
     "softDeleteRetentionInDays": {
       "value": 1
@@ -626,6 +909,52 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/app-configuration/configuration-store:<version>'
+
+// Required parameters
+param name = 'accwaf001'
+// Non-required parameters
+param createMode = 'Default'
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param disableLocalAuth = '<disableLocalAuth>'
+param enablePurgeProtection = false
+param keyValues = [
+  {
+    contentType: 'contentType'
+    name: 'keyName'
+    value: 'valueName'
+  }
+]
+param replicaLocations = [
+  {
+    replicaLocation: 'centralus'
+  }
+  {
+    replicaLocation: 'westus'
+  }
+]
+param softDeleteRetentionInDays = 1
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -641,9 +970,10 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 | :-- | :-- | :-- |
 | [`createMode`](#parameter-createmode) | string | Indicates whether the configuration store need to be recovered. |
 | [`customerManagedKey`](#parameter-customermanagedkey) | object | The customer managed key definition. |
+| [`dataPlaneProxy`](#parameter-dataplaneproxy) | object | Property specifying the configuration of data plane proxy for Azure Resource Manager (ARM). |
 | [`diagnosticSettings`](#parameter-diagnosticsettings) | array | The diagnostic settings of the service. |
 | [`disableLocalAuth`](#parameter-disablelocalauth) | bool | Disables all authentication methods other than AAD authentication. |
-| [`enablePurgeProtection`](#parameter-enablepurgeprotection) | bool | Property specifying whether protection against purge is enabled for this configuration store. |
+| [`enablePurgeProtection`](#parameter-enablepurgeprotection) | bool | Property specifying whether protection against purge is enabled for this configuration store. Defaults to true unless sku is set to Free, since purge protection is not available in Free tier. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`keyValues`](#parameter-keyvalues) | array | All Key / Values to create. Requires local authentication to be enabled. |
 | [`location`](#parameter-location) | string | Location for all Resources. |
@@ -651,6 +981,7 @@ module configurationStore 'br/public:avm/res/app-configuration/configuration-sto
 | [`managedIdentities`](#parameter-managedidentities) | object | The managed identity definition for this resource. |
 | [`privateEndpoints`](#parameter-privateendpoints) | array | Configuration details for private endpoints. For security reasons, it is recommended to use private endpoints whenever possible. |
 | [`publicNetworkAccess`](#parameter-publicnetworkaccess) | string | Whether or not public network access is allowed for this resource. For security reasons it should be disabled. If not specified, it will be disabled by default if private endpoints are set. |
+| [`replicaLocations`](#parameter-replicalocations) | array | All Replicas to create. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
 | [`sku`](#parameter-sku) | string | Pricing tier of App Configuration. |
 | [`softDeleteRetentionInDays`](#parameter-softdeleteretentionindays) | int | The amount of time in days that the configuration store will be retained when it is soft deleted. |
@@ -696,7 +1027,8 @@ The customer managed key definition.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`keyVersion`](#parameter-customermanagedkeykeyversion) | string | The version of the customer managed key to reference for encryption. If not provided, using 'latest'. |
+| [`autoRotationEnabled`](#parameter-customermanagedkeyautorotationenabled) | bool | Enable or disable auto-rotating to the latest key version. Default is `true`. If set to `false`, the latest key version at the time of the deployment is used. |
+| [`keyVersion`](#parameter-customermanagedkeykeyversion) | string | The version of the customer managed key to reference for encryption. If not provided, using version as per 'autoRotationEnabled' setting. |
 | [`userAssignedIdentityResourceId`](#parameter-customermanagedkeyuserassignedidentityresourceid) | string | User assigned identity to use when fetching the customer managed key. Required if no system assigned identity is available for use. |
 
 ### Parameter: `customerManagedKey.keyName`
@@ -713,9 +1045,16 @@ The resource ID of a key vault to reference a customer managed key for encryptio
 - Required: Yes
 - Type: string
 
+### Parameter: `customerManagedKey.autoRotationEnabled`
+
+Enable or disable auto-rotating to the latest key version. Default is `true`. If set to `false`, the latest key version at the time of the deployment is used.
+
+- Required: No
+- Type: bool
+
 ### Parameter: `customerManagedKey.keyVersion`
 
-The version of the customer managed key to reference for encryption. If not provided, using 'latest'.
+The version of the customer managed key to reference for encryption. If not provided, using version as per 'autoRotationEnabled' setting.
 
 - Required: No
 - Type: string
@@ -726,6 +1065,53 @@ User assigned identity to use when fetching the customer managed key. Required i
 
 - Required: No
 - Type: string
+
+### Parameter: `dataPlaneProxy`
+
+Property specifying the configuration of data plane proxy for Azure Resource Manager (ARM).
+
+- Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateLinkDelegation`](#parameter-dataplaneproxyprivatelinkdelegation) | string | The data plane proxy private link delegation. This property manages if a request from delegated Azure Resource Manager (ARM) private link is allowed when the data plane resource requires private link. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`authenticationMode`](#parameter-dataplaneproxyauthenticationmode) | string | The data plane proxy authentication mode. This property manages the authentication mode of request to the data plane resources. 'Pass-through' is recommended. |
+
+### Parameter: `dataPlaneProxy.privateLinkDelegation`
+
+The data plane proxy private link delegation. This property manages if a request from delegated Azure Resource Manager (ARM) private link is allowed when the data plane resource requires private link.
+
+- Required: Yes
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Disabled'
+    'Enabled'
+  ]
+  ```
+
+### Parameter: `dataPlaneProxy.authenticationMode`
+
+The data plane proxy authentication mode. This property manages the authentication mode of request to the data plane resources. 'Pass-through' is recommended.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Local'
+    'Pass-through'
+  ]
+  ```
 
 ### Parameter: `diagnosticSettings`
 
@@ -741,10 +1127,10 @@ The diagnostic settings of the service.
 | [`eventHubAuthorizationRuleResourceId`](#parameter-diagnosticsettingseventhubauthorizationruleresourceid) | string | Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to. |
 | [`eventHubName`](#parameter-diagnosticsettingseventhubname) | string | Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 | [`logAnalyticsDestinationType`](#parameter-diagnosticsettingsloganalyticsdestinationtype) | string | A string indicating whether the export to Log Analytics should use the default destination type, i.e. AzureDiagnostics, or use a destination type. |
-| [`logCategoriesAndGroups`](#parameter-diagnosticsettingslogcategoriesandgroups) | array | The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to '' to disable log collection. |
+| [`logCategoriesAndGroups`](#parameter-diagnosticsettingslogcategoriesandgroups) | array | The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to `[]` to disable log collection. |
 | [`marketplacePartnerResourceId`](#parameter-diagnosticsettingsmarketplacepartnerresourceid) | string | The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs. |
-| [`metricCategories`](#parameter-diagnosticsettingsmetriccategories) | array | The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to '' to disable log collection. |
-| [`name`](#parameter-diagnosticsettingsname) | string | The name of diagnostic setting. |
+| [`metricCategories`](#parameter-diagnosticsettingsmetriccategories) | array | The name of metrics that will be streamed. "allMetrics" includes all possible metrics for the resource. Set to `[]` to disable metric collection. |
+| [`name`](#parameter-diagnosticsettingsname) | string | The name of the diagnostic setting. |
 | [`storageAccountResourceId`](#parameter-diagnosticsettingsstorageaccountresourceid) | string | Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 | [`workspaceResourceId`](#parameter-diagnosticsettingsworkspaceresourceid) | string | Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 
@@ -778,7 +1164,7 @@ A string indicating whether the export to Log Analytics should use the default d
 
 ### Parameter: `diagnosticSettings.logCategoriesAndGroups`
 
-The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to '' to disable log collection.
+The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to `[]` to disable log collection.
 
 - Required: No
 - Type: array
@@ -788,7 +1174,8 @@ The name of logs that will be streamed. "allLogs" includes all possible logs for
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`category`](#parameter-diagnosticsettingslogcategoriesandgroupscategory) | string | Name of a Diagnostic Log category for a resource type this setting is applied to. Set the specific logs to collect here. |
-| [`categoryGroup`](#parameter-diagnosticsettingslogcategoriesandgroupscategorygroup) | string | Name of a Diagnostic Log category group for a resource type this setting is applied to. Set to 'AllLogs' to collect all logs. |
+| [`categoryGroup`](#parameter-diagnosticsettingslogcategoriesandgroupscategorygroup) | string | Name of a Diagnostic Log category group for a resource type this setting is applied to. Set to `allLogs` to collect all logs. |
+| [`enabled`](#parameter-diagnosticsettingslogcategoriesandgroupsenabled) | bool | Enable or disable the category explicitly. Default is `true`. |
 
 ### Parameter: `diagnosticSettings.logCategoriesAndGroups.category`
 
@@ -799,10 +1186,17 @@ Name of a Diagnostic Log category for a resource type this setting is applied to
 
 ### Parameter: `diagnosticSettings.logCategoriesAndGroups.categoryGroup`
 
-Name of a Diagnostic Log category group for a resource type this setting is applied to. Set to 'AllLogs' to collect all logs.
+Name of a Diagnostic Log category group for a resource type this setting is applied to. Set to `allLogs` to collect all logs.
 
 - Required: No
 - Type: string
+
+### Parameter: `diagnosticSettings.logCategoriesAndGroups.enabled`
+
+Enable or disable the category explicitly. Default is `true`.
+
+- Required: No
+- Type: bool
 
 ### Parameter: `diagnosticSettings.marketplacePartnerResourceId`
 
@@ -813,7 +1207,7 @@ The full ARM resource ID of the Marketplace resource to which you would like to 
 
 ### Parameter: `diagnosticSettings.metricCategories`
 
-The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to '' to disable log collection.
+The name of metrics that will be streamed. "allMetrics" includes all possible metrics for the resource. Set to `[]` to disable metric collection.
 
 - Required: No
 - Type: array
@@ -822,18 +1216,31 @@ The name of logs that will be streamed. "allLogs" includes all possible logs for
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`category`](#parameter-diagnosticsettingsmetriccategoriescategory) | string | Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to 'AllMetrics' to collect all metrics. |
+| [`category`](#parameter-diagnosticsettingsmetriccategoriescategory) | string | Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to `AllMetrics` to collect all metrics. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`enabled`](#parameter-diagnosticsettingsmetriccategoriesenabled) | bool | Enable or disable the category explicitly. Default is `true`. |
 
 ### Parameter: `diagnosticSettings.metricCategories.category`
 
-Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to 'AllMetrics' to collect all metrics.
+Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to `AllMetrics` to collect all metrics.
 
 - Required: Yes
 - Type: string
 
+### Parameter: `diagnosticSettings.metricCategories.enabled`
+
+Enable or disable the category explicitly. Default is `true`.
+
+- Required: No
+- Type: bool
+
 ### Parameter: `diagnosticSettings.name`
 
-The name of diagnostic setting.
+The name of the diagnostic setting.
 
 - Required: No
 - Type: string
@@ -858,15 +1265,15 @@ Disables all authentication methods other than AAD authentication.
 
 - Required: No
 - Type: bool
-- Default: `False`
+- Default: `True`
 
 ### Parameter: `enablePurgeProtection`
 
-Property specifying whether protection against purge is enabled for this configuration store.
+Property specifying whether protection against purge is enabled for this configuration store. Defaults to true unless sku is set to Free, since purge protection is not available in Free tier.
 
 - Required: No
 - Type: bool
-- Default: `False`
+- Default: `True`
 
 ### Parameter: `enableTelemetry`
 
@@ -904,6 +1311,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -927,6 +1335,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `managedIdentities`
 
 The managed identity definition for this resource.
@@ -939,7 +1354,7 @@ The managed identity definition for this resource.
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`systemAssigned`](#parameter-managedidentitiessystemassigned) | bool | Enables system assigned managed identity on the resource. |
-| [`userAssignedResourceIds`](#parameter-managedidentitiesuserassignedresourceids) | array | The resource ID(s) to assign to the resource. |
+| [`userAssignedResourceIds`](#parameter-managedidentitiesuserassignedresourceids) | array | The resource ID(s) to assign to the resource. Required if a user assigned identity is used for encryption. |
 
 ### Parameter: `managedIdentities.systemAssigned`
 
@@ -950,7 +1365,7 @@ Enables system assigned managed identity on the resource.
 
 ### Parameter: `managedIdentities.userAssignedResourceIds`
 
-The resource ID(s) to assign to the resource.
+The resource ID(s) to assign to the resource. Required if a user assigned identity is used for encryption.
 
 - Required: No
 - Type: array
@@ -972,21 +1387,22 @@ Configuration details for private endpoints. For security reasons, it is recomme
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`applicationSecurityGroupResourceIds`](#parameter-privateendpointsapplicationsecuritygroupresourceids) | array | Application security groups in which the private endpoint IP configuration is included. |
+| [`applicationSecurityGroupResourceIds`](#parameter-privateendpointsapplicationsecuritygroupresourceids) | array | Application security groups in which the Private Endpoint IP configuration is included. |
 | [`customDnsConfigs`](#parameter-privateendpointscustomdnsconfigs) | array | Custom DNS configurations. |
-| [`customNetworkInterfaceName`](#parameter-privateendpointscustomnetworkinterfacename) | string | The custom name of the network interface attached to the private endpoint. |
+| [`customNetworkInterfaceName`](#parameter-privateendpointscustomnetworkinterfacename) | string | The custom name of the network interface attached to the Private Endpoint. |
 | [`enableTelemetry`](#parameter-privateendpointsenabletelemetry) | bool | Enable/Disable usage telemetry for module. |
-| [`ipConfigurations`](#parameter-privateendpointsipconfigurations) | array | A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints. |
+| [`ipConfigurations`](#parameter-privateendpointsipconfigurations) | array | A list of IP configurations of the Private Endpoint. This will be used to map to the first-party Service endpoints. |
 | [`isManualConnection`](#parameter-privateendpointsismanualconnection) | bool | If Manual Private Link Connection is required. |
-| [`location`](#parameter-privateendpointslocation) | string | The location to deploy the private endpoint to. |
+| [`location`](#parameter-privateendpointslocation) | string | The location to deploy the Private Endpoint to. |
 | [`lock`](#parameter-privateendpointslock) | object | Specify the type of lock. |
-| [`manualConnectionRequestMessage`](#parameter-privateendpointsmanualconnectionrequestmessage) | string | A message passed to the owner of the remote resource with the manual connection request. Restricted to 140 chars. |
-| [`name`](#parameter-privateendpointsname) | string | The name of the private endpoint. |
-| [`privateDnsZoneGroupName`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided. |
-| [`privateDnsZoneResourceIds`](#parameter-privateendpointsprivatednszoneresourceids) | array | The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones. |
+| [`manualConnectionRequestMessage`](#parameter-privateendpointsmanualconnectionrequestmessage) | string | A message passed to the owner of the remote resource with the manual connection request. |
+| [`name`](#parameter-privateendpointsname) | string | The name of the Private Endpoint. |
+| [`privateDnsZoneGroup`](#parameter-privateendpointsprivatednszonegroup) | object | The private DNS Zone Group to configure for the Private Endpoint. |
+| [`privateLinkServiceConnectionName`](#parameter-privateendpointsprivatelinkserviceconnectionname) | string | The name of the private link connection to create. |
+| [`resourceGroupResourceId`](#parameter-privateendpointsresourcegroupresourceid) | string | The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used. |
 | [`roleAssignments`](#parameter-privateendpointsroleassignments) | array | Array of role assignments to create. |
-| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the private endpoint for. For example "vault", "mysqlServer" or "dataFactory". |
-| [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/resource groups in this deployment. |
+| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the Private Endpoint for. For example "vault" for a Key Vault Private Endpoint. |
+| [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/Resource Groups in this deployment. |
 
 ### Parameter: `privateEndpoints.subnetResourceId`
 
@@ -997,7 +1413,7 @@ Resource ID of the subnet where the endpoint needs to be created.
 
 ### Parameter: `privateEndpoints.applicationSecurityGroupResourceIds`
 
-Application security groups in which the private endpoint IP configuration is included.
+Application security groups in which the Private Endpoint IP configuration is included.
 
 - Required: No
 - Type: array
@@ -1013,15 +1429,13 @@ Custom DNS configurations.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | Fqdn that resolves to private endpoint IP address. |
 | [`ipAddresses`](#parameter-privateendpointscustomdnsconfigsipaddresses) | array | A list of private IP addresses of the private endpoint. |
 
-### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+**Optional parameters**
 
-Fqdn that resolves to private endpoint IP address.
-
-- Required: No
-- Type: string
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | FQDN that resolves to private endpoint IP address. |
 
 ### Parameter: `privateEndpoints.customDnsConfigs.ipAddresses`
 
@@ -1030,9 +1444,16 @@ A list of private IP addresses of the private endpoint.
 - Required: Yes
 - Type: array
 
+### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+
+FQDN that resolves to private endpoint IP address.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.customNetworkInterfaceName`
 
-The custom name of the network interface attached to the private endpoint.
+The custom name of the network interface attached to the Private Endpoint.
 
 - Required: No
 - Type: string
@@ -1046,7 +1467,7 @@ Enable/Disable usage telemetry for module.
 
 ### Parameter: `privateEndpoints.ipConfigurations`
 
-A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints.
+A list of IP configurations of the Private Endpoint. This will be used to map to the first-party Service endpoints.
 
 - Required: No
 - Type: array
@@ -1110,7 +1531,7 @@ If Manual Private Link Connection is required.
 
 ### Parameter: `privateEndpoints.location`
 
-The location to deploy the private endpoint to.
+The location to deploy the Private Endpoint to.
 
 - Required: No
 - Type: string
@@ -1128,6 +1549,7 @@ Specify the type of lock.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-privateendpointslockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-privateendpointslockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-privateendpointslocknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `privateEndpoints.lock.kind`
 
@@ -1151,33 +1573,99 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.manualConnectionRequestMessage`
 
-A message passed to the owner of the remote resource with the manual connection request. Restricted to 140 chars.
+A message passed to the owner of the remote resource with the manual connection request.
 
 - Required: No
 - Type: string
 
 ### Parameter: `privateEndpoints.name`
 
-The name of the private endpoint.
+The name of the Private Endpoint.
 
 - Required: No
 - Type: string
 
-### Parameter: `privateEndpoints.privateDnsZoneGroupName`
+### Parameter: `privateEndpoints.privateDnsZoneGroup`
 
-The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided.
-
-- Required: No
-- Type: string
-
-### Parameter: `privateEndpoints.privateDnsZoneResourceIds`
-
-The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones.
+The private DNS Zone Group to configure for the Private Endpoint.
 
 - Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneGroupConfigs`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigs) | array | The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the Private DNS Zone Group. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs`
+
+The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones.
+
+- Required: Yes
 - Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneResourceId`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsprivatednszoneresourceid) | string | The resource id of the private DNS zone. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsname) | string | The name of the private DNS Zone Group config. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.privateDnsZoneResourceId`
+
+The resource id of the private DNS zone.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.name`
+
+The name of the private DNS Zone Group config.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.name`
+
+The name of the Private DNS Zone Group.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.privateLinkServiceConnectionName`
+
+The name of the private link connection to create.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.resourceGroupResourceId`
+
+The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used.
+
+- Required: No
+- Type: string
 
 ### Parameter: `privateEndpoints.roleAssignments`
 
@@ -1185,6 +1673,17 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'DNS Resolver Contributor'`
+  - `'DNS Zone Contributor'`
+  - `'Domain Services Contributor'`
+  - `'Domain Services Reader'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Private DNS Zone Contributor'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
 
 **Required parameters**
 
@@ -1201,6 +1700,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-privateendpointsroleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-privateendpointsroleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-privateendpointsroleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-privateendpointsroleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-privateendpointsroleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `privateEndpoints.roleAssignments.principalId`
@@ -1251,6 +1751,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1270,14 +1777,14 @@ The principal type of the assigned principal ID.
 
 ### Parameter: `privateEndpoints.service`
 
-The subresource to deploy the private endpoint for. For example "vault", "mysqlServer" or "dataFactory".
+The subresource to deploy the Private Endpoint for. For example "vault" for a Key Vault Private Endpoint.
 
 - Required: No
 - Type: string
 
 ### Parameter: `privateEndpoints.tags`
 
-Tags to be applied on all resources/resource groups in this deployment.
+Tags to be applied on all resources/Resource Groups in this deployment.
 
 - Required: No
 - Type: object
@@ -1296,12 +1803,57 @@ Whether or not public network access is allowed for this resource. For security 
   ]
   ```
 
+### Parameter: `replicaLocations`
+
+All Replicas to create.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`replicaLocation`](#parameter-replicalocationsreplicalocation) | string | Location of the replica. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-replicalocationsname) | string | Name of the replica. |
+
+### Parameter: `replicaLocations.replicaLocation`
+
+Location of the replica.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `replicaLocations.name`
+
+Name of the replica.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments`
 
 Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'App Compliance Automation Administrator'`
+  - `'App Compliance Automation Reader'`
+  - `'App Configuration Data Owner'`
+  - `'App Configuration Data Reader'`
+  - `'App Configuration Reader'`
+  - `'App Configuration Contributor'`
+  - `'Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -1318,6 +1870,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -1368,6 +1921,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1395,7 +1955,9 @@ Pricing tier of App Configuration.
 - Allowed:
   ```Bicep
   [
+    'Developer'
     'Free'
+    'Premium'
     'Standard'
   ]
   ```
@@ -1407,6 +1969,8 @@ The amount of time in days that the configuration store will be retained when it
 - Required: No
 - Type: int
 - Default: `1`
+- MinValue: 1
+- MaxValue: 7
 
 ### Parameter: `tags`
 
@@ -1415,13 +1979,14 @@ Tags of the resource.
 - Required: No
 - Type: object
 
-
 ## Outputs
 
 | Output | Type | Description |
 | :-- | :-- | :-- |
+| `endpoint` | string | The endpoint of the app configuration. |
 | `location` | string | The location the resource was deployed into. |
 | `name` | string | The name of the app configuration. |
+| `privateEndpoints` | array | The private endpoints of the app configuration. |
 | `resourceGroupName` | string | The resource group the app configuration store was deployed into. |
 | `resourceId` | string | The resource ID of the app configuration. |
 | `systemAssignedMIPrincipalId` | string | The principal ID of the system assigned identity. |
@@ -1432,8 +1997,11 @@ This section gives you an overview of all local-referenced module files (i.e., o
 
 | Reference | Type |
 | :-- | :-- |
-| `br/public:avm/res/network/private-endpoint:0.4.1` | Remote reference |
+| `br/public:avm/res/network/private-endpoint:0.11.0` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.5.1` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.0` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

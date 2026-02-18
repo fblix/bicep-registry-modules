@@ -11,46 +11,44 @@ metadata description = 'This instance deploys the module in alignment with the b
 @maxLength(90)
 param resourceGroupName string = 'dep-${namePrefix}-web.sites-${serviceShort}-rg'
 
-@description('Optional. The location to deploy resources to.')
-param resourceLocation string = deployment().location
-
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 param serviceShort string = 'wswaf'
 
 @description('Optional. A token to inject into the name of each resource. This value can be automatically injected by the CI.')
 param namePrefix string = '#_namePrefix_#'
 
+// Note, we enforce the location due to quota restrictions in other regions (esp. east-us)
+#disable-next-line no-hardcoded-location
+var enforcedLocation = 'swedencentral'
 // ============ //
 // Dependencies //
 // ============ //
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
-  location: resourceLocation
+  location: enforcedLocation
 }
 
 module nestedDependencies 'dependencies.bicep' = {
   scope: resourceGroup
-  name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
+  name: '${uniqueString(deployment().name, enforcedLocation)}-nestedDependencies'
   params: {
     serverFarmName: 'dep-${namePrefix}-sf-${serviceShort}'
-    location: resourceLocation
   }
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
-  name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
+  name: '${uniqueString(deployment().name, enforcedLocation)}-diagnosticDependencies'
   params: {
     storageAccountName: 'dep${namePrefix}diasa${serviceShort}01'
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -61,10 +59,9 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
 module testDeployment '../../../main.bicep' = [
   for iteration in ['init', 'idem']: {
     scope: resourceGroup
-    name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
+    name: '${uniqueString(deployment().name, enforcedLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
       kind: 'app'
       serverFarmResourceId: nestedDependencies.outputs.serverFarmResourceId
       diagnosticSettings: [
@@ -79,6 +76,8 @@ module testDeployment '../../../main.bicep' = [
       siteConfig: {
         healthCheckPath: '/healthz'
         alwaysOn: true
+        minTlsVersion: '1.2'
+        ftpsState: 'FtpsOnly'
         metadata: [
           {
             name: 'CURRENT_STACK'
@@ -97,14 +96,12 @@ module testDeployment '../../../main.bicep' = [
         }
       ]
       scmSiteAlsoStopped: true
-      vnetContentShareEnabled: true
-      vnetImagePullEnabled: true
-      vnetRouteAllEnabled: true
       publicNetworkAccess: 'Disabled'
+      outboundVnetRouting: {
+        allTraffic: true
+        contentShareTraffic: true
+        imagePullTraffic: true
+      }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

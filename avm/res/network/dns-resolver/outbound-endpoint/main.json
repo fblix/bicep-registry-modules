@@ -5,12 +5,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "6638776759595697100"
+      "version": "0.38.5.1644",
+      "templateHash": "12016157190295204834"
     },
     "name": "DNS Resolver Outbound Endpoint",
-    "description": "This module deploys a DNS Resolver Outbound Endpoint.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a DNS Resolver Outbound Endpoint."
   },
   "parameters": {
     "dnsResolverName": {
@@ -29,10 +28,13 @@
     },
     "tags": {
       "type": "object",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Network/dnsResolvers/outboundEndpoints@2025-05-01#properties/tags"
+        },
         "description": "Optional. Tags of the resource."
-      }
+      },
+      "nullable": true
     },
     "subnetResourceId": {
       "type": "string",
@@ -51,12 +53,12 @@
     "dnsResolver": {
       "existing": true,
       "type": "Microsoft.Network/dnsResolvers",
-      "apiVersion": "2022-07-01",
+      "apiVersion": "2025-05-01",
       "name": "[parameters('dnsResolverName')]"
     },
     "outboundEndpoint": {
       "type": "Microsoft.Network/dnsResolvers/outboundEndpoints",
-      "apiVersion": "2022-07-01",
+      "apiVersion": "2025-05-01",
       "name": "[format('{0}/{1}', parameters('dnsResolverName'), parameters('name'))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -64,10 +66,7 @@
         "subnet": {
           "id": "[parameters('subnetResourceId')]"
         }
-      },
-      "dependsOn": [
-        "dnsResolver"
-      ]
+      }
     }
   },
   "outputs": {

@@ -1,8 +1,6 @@
 name: "avm.res.service-bus.namespace"
 
 on:
-  schedule:
-    - cron: "0 12 1/15 * *" # Bi-Weekly Test (on 1st & 15th of month)
   workflow_dispatch:
     inputs:
       staticValidation:
@@ -20,6 +18,10 @@ on:
         description: "Remove deployed module"
         required: false
         default: true
+      customLocation:
+        type: string
+        description: "Default location overwrite (e.g., eastus)"
+        required: false
   push:
     branches:
       - main
@@ -28,8 +30,9 @@ on:
       - ".github/workflows/avm.template.module.yml"
       - ".github/workflows/avm.res.service-bus.namespace.yml"
       - "avm/res/service-bus/namespace/**"
-      - "avm/utilities/pipelines/**"
-      - "!avm/utilities/pipelines/platform/**"
+      - "utilities/pipelines/**"
+      - "!utilities/pipelines/platform/**"
+      - "!*/**/child-module-publish-allowed-list.json"
       - "!*/**/README.md"
 
 env:
@@ -46,9 +49,10 @@ jobs:
   job_initialize_pipeline:
     runs-on: ubuntu-latest
     name: "Initialize pipeline"
+    if: ${{ !cancelled() && !(github.repository != 'Azure/bicep-registry-modules' && github.event_name != 'workflow_dispatch') }}
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: "Set input parameters to output variables"

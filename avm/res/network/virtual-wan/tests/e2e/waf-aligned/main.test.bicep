@@ -26,18 +26,9 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
-}
-
-module nestedDependencies 'dependencies.bicep' = {
-  scope: resourceGroup
-  name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
-  params: {
-    managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
-    location: resourceLocation
-  }
 }
 
 // ============== //
@@ -50,11 +41,8 @@ module testDeployment '../../../main.bicep' = [
     scope: resourceGroup
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
-      location: resourceLocation
       name: '${namePrefix}${serviceShort}001'
       allowBranchToBranchTraffic: true
-      allowVnetToVnetTraffic: true
-      disableVpnEncryption: true
       type: 'Basic'
       tags: {
         'hidden-title': 'This is visible in the resource name'
@@ -62,8 +50,5 @@ module testDeployment '../../../main.bicep' = [
         Role: 'DeploymentValidation'
       }
     }
-    dependsOn: [
-      nestedDependencies
-    ]
   }
 ]

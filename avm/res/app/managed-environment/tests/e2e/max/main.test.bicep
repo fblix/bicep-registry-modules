@@ -38,6 +38,11 @@ module nestedDependencies 'dependencies.bicep' = {
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
     location: resourceLocation
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
+    keyVaultName: 'dep-${namePrefix}-kv-${serviceShort}'
+    certname: 'dep-${namePrefix}-cert-${serviceShort}'
+    certDeploymentScriptName: 'dep-${namePrefix}-ds-${serviceShort}'
+    appInsightsComponentName: 'dep-${namePrefix}-appinsights-${serviceShort}'
+    storageAccountName: 'dep${namePrefix}sa${serviceShort}'
   }
 }
 
@@ -46,55 +51,105 @@ module nestedDependencies 'dependencies.bicep' = {
 // ============== //
 
 @batchSize(1)
-module testDeployment '../../../main.bicep' = [for iteration in [ 'init', 'idem' ]: {
-  scope: resourceGroup
-  name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
-  params: {
-    name: '${namePrefix}${serviceShort}001'
-    logAnalyticsWorkspaceResourceId: nestedDependencies.outputs.logAnalyticsWorkspaceResourceId
-    location: resourceLocation
-    workloadProfiles: [
-      {
-        workloadProfileType: 'D4'
-        name: 'CAW01'
-        minimumCount: 0
-        maximumCount: 3
+module testDeployment '../../../main.bicep' = [
+  for iteration in ['init', 'idem']: {
+    scope: resourceGroup
+    name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
+    params: {
+      name: '${namePrefix}${serviceShort}001'
+      appLogsConfiguration: {
+        destination: 'log-analytics'
+        logAnalyticsConfiguration: {
+          customerId: nestedDependencies.outputs.logAnalyticsWorkspaceCustomerId
+          sharedKey: listKeys(
+            '${resourceGroup.id}/providers/Microsoft.OperationalInsights/workspaces/dep-${namePrefix}-law-${serviceShort}',
+            '2023-09-01'
+          ).primarySharedKey
+        }
       }
-    ]
-    internal: true
-    dockerBridgeCidr: '172.16.0.1/28'
-    platformReservedCidr: '172.17.17.0/24'
-    platformReservedDnsIP: '172.17.17.17'
-    infrastructureSubnetId: nestedDependencies.outputs.subnetResourceId
-    infrastructureResourceGroupName: 'me-${resourceGroupName}'
-    roleAssignments: [
-      {
-        roleDefinitionIdOrName: 'Owner'
-        principalId: nestedDependencies.outputs.managedIdentityPrincipalId
-        principalType: 'ServicePrincipal'
+      location: resourceLocation
+      appInsightsConnectionString: nestedDependencies.outputs.appInsightsConnectionString
+      workloadProfiles: [
+        {
+          workloadProfileType: 'D4'
+          name: 'CAW01'
+          minimumCount: 0
+          maximumCount: 3
+        }
+      ]
+      internal: true
+      dnsSuffix: 'contoso.com'
+      certificate: {
+        name: 'dep-${namePrefix}-cert-${serviceShort}'
+        certificateKeyVaultProperties: {
+          identityResourceId: nestedDependencies.outputs.managedIdentityResourceId
+          keyVaultUrl: '${nestedDependencies.outputs.keyVaultUri}secrets/${split(nestedDependencies.outputs.certificateSecretUrl, '/')[4]}'
+        }
       }
-      {
-        roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
-        principalId: nestedDependencies.outputs.managedIdentityPrincipalId
-        principalType: 'ServicePrincipal'
+      dockerBridgeCidr: '172.16.0.1/28'
+      peerTrafficEncryption: true
+      platformReservedCidr: '172.17.17.0/24'
+      platformReservedDnsIP: '172.17.17.17'
+      infrastructureSubnetResourceId: nestedDependencies.outputs.subnetResourceId
+      infrastructureResourceGroupName: 'me-${resourceGroupName}'
+      managedIdentities: {
+        systemAssigned: true
+        userAssignedResourceIds: [
+          nestedDependencies.outputs.managedIdentityResourceId
+        ]
       }
-      {
-        roleDefinitionIdOrName: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')
-        principalId: nestedDependencies.outputs.managedIdentityPrincipalId
-        principalType: 'ServicePrincipal'
+      openTelemetryConfiguration: {
+        tracesConfiguration: {
+          destinations: ['appInsights']
+        }
+        logsConfiguration: {
+          destinations: ['appInsights']
+        }
       }
-    ]
+      roleAssignments: [
+        {
+          roleDefinitionIdOrName: 'Owner'
+          principalId: nestedDependencies.outputs.managedIdentityPrincipalId
+          principalType: 'ServicePrincipal'
+        }
+        {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
+          roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+          principalId: nestedDependencies.outputs.managedIdentityPrincipalId
+          principalType: 'ServicePrincipal'
+        }
+        {
+          roleDefinitionIdOrName: subscriptionResourceId(
+            'Microsoft.Authorization/roleDefinitions',
+            'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+          )
+          principalId: nestedDependencies.outputs.managedIdentityPrincipalId
+          principalType: 'ServicePrincipal'
+        }
+      ]
 
-    lock: {
-      kind: 'CanNotDelete'
-      name: 'myCustomLockName'
-    }
-    tags: {
-      'hidden-title': 'This is visible in the resource name'
-      Env: 'test'
+      storages: [
+        {
+          kind: 'SMB'
+          shareName: 'smbfileshare'
+          accessMode: 'ReadWrite'
+          storageAccountName: nestedDependencies.outputs.storageAccountName
+        }
+        {
+          kind: 'NFS'
+          shareName: 'nfsfileshare'
+          accessMode: 'ReadWrite'
+          storageAccountName: nestedDependencies.outputs.storageAccountName
+        }
+      ]
+      lock: {
+        kind: 'CanNotDelete'
+        name: 'myCustomLockName'
+      }
+      tags: {
+        'hidden-title': 'This is visible in the resource name'
+        Env: 'test'
+      }
     }
   }
-  dependsOn: [
-    nestedDependencies
-  ]
-}]
+]

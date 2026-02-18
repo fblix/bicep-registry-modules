@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -36,13 +36,12 @@ module nestedDependencies 'dependencies.bicep' = {
   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
   params: {
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
-    location: resourceLocation
   }
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -50,7 +49,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}01'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}01'
-    location: resourceLocation
   }
 }
 
@@ -58,62 +56,57 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
 // Test Execution //
 // ============== //
 
-module testDeployment '../../../main.bicep' = {
-  scope: resourceGroup
-  name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}'
-  params: {
-    location: resourceLocation
-    name: '${namePrefix}${serviceShort}001'
-    sku: 'standard3'
-    cmkEnforcement: 'Enabled'
-    disableLocalAuth: false
-    authOptions: {
-      aadOrApiKey: {
-        aadAuthFailureMode: 'http401WithBearerChallenge'
+@batchSize(1)
+module testDeployment '../../../main.bicep' = [
+  for iteration in ['init', 'idem']: {
+    scope: resourceGroup
+    name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
+    params: {
+      name: '${namePrefix}${serviceShort}001'
+      sku: 'standard3'
+      cmkEnforcement: 'Enabled'
+      disableLocalAuth: false
+      authOptions: {
+        aadOrApiKey: {
+          aadAuthFailureMode: 'http401WithBearerChallenge'
+        }
       }
-    }
-    hostingMode: 'highDensity'
-    partitionCount: 2
-    replicaCount: 3
-    managedIdentities: {
-      systemAssigned: true
-    }
-    lock: {
-      kind: 'CanNotDelete'
-      name: 'myCustomLockName'
-    }
-    networkRuleSet: {
-      ipRules: [
-        {
-          value: '40.74.28.0/23'
-        }
-        {
-          value: '87.147.204.13'
-        }
-      ]
-    }
-    diagnosticSettings: [
-      {
-        name: 'customSetting'
-        metricCategories: [
+      hostingMode: 'HighDensity'
+      partitionCount: 2
+      replicaCount: 3
+      managedIdentities: {
+        systemAssigned: true
+      }
+      networkRuleSet: {
+        bypass: 'AzureServices'
+        ipRules: [
           {
-            category: 'AllMetrics'
+            value: '40.74.28.0/23'
+          }
+          {
+            value: '87.147.204.13'
           }
         ]
-        eventHubName: diagnosticDependencies.outputs.eventHubNamespaceEventHubName
-        eventHubAuthorizationRuleResourceId: diagnosticDependencies.outputs.eventHubAuthorizationRuleId
-        storageAccountResourceId: diagnosticDependencies.outputs.storageAccountResourceId
-        workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
       }
-    ]
-    tags: {
-      'hidden-title': 'This is visible in the resource name'
-      Environment: 'Non-Prod'
-      Role: 'DeploymentValidation'
+      diagnosticSettings: [
+        {
+          name: 'customSetting'
+          metricCategories: [
+            {
+              category: 'AllMetrics'
+            }
+          ]
+          eventHubName: diagnosticDependencies.outputs.eventHubNamespaceEventHubName
+          eventHubAuthorizationRuleResourceId: diagnosticDependencies.outputs.eventHubAuthorizationRuleId
+          storageAccountResourceId: diagnosticDependencies.outputs.storageAccountResourceId
+          workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
+        }
+      ]
+      tags: {
+        'hidden-title': 'This is visible in the resource name'
+        Environment: 'Non-Prod'
+        Role: 'DeploymentValidation'
+      }
     }
   }
-  dependsOn: [
-    nestedDependencies
-    diagnosticDependencies
-  ]
-}
+]

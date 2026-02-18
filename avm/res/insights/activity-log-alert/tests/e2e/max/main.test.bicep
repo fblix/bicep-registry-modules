@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -37,7 +37,6 @@ module nestedDependencies 'dependencies.bicep' = {
   params: {
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
     actionGroupName: 'dep-${namePrefix}-ag-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -90,13 +89,19 @@ module testDeployment '../../../main.bicep' = [
           actionGroupId: nestedDependencies.outputs.actionGroupResourceId
         }
       ]
+      lock: {
+        kind: 'CanNotDelete'
+        name: 'myCustomLockName'
+      }
       roleAssignments: [
         {
+          name: 'be96d7a9-6596-40c7-9acd-db6acd5cd41b'
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
         {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'

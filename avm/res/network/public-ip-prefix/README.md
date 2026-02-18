@@ -2,6 +2,14 @@
 
 This module deploys a Public IP Prefix.
 
+You can reference the module as follows:
+```bicep
+module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
@@ -13,11 +21,11 @@ This module deploys a Public IP Prefix.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Network/publicIPPrefixes` | [2023-09-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/publicIPPrefixes) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Network/publicIPPrefixes` | 2025-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_publicipprefixes.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2025-01-01/publicIPPrefixes)</li></ul> |
 
 ## Usage examples
 
@@ -28,12 +36,16 @@ The following section provides usage examples for the module, which were used to
 >**Note**: To reference the module, please use the following syntax `br/public:avm/res/network/public-ip-prefix:<version>`.
 
 - [Using only defaults](#example-1-using-only-defaults)
-- [Using large parameter set](#example-2-using-large-parameter-set)
-- [WAF-aligned](#example-3-waf-aligned)
+- [IPv6 Public IP Prefix](#example-2-ipv6-public-ip-prefix)
+- [Using large parameter set](#example-3-using-large-parameter-set)
+- [StandardV2 SKU](#example-4-standardv2-sku)
+- [WAF-aligned](#example-5-waf-aligned)
 
 ### Example 1: _Using only defaults_
 
 This instance deploys the module with the minimum set of required parameters.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
 
 
 <details>
@@ -42,7 +54,6 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
-  name: 'publicIpPrefixDeployment'
   params: {
     // Required parameters
     name: 'npipmin001'
@@ -58,7 +69,7 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -83,9 +94,28 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
 </details>
 <p>
 
-### Example 2: _Using large parameter set_
+<details>
 
-This instance deploys the module with most of its features enabled.
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/public-ip-prefix:<version>'
+
+// Required parameters
+param name = 'npipmin001'
+param prefixLength = 28
+// Non-required parameters
+param location = '<location>'
+```
+
+</details>
+<p>
+
+### Example 2: _IPv6 Public IP Prefix_
+
+This instance deploys the module using the IPv6 version of the Public IP Prefix.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/ipv6]
 
 
 <details>
@@ -94,12 +124,96 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
-  name: 'publicIpPrefixDeployment'
+  params: {
+    // Required parameters
+    name: 'npipip6001'
+    prefixLength: 127
+    // Non-required parameters
+    location: '<location>'
+    publicIPAddressVersion: 'IPv6'
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via JSON parameters file</summary>
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Required parameters
+    "name": {
+      "value": "npipip6001"
+    },
+    "prefixLength": {
+      "value": 127
+    },
+    // Non-required parameters
+    "location": {
+      "value": "<location>"
+    },
+    "publicIPAddressVersion": {
+      "value": "IPv6"
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/public-ip-prefix:<version>'
+
+// Required parameters
+param name = 'npipip6001'
+param prefixLength = 127
+// Non-required parameters
+param location = '<location>'
+param publicIPAddressVersion = 'IPv6'
+```
+
+</details>
+<p>
+
+### Example 3: _Using large parameter set_
+
+This instance deploys the module with most of its features enabled.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
+
+
+<details>
+
+<summary>via Bicep module</summary>
+
+```bicep
+module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
   params: {
     // Required parameters
     name: 'npipmax001'
     prefixLength: 28
     // Non-required parameters
+    availabilityZones: [
+      1
+      2
+    ]
+    ipTags: [
+      {
+        ipTagType: 'RoutingPreference'
+        tag: 'Internet'
+      }
+    ]
     location: '<location>'
     lock: {
       kind: 'CanNotDelete'
@@ -107,11 +221,13 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
     }
     roleAssignments: [
       {
+        name: 'bf62ed65-07be-48e8-b760-2d59795cd282'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -127,10 +243,6 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
       'hidden-title': 'This is visible in the resource name'
       Role: 'DeploymentValidation'
     }
-    zones: [
-      1
-      2
-    ]
   }
 }
 ```
@@ -140,7 +252,7 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -155,6 +267,20 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
       "value": 28
     },
     // Non-required parameters
+    "availabilityZones": {
+      "value": [
+        1,
+        2
+      ]
+    },
+    "ipTags": {
+      "value": [
+        {
+          "ipTagType": "RoutingPreference",
+          "tag": "Internet"
+        }
+      ]
+    },
     "location": {
       "value": "<location>"
     },
@@ -167,11 +293,13 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
     "roleAssignments": {
       "value": [
         {
+          "name": "bf62ed65-07be-48e8-b760-2d59795cd282",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -189,12 +317,6 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
         "hidden-title": "This is visible in the resource name",
         "Role": "DeploymentValidation"
       }
-    },
-    "zones": {
-      "value": [
-        1,
-        2
-      ]
     }
   }
 }
@@ -203,9 +325,66 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
 </details>
 <p>
 
-### Example 3: _WAF-aligned_
+<details>
 
-This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/public-ip-prefix:<version>'
+
+// Required parameters
+param name = 'npipmax001'
+param prefixLength = 28
+// Non-required parameters
+param availabilityZones = [
+  1
+  2
+]
+param ipTags = [
+  {
+    ipTagType: 'RoutingPreference'
+    tag: 'Internet'
+  }
+]
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param roleAssignments = [
+  {
+    name: 'bf62ed65-07be-48e8-b760-2d59795cd282'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
+
+### Example 4: _StandardV2 SKU_
+
+This instance deploys the module using the StandardV2 SKU.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/v2sku]
 
 
 <details>
@@ -214,7 +393,76 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
-  name: 'publicIpPrefixDeployment'
+  params: {
+    // Required parameters
+    name: 'npipv2001'
+    prefixLength: 28
+    // Non-required parameters
+    skuName: 'StandardV2'
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via JSON parameters file</summary>
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Required parameters
+    "name": {
+      "value": "npipv2001"
+    },
+    "prefixLength": {
+      "value": 28
+    },
+    // Non-required parameters
+    "skuName": {
+      "value": "StandardV2"
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/public-ip-prefix:<version>'
+
+// Required parameters
+param name = 'npipv2001'
+param prefixLength = 28
+// Non-required parameters
+param skuName = 'StandardV2'
+```
+
+</details>
+<p>
+
+### Example 5: _WAF-aligned_
+
+This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
+
+
+<details>
+
+<summary>via Bicep module</summary>
+
+```bicep
+module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
   params: {
     // Required parameters
     name: 'npipwaf001'
@@ -235,7 +483,7 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -267,6 +515,27 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/public-ip-prefix:<version>'
+
+// Required parameters
+param name = 'npipwaf001'
+param prefixLength = 28
+// Non-required parameters
+param location = '<location>'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -281,13 +550,17 @@ module publicIpPrefix 'br/public:avm/res/network/public-ip-prefix:<version>' = {
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
+| [`availabilityZones`](#parameter-availabilityzones) | array | A list of availability zones denoting the IP allocated for the resource needs to come from. This is only applicable for regional public IP prefixes and must be empty for global public IP prefixes. |
 | [`customIPPrefix`](#parameter-customipprefix) | object | The custom IP address prefix that this prefix is associated with. A custom IP address prefix is a contiguous range of IP addresses owned by an external customer and provisioned into a subscription. When a custom IP prefix is in Provisioned, Commissioning, or Commissioned state, a linked public IP prefix can be created. Either as a subset of the custom IP prefix range or the entire range. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
+| [`ipTags`](#parameter-iptags) | array | The list of tags associated with the public IP prefix. |
 | [`location`](#parameter-location) | string | Location for all resources. |
 | [`lock`](#parameter-lock) | object | The lock settings of the service. |
+| [`publicIPAddressVersion`](#parameter-publicipaddressversion) | string | The public IP address version. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
+| [`skuName`](#parameter-skuname) | string | Name of the Public IP Prefix SKU. |
 | [`tags`](#parameter-tags) | object | Tags of the resource. |
-| [`zones`](#parameter-zones) | array | A list of availability zones denoting the IP allocated for the resource needs to come from. |
+| [`tier`](#parameter-tier) | string | Tier of a public IP prefix SKU. If set to `Global`, the `zones` property must be empty. |
 
 ### Parameter: `name`
 
@@ -302,6 +575,31 @@ Length of the Public IP Prefix.
 
 - Required: Yes
 - Type: int
+- MinValue: 21
+- MaxValue: 127
+
+### Parameter: `availabilityZones`
+
+A list of availability zones denoting the IP allocated for the resource needs to come from. This is only applicable for regional public IP prefixes and must be empty for global public IP prefixes.
+
+- Required: No
+- Type: array
+- Default:
+  ```Bicep
+  [
+    1
+    2
+    3
+  ]
+  ```
+- Allowed:
+  ```Bicep
+  [
+    1
+    2
+    3
+  ]
+  ```
 
 ### Parameter: `customIPPrefix`
 
@@ -309,7 +607,6 @@ The custom IP address prefix that this prefix is associated with. A custom IP ad
 
 - Required: No
 - Type: object
-- Default: `{}`
 
 ### Parameter: `enableTelemetry`
 
@@ -318,6 +615,34 @@ Enable/Disable usage telemetry for module.
 - Required: No
 - Type: bool
 - Default: `True`
+
+### Parameter: `ipTags`
+
+The list of tags associated with the public IP prefix.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`ipTagType`](#parameter-iptagsiptagtype) | string | The IP tag type. |
+| [`tag`](#parameter-iptagstag) | string | The IP tag. |
+
+### Parameter: `ipTags.ipTagType`
+
+The IP tag type.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `ipTags.tag`
+
+The IP tag.
+
+- Required: Yes
+- Type: string
 
 ### Parameter: `location`
 
@@ -340,6 +665,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -363,12 +689,41 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
+### Parameter: `publicIPAddressVersion`
+
+The public IP address version.
+
+- Required: No
+- Type: string
+- Default: `'IPv4'`
+- Allowed:
+  ```Bicep
+  [
+    'IPv4'
+    'IPv6'
+  ]
+  ```
+
 ### Parameter: `roleAssignments`
 
 Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -385,6 +740,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -435,6 +791,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -452,6 +815,21 @@ The principal type of the assigned principal ID.
   ]
   ```
 
+### Parameter: `skuName`
+
+Name of the Public IP Prefix SKU.
+
+- Required: No
+- Type: string
+- Default: `'Standard'`
+- Allowed:
+  ```Bicep
+  [
+    'Standard'
+    'StandardV2'
+  ]
+  ```
+
 ### Parameter: `tags`
 
 Tags of the resource.
@@ -459,29 +837,20 @@ Tags of the resource.
 - Required: No
 - Type: object
 
-### Parameter: `zones`
+### Parameter: `tier`
 
-A list of availability zones denoting the IP allocated for the resource needs to come from.
+Tier of a public IP prefix SKU. If set to `Global`, the `zones` property must be empty.
 
 - Required: No
-- Type: array
-- Default:
-  ```Bicep
-  [
-    1
-    2
-    3
-  ]
-  ```
+- Type: string
+- Default: `'Regional'`
 - Allowed:
   ```Bicep
   [
-    1
-    2
-    3
+    'Global'
+    'Regional'
   ]
   ```
-
 
 ## Outputs
 
@@ -494,8 +863,12 @@ A list of availability zones denoting the IP allocated for the resource needs to
 
 ## Cross-referenced modules
 
-_None_
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

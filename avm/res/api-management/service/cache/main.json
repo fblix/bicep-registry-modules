@@ -5,12 +5,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "5452536693649070190"
+      "version": "0.37.4.10188",
+      "templateHash": "18421200341941067261"
     },
     "name": "API Management Service Caches",
-    "description": "This module deploys an API Management Service Cache.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys an API Management Service Cache."
   },
   "parameters": {
     "apiManagementServiceName": {
@@ -50,28 +49,52 @@
       "metadata": {
         "description": "Required. Location identifier to use cache from (should be either 'default' or valid Azure region identifier)."
       }
+    },
+    "enableTelemetry": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Optional. Enable/Disable usage telemetry for module."
+      }
     }
   },
   "resources": {
     "service": {
       "existing": true,
       "type": "Microsoft.ApiManagement/service",
-      "apiVersion": "2021-08-01",
+      "apiVersion": "2024-05-01",
       "name": "[parameters('apiManagementServiceName')]"
+    },
+    "avmTelemetry": {
+      "condition": "[parameters('enableTelemetry')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2024-03-01",
+      "name": "[format('46d3xbcp.res.apimgmt-cache.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name), 0, 4))]",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [],
+          "outputs": {
+            "telemetry": {
+              "type": "String",
+              "value": "For more information, see https://aka.ms/avm/TelemetryInfo"
+            }
+          }
+        }
+      }
     },
     "cache": {
       "type": "Microsoft.ApiManagement/service/caches",
-      "apiVersion": "2021-08-01",
+      "apiVersion": "2024-05-01",
       "name": "[format('{0}/{1}', parameters('apiManagementServiceName'), parameters('name'))]",
       "properties": {
         "description": "[parameters('description')]",
         "connectionString": "[parameters('connectionString')]",
         "useFromLocation": "[parameters('useFromLocation')]",
         "resourceId": "[parameters('resourceId')]"
-      },
-      "dependsOn": [
-        "service"
-      ]
+      }
     }
   },
   "outputs": {

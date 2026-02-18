@@ -5,79 +5,165 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "3572364605280930173"
+      "version": "0.37.4.10188",
+      "templateHash": "17144897422770549699"
     },
     "name": "Action Groups",
-    "description": "This module deploys an Action Group.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys an Action Group."
   },
   "definitions": {
-    "roleAssignmentType": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "roleDefinitionIdOrName": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'."
-            }
-          },
-          "principalId": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. The principal ID of the principal (user/group/identity) to assign the role to."
-            }
-          },
-          "principalType": {
-            "type": "string",
-            "allowedValues": [
-              "Device",
-              "ForeignGroup",
-              "Group",
-              "ServicePrincipal",
-              "User"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The principal type of the assigned principal ID."
-            }
-          },
-          "description": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The description of the role assignment."
-            }
-          },
-          "condition": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase \"foo_storage_container\"."
-            }
-          },
-          "conditionVersion": {
-            "type": "string",
-            "allowedValues": [
-              "2.0"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Version of the condition."
-            }
-          },
-          "delegatedManagedIdentityResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The Resource Id of the delegated managed identity resource."
-            }
+    "logicAppReceiversType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The name of the logic app receiver. Names must be unique across all receivers within an action group."
+          }
+        },
+        "callbackUrl": {
+          "type": "securestring",
+          "metadata": {
+            "description": "Required. The callback url where http request sent to."
+          }
+        },
+        "resourceId": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The azure resource id of the logic app receiver."
+          }
+        },
+        "managedIdentity": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The principal id of the managed identity. The value can be \"None\", \"SystemAssigned\"."
+          }
+        },
+        "useCommonAlertSchema": {
+          "type": "bool",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Indicates whether to use common alert schema."
           }
         }
       },
-      "nullable": true
+      "metadata": {
+        "__bicep_export!": true,
+        "description": "The type describing a Logic App receiver."
+      }
+    },
+    "lockType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specify the name of lock."
+          }
+        },
+        "kind": {
+          "type": "string",
+          "allowedValues": [
+            "CanNotDelete",
+            "None",
+            "ReadOnly"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specify the type of lock."
+          }
+        },
+        "notes": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specify the notes of the lock."
+          }
+        }
+      },
+      "metadata": {
+        "description": "An AVM-aligned type for a lock.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.6.1"
+        }
+      }
+    },
+    "roleAssignmentType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name (as GUID) of the role assignment. If not provided, a GUID will be generated."
+          }
+        },
+        "roleDefinitionIdOrName": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'."
+          }
+        },
+        "principalId": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The principal ID of the principal (user/group/identity) to assign the role to."
+          }
+        },
+        "principalType": {
+          "type": "string",
+          "allowedValues": [
+            "Device",
+            "ForeignGroup",
+            "Group",
+            "ServicePrincipal",
+            "User"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The principal type of the assigned principal ID."
+          }
+        },
+        "description": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The description of the role assignment."
+          }
+        },
+        "condition": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase \"foo_storage_container\"."
+          }
+        },
+        "conditionVersion": {
+          "type": "string",
+          "allowedValues": [
+            "2.0"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Version of the condition."
+          }
+        },
+        "delegatedManagedIdentityResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The Resource Id of the delegated managed identity resource."
+          }
+        }
+      },
+      "metadata": {
+        "description": "An AVM-aligned type for a role assignment.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.6.1"
+        }
+      }
     }
   },
   "parameters": {
@@ -100,63 +186,108 @@
         "description": "Optional. Indicates whether this action group is enabled. If an action group is not enabled, then none of its receivers will receive communications."
       }
     },
+    "lock": {
+      "$ref": "#/definitions/lockType",
+      "nullable": true,
+      "metadata": {
+        "description": "Optional. The lock settings of the service."
+      }
+    },
     "roleAssignments": {
-      "$ref": "#/definitions/roleAssignmentType",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/roleAssignmentType"
+      },
+      "nullable": true,
       "metadata": {
         "description": "Optional. Array of role assignments to create."
       }
     },
     "emailReceivers": {
       "type": "array",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/properties/properties/emailReceivers"
+        },
         "description": "Optional. The list of email receivers that are part of this action group."
-      }
+      },
+      "nullable": true
+    },
+    "eventHubReceivers": {
+      "type": "array",
+      "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/properties/properties/eventHubReceivers"
+        },
+        "description": "Optional. The list of Event Hub receivers that are part of this action group."
+      },
+      "nullable": true
     },
     "smsReceivers": {
       "type": "array",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/properties/properties/smsReceivers"
+        },
         "description": "Optional. The list of SMS receivers that are part of this action group."
-      }
+      },
+      "nullable": true
     },
     "webhookReceivers": {
       "type": "array",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/properties/properties/webhookReceivers"
+        },
         "description": "Optional. The list of webhook receivers that are part of this action group."
-      }
+      },
+      "nullable": true
     },
     "itsmReceivers": {
       "type": "array",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/properties/properties/itsmReceivers"
+        },
         "description": "Optional. The list of ITSM receivers that are part of this action group."
-      }
+      },
+      "nullable": true
     },
     "azureAppPushReceivers": {
       "type": "array",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/properties/properties/azureAppPushReceivers"
+        },
         "description": "Optional. The list of AzureAppPush receivers that are part of this action group."
-      }
+      },
+      "nullable": true
     },
     "automationRunbookReceivers": {
       "type": "array",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/properties/properties/automationRunbookReceivers"
+        },
         "description": "Optional. The list of AutomationRunbook receivers that are part of this action group."
-      }
+      },
+      "nullable": true
     },
     "voiceReceivers": {
       "type": "array",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/properties/properties/voiceReceivers"
+        },
         "description": "Optional. The list of voice receivers that are part of this action group."
-      }
+      },
+      "nullable": true
     },
     "logicAppReceivers": {
       "type": "array",
+      "items": {
+        "$ref": "#/definitions/logicAppReceiversType"
+      },
       "nullable": true,
       "metadata": {
         "description": "Optional. The list of logic app receivers that are part of this action group."
@@ -164,24 +295,43 @@
     },
     "azureFunctionReceivers": {
       "type": "array",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/properties/properties/azureFunctionReceivers"
+        },
         "description": "Optional. The list of function receivers that are part of this action group."
-      }
+      },
+      "nullable": true
     },
     "armRoleReceivers": {
       "type": "array",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/properties/properties/armRoleReceivers"
+        },
         "description": "Optional. The list of ARM role receivers that are part of this action group. Roles are Azure RBAC roles and only built-in roles are supported."
-      }
+      },
+      "nullable": true
+    },
+    "incidentReceivers": {
+      "type": "array",
+      "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/properties/properties/incidentReceivers"
+        },
+        "description": "Optional. The list of incident receivers that are part of this action group."
+      },
+      "nullable": true
     },
     "tags": {
       "type": "object",
-      "nullable": true,
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Insights/actionGroups@2024-10-01-preview#properties/tags"
+        },
         "description": "Optional. Tags of the resource."
-      }
+      },
+      "nullable": true
     },
     "enableTelemetry": {
       "type": "bool",
@@ -199,11 +349,18 @@
     }
   },
   "variables": {
+    "copy": [
+      {
+        "name": "formattedRoleAssignments",
+        "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]",
+        "input": "[union(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')], createObject('roleDefinitionId', coalesce(tryGet(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName), if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName)))))]"
+      }
+    ],
     "builtInRoleNames": {
       "Contributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
       "Owner": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
       "Reader": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
-      "Role Based Access Control Administrator (Preview)": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
+      "Role Based Access Control Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
       "User Access Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9')]"
     }
   },
@@ -211,7 +368,7 @@
     "avmTelemetry": {
       "condition": "[parameters('enableTelemetry')]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2023-07-01",
+      "apiVersion": "2024-03-01",
       "name": "[format('46d3xbcp.res.insights-actiongroup.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
       "properties": {
         "mode": "Incremental",
@@ -230,7 +387,7 @@
     },
     "actionGroup": {
       "type": "Microsoft.Insights/actionGroups",
-      "apiVersion": "2023-01-01",
+      "apiVersion": "2024-10-01-preview",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -238,6 +395,7 @@
         "groupShortName": "[parameters('groupShortName')]",
         "enabled": "[parameters('enabled')]",
         "emailReceivers": "[parameters('emailReceivers')]",
+        "eventHubReceivers": "[parameters('eventHubReceivers')]",
         "smsReceivers": "[parameters('smsReceivers')]",
         "webhookReceivers": "[parameters('webhookReceivers')]",
         "itsmReceivers": "[parameters('itsmReceivers')]",
@@ -246,26 +404,41 @@
         "voiceReceivers": "[parameters('voiceReceivers')]",
         "logicAppReceivers": "[parameters('logicAppReceivers')]",
         "azureFunctionReceivers": "[parameters('azureFunctionReceivers')]",
-        "armRoleReceivers": "[parameters('armRoleReceivers')]"
+        "armRoleReceivers": "[parameters('armRoleReceivers')]",
+        "incidentReceivers": "[parameters('incidentReceivers')]"
       }
+    },
+    "actionGroup_lock": {
+      "condition": "[and(not(empty(coalesce(parameters('lock'), createObject()))), not(equals(tryGet(parameters('lock'), 'kind'), 'None')))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.Insights/actionGroups/{0}', parameters('name'))]",
+      "name": "[coalesce(tryGet(parameters('lock'), 'name'), format('lock-{0}', parameters('name')))]",
+      "properties": {
+        "level": "[coalesce(tryGet(parameters('lock'), 'kind'), '')]",
+        "notes": "[coalesce(tryGet(parameters('lock'), 'notes'), if(equals(tryGet(parameters('lock'), 'kind'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot delete or modify the resource or child resources.'))]"
+      },
+      "dependsOn": [
+        "actionGroup"
+      ]
     },
     "actionGroup_roleAssignments": {
       "copy": {
         "name": "actionGroup_roleAssignments",
-        "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]"
+        "count": "[length(coalesce(variables('formattedRoleAssignments'), createArray()))]"
       },
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
       "scope": "[format('Microsoft.Insights/actionGroups/{0}', parameters('name'))]",
-      "name": "[guid(resourceId('Microsoft.Insights/actionGroups', parameters('name')), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId, coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)]",
+      "name": "[coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'name'), guid(resourceId('Microsoft.Insights/actionGroups', parameters('name')), coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId, coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId))]",
       "properties": {
-        "roleDefinitionId": "[if(contains(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName), variables('builtInRoleNames')[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName], if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex()].roleDefinitionIdOrName)))]",
-        "principalId": "[coalesce(parameters('roleAssignments'), createArray())[copyIndex()].principalId]",
-        "description": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'description')]",
-        "principalType": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'principalType')]",
-        "condition": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition')]",
-        "conditionVersion": "[if(not(empty(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
-        "delegatedManagedIdentityResourceId": "[tryGet(coalesce(parameters('roleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
+        "roleDefinitionId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].roleDefinitionId]",
+        "principalId": "[coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()].principalId]",
+        "description": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'description')]",
+        "principalType": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'principalType')]",
+        "condition": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition')]",
+        "conditionVersion": "[if(not(empty(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'condition'))), coalesce(tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'conditionVersion'), '2.0'), null())]",
+        "delegatedManagedIdentityResourceId": "[tryGet(coalesce(variables('formattedRoleAssignments'), createArray())[copyIndex()], 'delegatedManagedIdentityResourceId')]"
       },
       "dependsOn": [
         "actionGroup"
@@ -299,7 +472,7 @@
       "metadata": {
         "description": "The location the resource was deployed into."
       },
-      "value": "[reference('actionGroup', '2023-01-01', 'full').location]"
+      "value": "[reference('actionGroup', '2024-10-01-preview', 'full').location]"
     }
   }
 }

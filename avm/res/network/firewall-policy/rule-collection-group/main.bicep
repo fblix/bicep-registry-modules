@@ -1,6 +1,5 @@
 metadata name = 'Firewall Policy Rule Collection Groups'
 metadata description = 'This module deploys a Firewall Policy Rule Collection Group.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Conditional. The name of the parent Firewall Policy. Required if the template is used in a standalone deployment.')
 param firewallPolicyName string
@@ -14,11 +13,11 @@ param priority int
 @description('Optional. Group of Firewall Policy rule collections.')
 param ruleCollections array?
 
-resource firewallPolicy 'Microsoft.Network/firewallPolicies@2023-04-01' existing = {
+resource firewallPolicy 'Microsoft.Network/firewallPolicies@2024-10-01' existing = {
   name: firewallPolicyName
 }
 
-resource ruleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleCollectionGroups@2023-04-01' = {
+resource ruleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleCollectionGroups@2024-10-01' = {
   name: name
   parent: firewallPolicy
   properties: {

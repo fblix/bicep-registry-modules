@@ -2,6 +2,14 @@
 
 This module deploys an Action Group.
 
+You can reference the module as follows:
+```bicep
+module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
@@ -13,10 +21,11 @@ This module deploys an Action Group.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Insights/actionGroups` | [2023-01-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2023-01-01/actionGroups) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Insights/actionGroups` | 2024-10-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.insights_actiongroups.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2024-10-01-preview/actionGroups)</li></ul> |
 
 ## Usage examples
 
@@ -34,6 +43,8 @@ The following section provides usage examples for the module, which were used to
 
 This instance deploys the module with the minimum set of required parameters.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
 
 <details>
 
@@ -41,13 +52,10 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
-  name: 'actionGroupDeployment'
   params: {
     // Required parameters
     groupShortName: 'agiagmin001'
     name: 'iagmin001'
-    // Non-required parameters
-    location: 'global'
   }
 }
 ```
@@ -57,7 +65,7 @@ module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -70,13 +78,24 @@ module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
     },
     "name": {
       "value": "iagmin001"
-    },
-    // Non-required parameters
-    "location": {
-      "value": "global"
     }
   }
 }
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/action-group:<version>'
+
+// Required parameters
+param groupShortName = 'agiagmin001'
+param name = 'iagmin001'
 ```
 
 </details>
@@ -86,6 +105,8 @@ module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
 
 This instance deploys the module with most of its features enabled.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
+
 
 <details>
 
@@ -93,7 +114,6 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
-  name: 'actionGroupDeployment'
   params: {
     // Required parameters
     groupShortName: 'agiagmax001'
@@ -112,13 +132,19 @@ module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
       }
     ]
     location: 'global'
+    lock: {
+      kind: 'CanNotDelete'
+      name: 'myCustomLockName'
+    }
     roleAssignments: [
       {
+        name: 'fc3ee4d9-d0c0-42c2-962f-082cf8d78882'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -150,7 +176,7 @@ module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -182,14 +208,22 @@ module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
     "location": {
       "value": "global"
     },
+    "lock": {
+      "value": {
+        "kind": "CanNotDelete",
+        "name": "myCustomLockName"
+      }
+    },
     "roleAssignments": {
       "value": [
         {
+          "name": "fc3ee4d9-d0c0-42c2-962f-082cf8d78882",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -224,9 +258,75 @@ module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/action-group:<version>'
+
+// Required parameters
+param groupShortName = 'agiagmax001'
+param name = 'iagmax001'
+// Non-required parameters
+param emailReceivers = [
+  {
+    emailAddress: 'test.user@testcompany.com'
+    name: 'TestUser_-EmailAction-'
+    useCommonAlertSchema: true
+  }
+  {
+    emailAddress: 'test.user2@testcompany.com'
+    name: 'TestUser2'
+    useCommonAlertSchema: true
+  }
+]
+param location = 'global'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param roleAssignments = [
+  {
+    name: 'fc3ee4d9-d0c0-42c2-962f-082cf8d78882'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param smsReceivers = [
+  {
+    countryCode: '1'
+    name: 'TestUser_-SMSAction-'
+    phoneNumber: '2345678901'
+  }
+]
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
+
 ### Example 3: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -235,13 +335,11 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
-  name: 'actionGroupDeployment'
   params: {
     // Required parameters
     groupShortName: 'agiagwaf001'
     name: 'iagwaf001'
     // Non-required parameters
-    location: 'global'
     tags: {
       Environment: 'Non-Prod'
       'hidden-title': 'This is visible in the resource name'
@@ -256,7 +354,7 @@ module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -271,9 +369,6 @@ module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
       "value": "iagwaf001"
     },
     // Non-required parameters
-    "location": {
-      "value": "global"
-    },
     "tags": {
       "value": {
         "Environment": "Non-Prod",
@@ -288,6 +383,26 @@ module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/action-group:<version>'
+
+// Required parameters
+param groupShortName = 'agiagwaf001'
+param name = 'iagwaf001'
+// Non-required parameters
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -309,8 +424,11 @@ module actionGroup 'br/public:avm/res/insights/action-group:<version>' = {
 | [`emailReceivers`](#parameter-emailreceivers) | array | The list of email receivers that are part of this action group. |
 | [`enabled`](#parameter-enabled) | bool | Indicates whether this action group is enabled. If an action group is not enabled, then none of its receivers will receive communications. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
+| [`eventHubReceivers`](#parameter-eventhubreceivers) | array | The list of Event Hub receivers that are part of this action group. |
+| [`incidentReceivers`](#parameter-incidentreceivers) | array | The list of incident receivers that are part of this action group. |
 | [`itsmReceivers`](#parameter-itsmreceivers) | array | The list of ITSM receivers that are part of this action group. |
 | [`location`](#parameter-location) | string | Location for all resources. |
+| [`lock`](#parameter-lock) | object | The lock settings of the service. |
 | [`logicAppReceivers`](#parameter-logicappreceivers) | array | The list of logic app receivers that are part of this action group. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
 | [`smsReceivers`](#parameter-smsreceivers) | array | The list of SMS receivers that are part of this action group. |
@@ -383,6 +501,20 @@ Enable/Disable usage telemetry for module.
 - Type: bool
 - Default: `True`
 
+### Parameter: `eventHubReceivers`
+
+The list of Event Hub receivers that are part of this action group.
+
+- Required: No
+- Type: array
+
+### Parameter: `incidentReceivers`
+
+The list of incident receivers that are part of this action group.
+
+- Required: No
+- Type: array
+
 ### Parameter: `itsmReceivers`
 
 The list of ITSM receivers that are part of this action group.
@@ -398,6 +530,50 @@ Location for all resources.
 - Type: string
 - Default: `'global'`
 
+### Parameter: `lock`
+
+The lock settings of the service.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
+| [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
+
+### Parameter: `lock.kind`
+
+Specify the type of lock.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'CanNotDelete'
+    'None'
+    'ReadOnly'
+  ]
+  ```
+
+### Parameter: `lock.name`
+
+Specify the name of lock.
+
+- Required: No
+- Type: string
+
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `logicAppReceivers`
 
 The list of logic app receivers that are part of this action group.
@@ -405,12 +581,68 @@ The list of logic app receivers that are part of this action group.
 - Required: No
 - Type: array
 
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`callbackUrl`](#parameter-logicappreceiverscallbackurl) | securestring | The callback url where http request sent to. |
+| [`name`](#parameter-logicappreceiversname) | string | The name of the logic app receiver. Names must be unique across all receivers within an action group. |
+| [`resourceId`](#parameter-logicappreceiversresourceid) | string | The azure resource id of the logic app receiver. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`managedIdentity`](#parameter-logicappreceiversmanagedidentity) | string | The principal id of the managed identity. The value can be "None", "SystemAssigned". |
+| [`useCommonAlertSchema`](#parameter-logicappreceiversusecommonalertschema) | bool | Indicates whether to use common alert schema. |
+
+### Parameter: `logicAppReceivers.callbackUrl`
+
+The callback url where http request sent to.
+
+- Required: Yes
+- Type: securestring
+
+### Parameter: `logicAppReceivers.name`
+
+The name of the logic app receiver. Names must be unique across all receivers within an action group.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `logicAppReceivers.resourceId`
+
+The azure resource id of the logic app receiver.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `logicAppReceivers.managedIdentity`
+
+The principal id of the managed identity. The value can be "None", "SystemAssigned".
+
+- Required: No
+- Type: string
+
+### Parameter: `logicAppReceivers.useCommonAlertSchema`
+
+Indicates whether to use common alert schema.
+
+- Required: No
+- Type: bool
+
 ### Parameter: `roleAssignments`
 
 Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -427,6 +659,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -477,6 +710,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -522,7 +762,6 @@ The list of webhook receivers that are part of this action group.
 - Required: No
 - Type: array
 
-
 ## Outputs
 
 | Output | Type | Description |
@@ -534,8 +773,12 @@ The list of webhook receivers that are part of this action group.
 
 ## Cross-referenced modules
 
-_None_
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

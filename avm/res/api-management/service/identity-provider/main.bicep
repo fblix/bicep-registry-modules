@@ -1,18 +1,24 @@
 metadata name = 'API Management Service Identity Providers'
 metadata description = 'This module deploys an API Management Service Identity Provider.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Conditional. The name of the parent API Management service. Required if the template is used in a standalone deployment.')
 param apiManagementServiceName string
 
 @description('Optional. List of Allowed Tenants when configuring Azure Active Directory login. - string.')
-param allowedTenants array = []
+param allowedTenants resourceInput<'Microsoft.ApiManagement/service/identityProviders@2024-05-01'>.properties.allowedTenants = []
 
 @description('Optional. OpenID Connect discovery endpoint hostname for AAD or AAD B2C.')
 param authority string = ''
 
 @description('Conditional. Client ID of the Application in the external Identity Provider. Required if identity provider is used.')
 param clientId string = ''
+
+@description('Optional. The client library to be used in the developer portal. Only applies to AAD and AAD B2C Identity Provider.')
+@allowed([
+  'ADAL'
+  'MSAL-2'
+])
+param clientLibrary string?
 
 @description('Conditional. Client secret of the Application in external Identity Provider, used to authenticate login request. Required if identity provider is used.')
 @secure()
@@ -48,13 +54,35 @@ param type string = 'aad'
 @description('Required. Identity provider name.')
 param name string
 
+@description('Optional. Enable/Disable usage telemetry for module.')
+param enableTelemetry bool = true
+
 var isAadB2C = (type == 'aadB2C')
 
-resource service 'Microsoft.ApiManagement/service@2021-08-01' existing = {
+resource service 'Microsoft.ApiManagement/service@2024-05-01' existing = {
   name: apiManagementServiceName
 }
 
-resource identityProvider 'Microsoft.ApiManagement/service/identityProviders@2021-08-01' = {
+#disable-next-line no-deployments-resources
+resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
+  name: '46d3xbcp.res.apimgmt-identityprovider.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name), 0, 4)}'
+  properties: {
+    mode: 'Incremental'
+    template: {
+      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
+      contentVersion: '1.0.0.0'
+      resources: []
+      outputs: {
+        telemetry: {
+          type: 'String'
+          value: 'For more information, see https://aka.ms/avm/TelemetryInfo'
+        }
+      }
+    }
+  }
+}
+
+resource identityProvider 'Microsoft.ApiManagement/service/identityProviders@2024-05-01' = {
   name: name
   parent: service
   properties: {
@@ -67,6 +95,7 @@ resource identityProvider 'Microsoft.ApiManagement/service/identityProviders@202
     profileEditingPolicyName: isAadB2C ? profileEditingPolicyName : null
     passwordResetPolicyName: isAadB2C ? passwordResetPolicyName : null
     clientId: clientId
+    clientLibrary: clientLibrary
     clientSecret: clientSecret
   }
 }

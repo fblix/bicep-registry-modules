@@ -19,12 +19,12 @@ param triggerImageDeploymentScriptName string
 @description('Required. The name of the Deployment Script to copy the VHD to a destination storage account.')
 param copyVhdDeploymentScriptName string
 
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' = {
   name: managedIdentityName
   location: location
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2025-01-01' = {
   name: storageAccountName
   location: location
   kind: 'StorageV2'
@@ -34,9 +34,9 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   properties: {
     allowBlobPublicAccess: false
   }
-  resource blobServices 'blobServices@2022-09-01' = {
+  resource blobServices 'blobServices@2025-01-01' = {
     name: 'default'
-    resource container 'containers@2022-09-01' = {
+    resource container 'containers@2025-01-01' = {
       name: 'vhds'
       properties: {
         publicAccess: 'None'
@@ -50,12 +50,11 @@ module roleAssignment 'dependencies_rbac.bicep' = {
   scope: subscription()
   params: {
     managedIdentityPrincipalId: managedIdentity.properties.principalId
-    managedIdentityResourceId: managedIdentity.id
   }
 }
 
 // Deploy image template
-resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2022-02-14' = {
+resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2024-02-01' = {
   name: imageTemplateName
   location: location
   identity: {
@@ -94,7 +93,7 @@ resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2022-02-14
 }
 
 // Trigger VHD creation
-resource triggerImageDeploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+resource triggerImageDeploymentScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: triggerImageDeploymentScriptName
   location: location
   kind: 'AzurePowerShell'
@@ -105,10 +104,10 @@ resource triggerImageDeploymentScript 'Microsoft.Resources/deploymentScripts@202
     }
   }
   properties: {
-    azPowerShellVersion: '8.0'
+    azPowerShellVersion: '11.5'
     retentionInterval: 'P1D'
     arguments: '-ImageTemplateName \\"${imageTemplate.name}\\" -ImageTemplateResourceGroup \\"${resourceGroup().name}\\"'
-    scriptContent: loadTextContent('../../../../../../utilities/e2e-template-assets/scripts/Start-ImageTemplate.ps1')
+    scriptContent: loadTextContent('../../../../../../../utilities/e2e-template-assets/scripts/Start-ImageTemplate.ps1')
     cleanupPreference: 'OnSuccess'
     forceUpdateTag: baseTime
   }
@@ -118,7 +117,7 @@ resource triggerImageDeploymentScript 'Microsoft.Resources/deploymentScripts@202
 }
 
 // Copy VHD to destination storage account
-resource copyVhdDeploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+resource copyVhdDeploymentScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: copyVhdDeploymentScriptName
   location: location
   kind: 'AzurePowerShell'
@@ -129,10 +128,10 @@ resource copyVhdDeploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-
     }
   }
   properties: {
-    azPowerShellVersion: '8.0'
+    azPowerShellVersion: '11.5'
     retentionInterval: 'P1D'
     arguments: '-ImageTemplateName \\"${imageTemplate.name}\\" -ImageTemplateResourceGroup \\"${resourceGroup().name}\\" -DestinationStorageAccountName \\"${storageAccount.name}\\" -VhdName \\"${imageTemplateName}\\" -WaitForComplete'
-    scriptContent: loadTextContent('../../../../../../utilities/e2e-template-assets/scripts/Copy-VhdToStorageAccount.ps1')
+    scriptContent: loadTextContent('../../../../../../../utilities/e2e-template-assets/scripts/Copy-VhdToStorageAccount.ps1')
     cleanupPreference: 'OnSuccess'
     forceUpdateTag: baseTime
   }

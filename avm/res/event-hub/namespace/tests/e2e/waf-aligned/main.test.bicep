@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -36,13 +36,14 @@ module nestedDependencies 'dependencies.bicep' = {
   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
   params: {
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
+    managedIdentityName: 'dep-${namePrefix}-ids-${serviceShort}'
     storageAccountName: 'dep${namePrefix}sa${serviceShort}'
   }
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -64,10 +65,11 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
-      zoneRedundant: true
       skuName: 'Standard'
       skuCapacity: 2
+      managedIdentities: {
+        userAssignedResourceId: nestedDependencies.outputs.managedIdentityResourceId
+      }
       authorizationRules: [
         {
           name: 'RootManageSharedAccessKey'
@@ -122,15 +124,23 @@ module testDeployment '../../../main.bicep' = [
               ]
             }
           ]
-          captureDescriptionDestinationArchiveNameFormat: '{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}'
-          captureDescriptionDestinationBlobContainer: 'eventhub'
-          captureDescriptionDestinationName: 'EventHubArchive.AzureBlockBlob'
-          captureDescriptionDestinationStorageAccountResourceId: nestedDependencies.outputs.storageAccountResourceId
-          captureDescriptionEnabled: true
-          captureDescriptionEncoding: 'Avro'
-          captureDescriptionIntervalInSeconds: 300
-          captureDescriptionSizeLimitInBytes: 314572800
-          captureDescriptionSkipEmptyArchives: true
+          captureDescription: {
+            destination: {
+              name: 'EventHubArchive.AzureBlockBlob'
+              identity: {
+                userAssignedResourceId: nestedDependencies.outputs.managedIdentityResourceId
+              }
+              properties: {
+                archiveNameFormat: '{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}'
+                blobContainer: nestedDependencies.outputs.storageAccountContainerName
+                storageAccountResourceId: nestedDependencies.outputs.storageAccountResourceId
+              }
+            }
+            intervalInSeconds: 300
+            sizeLimitInBytes: 314572800
+            skipEmptyArchives: true
+            encoding: 'Avro'
+          }
           consumergroups: [
             {
               name: 'custom'
@@ -167,9 +177,13 @@ module testDeployment '../../../main.bicep' = [
       }
       privateEndpoints: [
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
           tags: {
             'hidden-title': 'This is visible in the resource name'

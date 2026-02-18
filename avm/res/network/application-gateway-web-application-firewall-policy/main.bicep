@@ -1,6 +1,5 @@
 metadata name = 'Application Gateway Web Application Firewall (WAF) Policies'
 metadata description = 'This module deploys an Application Gateway Web Application Firewall (WAF) Policy.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. Name of the Application Gateway WAF policy.')
 param name string
@@ -9,45 +8,45 @@ param name string
 param location string = resourceGroup().location
 
 @description('Optional. Resource tags.')
-param tags object?
+param tags resourceInput<'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2025-01-01'>.tags?
 
 @description('Optional. Enable/Disable usage telemetry for module.')
 param enableTelemetry bool = true
 
 @description('Required. Describes the managedRules structure.')
-param managedRules object
+param managedRules resourceInput<'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2025-01-01'>.properties.managedRules
 
 @description('Optional. The custom rules inside the policy.')
-param customRules array?
+param customRules resourceInput<'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2025-01-01'>.properties.customRules?
 
 @description('Optional. The PolicySettings for policy.')
-param policySettings object?
+param policySettings resourceInput<'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2025-01-01'>.properties.policySettings?
 
-resource avmTelemetry 'Microsoft.Resources/deployments@2023-07-01' =
-  if (enableTelemetry) {
-    name: '46d3xbcp.res.network-appgwwebappfirewallpolicy.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
-    properties: {
-      mode: 'Incremental'
-      template: {
-        '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
-        contentVersion: '1.0.0.0'
-        resources: []
-        outputs: {
-          telemetry: {
-            type: 'String'
-            value: 'For more information, see https://aka.ms/avm/TelemetryInfo'
-          }
+#disable-next-line no-deployments-resources
+resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
+  name: '46d3xbcp.res.network-appgwwebappfirewallpolicy.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
+  properties: {
+    mode: 'Incremental'
+    template: {
+      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
+      contentVersion: '1.0.0.0'
+      resources: []
+      outputs: {
+        telemetry: {
+          type: 'String'
+          value: 'For more information, see https://aka.ms/avm/TelemetryInfo'
         }
       }
     }
   }
+}
 
-resource applicationGatewayWAFPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2022-11-01' = {
+resource applicationGatewayWAFPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2025-01-01' = {
   name: name
   location: location
   tags: tags
   properties: {
-    managedRules: managedRules ?? {}
+    managedRules: managedRules
     customRules: customRules
     policySettings: policySettings
   }

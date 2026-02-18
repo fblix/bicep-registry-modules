@@ -2,6 +2,14 @@
 
 This module deploys a VPN Site.
 
+You can reference the module as follows:
+```bicep
+module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
@@ -14,11 +22,11 @@ This module deploys a VPN Site.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Network/vpnSites` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/vpnSites) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Network/vpnSites` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_vpnsites.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/vpnSites)</li></ul> |
 
 ## Usage examples
 
@@ -36,6 +44,8 @@ The following section provides usage examples for the module, which were used to
 
 This instance deploys the module with the minimum set of required parameters.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
 
 <details>
 
@@ -43,17 +53,15 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
-  name: 'vpnSiteDeployment'
   params: {
     // Required parameters
     name: 'nvsmin'
-    virtualWanId: '<virtualWanId>'
+    virtualWanResourceId: '<virtualWanResourceId>'
     // Non-required parameters
     addressPrefixes: [
       '10.0.0.0/16'
     ]
     ipAddress: '1.2.3.4'
-    location: '<location>'
   }
 }
 ```
@@ -63,7 +71,7 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -74,8 +82,8 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
     "name": {
       "value": "nvsmin"
     },
-    "virtualWanId": {
-      "value": "<virtualWanId>"
+    "virtualWanResourceId": {
+      "value": "<virtualWanResourceId>"
     },
     // Non-required parameters
     "addressPrefixes": {
@@ -85,12 +93,29 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
     },
     "ipAddress": {
       "value": "1.2.3.4"
-    },
-    "location": {
-      "value": "<location>"
     }
   }
 }
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/vpn-site:<version>'
+
+// Required parameters
+param name = 'nvsmin'
+param virtualWanResourceId = '<virtualWanResourceId>'
+// Non-required parameters
+param addressPrefixes = [
+  '10.0.0.0/16'
+]
+param ipAddress = '1.2.3.4'
 ```
 
 </details>
@@ -100,6 +125,8 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
 
 This instance deploys the module with most of its features enabled.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
+
 
 <details>
 
@@ -107,11 +134,10 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
-  name: 'vpnSiteDeployment'
   params: {
     // Required parameters
     name: 'nvsmax'
-    virtualWanId: '<virtualWanId>'
+    virtualWanResourceId: '<virtualWanResourceId>'
     // Non-required parameters
     deviceProperties: {
       linkSpeedInMbps: 0
@@ -130,11 +156,13 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
     }
     roleAssignments: [
       {
+        name: '1dcfa9c2-5e95-42d2-bf04-bdecad93abcf'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -189,7 +217,7 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -200,8 +228,8 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
     "name": {
       "value": "nvsmax"
     },
-    "virtualWanId": {
-      "value": "<virtualWanId>"
+    "virtualWanResourceId": {
+      "value": "<virtualWanResourceId>"
     },
     // Non-required parameters
     "deviceProperties": {
@@ -230,11 +258,13 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
     "roleAssignments": {
       "value": [
         {
+          "name": "1dcfa9c2-5e95-42d2-bf04-bdecad93abcf",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -292,9 +322,96 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/vpn-site:<version>'
+
+// Required parameters
+param name = 'nvsmax'
+param virtualWanResourceId = '<virtualWanResourceId>'
+// Non-required parameters
+param deviceProperties = {
+  linkSpeedInMbps: 0
+}
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+o365Policy: {
+  breakOutCategories: {
+    allow: true
+    default: true
+    optimize: true
+  }
+}
+param roleAssignments = [
+  {
+    name: '1dcfa9c2-5e95-42d2-bf04-bdecad93abcf'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param tags = {
+  'hidden-title': 'This is visible in the resource name'
+  tagA: 'valueA'
+  tagB: 'valueB'
+}
+param vpnSiteLinks = [
+  {
+    name: 'vSite-nvsmax'
+    properties: {
+      bgpProperties: {
+        asn: 65010
+        bgpPeeringAddress: '1.1.1.1'
+      }
+      ipAddress: '1.2.3.4'
+      linkProperties: {
+        linkProviderName: 'contoso'
+        linkSpeedInMbps: 5
+      }
+    }
+  }
+  {
+    name: 'Link1'
+    properties: {
+      bgpProperties: {
+        asn: 65020
+        bgpPeeringAddress: '192.168.1.0'
+      }
+      ipAddress: '2.2.2.2'
+      linkProperties: {
+        linkProviderName: 'contoso'
+        linkSpeedInMbps: 5
+      }
+    }
+  }
+]
+```
+
+</details>
+<p>
+
 ### Example 3: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -303,20 +420,15 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
-  name: 'vpnSiteDeployment'
   params: {
     // Required parameters
     name: 'nvswaf'
-    virtualWanId: '<virtualWanId>'
+    virtualWanResourceId: '<virtualWanResourceId>'
     // Non-required parameters
     deviceProperties: {
       linkSpeedInMbps: 0
     }
     location: '<location>'
-    lock: {
-      kind: 'CanNotDelete'
-      name: 'myCustomLockName'
-    }
     o365Policy: {
       breakOutCategories: {
         allow: true
@@ -368,7 +480,7 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -379,8 +491,8 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
     "name": {
       "value": "nvswaf"
     },
-    "virtualWanId": {
-      "value": "<virtualWanId>"
+    "virtualWanResourceId": {
+      "value": "<virtualWanResourceId>"
     },
     // Non-required parameters
     "deviceProperties": {
@@ -390,12 +502,6 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
     },
     "location": {
       "value": "<location>"
-    },
-    "lock": {
-      "value": {
-        "kind": "CanNotDelete",
-        "name": "myCustomLockName"
-      }
     },
     "o365Policy": {
       "value": {
@@ -452,6 +558,67 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/vpn-site:<version>'
+
+// Required parameters
+param name = 'nvswaf'
+param virtualWanResourceId = '<virtualWanResourceId>'
+// Non-required parameters
+param deviceProperties = {
+  linkSpeedInMbps: 0
+}
+param location = '<location>'
+o365Policy: {
+  breakOutCategories: {
+    allow: true
+    default: true
+    optimize: true
+  }
+}
+param tags = {
+  'hidden-title': 'This is visible in the resource name'
+  tagA: 'valueA'
+  tagB: 'valueB'
+}
+param vpnSiteLinks = [
+  {
+    name: 'vSite-nvswaf'
+    properties: {
+      bgpProperties: {
+        asn: 65010
+        bgpPeeringAddress: '1.1.1.1'
+      }
+      ipAddress: '1.2.3.4'
+      linkProperties: {
+        linkProviderName: 'contoso'
+        linkSpeedInMbps: 5
+      }
+    }
+  }
+  {
+    name: 'Link1'
+    properties: {
+      bgpProperties: {
+        asn: 65020
+        bgpPeeringAddress: '192.168.1.0'
+      }
+      ipAddress: '2.2.2.2'
+      linkProperties: {
+        linkProviderName: 'contoso'
+        linkSpeedInMbps: 5
+      }
+    }
+  }
+]
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -460,7 +627,7 @@ module vpnSite 'br/public:avm/res/network/vpn-site:<version>' = {
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`name`](#parameter-name) | string | Name of the VPN Site. |
-| [`virtualWanId`](#parameter-virtualwanid) | string | Resource ID of the virtual WAN to link to. |
+| [`virtualWanResourceId`](#parameter-virtualwanresourceid) | string | Resource ID of the virtual WAN to link to. |
 
 **Conditional parameters**
 
@@ -491,7 +658,7 @@ Name of the VPN Site.
 - Required: Yes
 - Type: string
 
-### Parameter: `virtualWanId`
+### Parameter: `virtualWanResourceId`
 
 Resource ID of the virtual WAN to link to.
 
@@ -504,7 +671,6 @@ An array of IP address ranges that can be used by subnets of the virtual network
 
 - Required: No
 - Type: array
-- Default: `[]`
 
 ### Parameter: `bgpProperties`
 
@@ -512,7 +678,6 @@ BGP settings details. Note: This is a deprecated property, please use the corres
 
 - Required: No
 - Type: object
-- Default: `{}`
 
 ### Parameter: `deviceProperties`
 
@@ -520,7 +685,6 @@ List of properties of the device.
 
 - Required: No
 - Type: object
-- Default: `{}`
 
 ### Parameter: `enableTelemetry`
 
@@ -567,6 +731,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -590,13 +755,19 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `o365Policy`
 
 The Office365 breakout policy.
 
 - Required: No
 - Type: object
-- Default: `{}`
 
 ### Parameter: `roleAssignments`
 
@@ -604,6 +775,13 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -620,6 +798,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -670,6 +849,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -700,8 +886,6 @@ List of all VPN site links.
 
 - Required: No
 - Type: array
-- Default: `[]`
-
 
 ## Outputs
 
@@ -714,7 +898,11 @@ List of all VPN site links.
 
 ## Cross-referenced modules
 
-_None_
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Notes
 
@@ -754,4 +942,4 @@ deviceProperties: {
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

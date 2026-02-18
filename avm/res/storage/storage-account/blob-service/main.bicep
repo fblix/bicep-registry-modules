@@ -1,6 +1,5 @@
 metadata name = 'Storage Account blob Services'
 metadata description = 'This module deploys a Storage Account Blob Service.'
-metadata owner = 'Azure/module-maintainers'
 
 @maxLength(24)
 @description('Conditional. The name of the parent Storage Account. Required if the template is used in a standalone deployment.')
@@ -12,9 +11,9 @@ param automaticSnapshotPolicyEnabled bool = false
 @description('Optional. The blob service properties for change feed events. Indicates whether change feed event logging is enabled for the Blob service.')
 param changeFeedEnabled bool = false
 
-@minValue(0)
+@minValue(1)
 @maxValue(146000)
-@description('Optional. Indicates whether change feed event logging is enabled for the Blob service. Indicates the duration of changeFeed retention in days. A "0" value indicates an infinite retention of the change feed.')
+@description('Optional. Indicates whether change feed event logging is enabled for the Blob service. Indicates the duration of changeFeed retention in days. If left blank, it indicates an infinite retention of the change feed.')
 param changeFeedRetentionInDays int?
 
 @description('Optional. The blob service properties for container soft delete. Indicates whether DeleteRetentionPolicy is enabled.')
@@ -28,11 +27,11 @@ param containerDeleteRetentionPolicyDays int?
 @description('Optional. This property when set to true allows deletion of the soft deleted blob versions and snapshots. This property cannot be used with blob restore policy. This property only applies to blob service and does not apply to containers or file share.')
 param containerDeleteRetentionPolicyAllowPermanentDelete bool = false
 
-@description('Optional. Specifies CORS rules for the Blob service. You can include up to five CorsRule elements in the request. If no CorsRule elements are included in the request body, all CORS rules will be deleted, and CORS will be disabled for the Blob service.')
-param corsRules array = []
+@description('Optional. The List of CORS rules. You can include up to five CorsRule elements in the request.')
+param corsRules corsRuleType[]?
 
 @description('Optional. Indicates the default version to use for requests to the Blob service if an incoming request\'s version is not specified. Possible values include version 2008-10-27 and all more recent versions.')
-param defaultServiceVersion string = ''
+param defaultServiceVersion string?
 
 @description('Optional. The blob service properties for blob soft delete.')
 param deleteRetentionPolicyEnabled bool = true
@@ -45,7 +44,7 @@ param deleteRetentionPolicyDays int = 7
 @description('Optional. This property when set to true allows deletion of the soft deleted blob versions and snapshots. This property cannot be used with blob restore policy. This property only applies to blob service and does not apply to containers or file share.')
 param deleteRetentionPolicyAllowPermanentDelete bool = false
 
-@description('Optional. Use versioning to automatically maintain previous versions of your blobs.')
+@description('Optional. Use versioning to automatically maintain previous versions of your blobs. Cannot be enabled for ADLS Gen2 storage accounts.')
 param isVersioningEnabled bool = false
 
 @description('Optional. The blob service property to configure last access time based tracking policy. When set to true last access time based tracking is enabled.')
@@ -56,96 +55,125 @@ param restorePolicyEnabled bool = false
 
 @minValue(1)
 @description('Optional. How long this blob can be restored. It should be less than DeleteRetentionPolicy days.')
-param restorePolicyDays int = 6
+param restorePolicyDays int = 7
 
 @description('Optional. Blob containers to create.')
-param containers array?
+param containers containerType[]?
 
+import { diagnosticSettingFullType } from 'br/public:avm/utl/types/avm-common-types:0.6.1'
 @description('Optional. The diagnostic settings of the service.')
-param diagnosticSettings diagnosticSettingType
+param diagnosticSettings diagnosticSettingFullType[]?
+
+#disable-next-line no-unused-vars
+var immutabilityValidation = storageAccount.properties.isHnsEnabled == true && isVersioningEnabled
+  ? fail('Configuration error: Versioning for blobs cannot be enabled when hierarchical namespace is enabled.')
+  : null
+
+var enableReferencedModulesTelemetry = false
 
 // The name of the blob services
 var name = 'default'
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2025-01-01' existing = {
   name: storageAccountName
 }
 
-resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = {
+resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2025-01-01' = {
   name: name
   parent: storageAccount
   properties: {
     automaticSnapshotPolicyEnabled: automaticSnapshotPolicyEnabled
-    changeFeed: changeFeedEnabled ? {
-      enabled: true
-      retentionInDays: changeFeedRetentionInDays
-    } : null
+    changeFeed: changeFeedEnabled
+      ? {
+          enabled: true
+          retentionInDays: changeFeedRetentionInDays
+        }
+      : null
     containerDeleteRetentionPolicy: {
       enabled: containerDeleteRetentionPolicyEnabled
       days: containerDeleteRetentionPolicyDays
-      allowPermanentDelete: containerDeleteRetentionPolicyEnabled == true ? containerDeleteRetentionPolicyAllowPermanentDelete : null
+      allowPermanentDelete: containerDeleteRetentionPolicyEnabled == true
+        ? containerDeleteRetentionPolicyAllowPermanentDelete
+        : null
     }
-    cors: {
-      corsRules: corsRules
-    }
-    defaultServiceVersion: !empty(defaultServiceVersion) ? defaultServiceVersion : null
+    cors: corsRules != null
+      ? {
+          corsRules: corsRules
+        }
+      : null
+    defaultServiceVersion: defaultServiceVersion
     deleteRetentionPolicy: {
       enabled: deleteRetentionPolicyEnabled
       days: deleteRetentionPolicyDays
       allowPermanentDelete: deleteRetentionPolicyEnabled && deleteRetentionPolicyAllowPermanentDelete ? true : null
     }
     isVersioningEnabled: isVersioningEnabled
-    lastAccessTimeTrackingPolicy: storageAccount.kind != 'Storage' ? {
-      enable: lastAccessTimeTrackingPolicyEnabled
-      name: lastAccessTimeTrackingPolicyEnabled == true ? 'AccessTimeTracking' : null
-      trackingGranularityInDays: lastAccessTimeTrackingPolicyEnabled == true ? 1 : null
-    } : null
-    restorePolicy: restorePolicyEnabled ? {
-      enabled: true
-      days: restorePolicyDays
-    } : null
+    // lastAccessTimeTrackingPolicy not supported for old storage kinds or for extended zones
+    lastAccessTimeTrackingPolicy: storageAccount.kind != 'Storage' && empty(storageAccount.?extendedLocation)
+      ? {
+          enable: lastAccessTimeTrackingPolicyEnabled
+          name: lastAccessTimeTrackingPolicyEnabled == true ? 'AccessTimeTracking' : null
+          trackingGranularityInDays: lastAccessTimeTrackingPolicyEnabled == true ? 1 : null
+        }
+      : null
+    restorePolicy: restorePolicyEnabled
+      ? {
+          enabled: true
+          days: restorePolicyDays
+        }
+      : null
   }
 }
 
-resource blobServices_diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = [for (diagnosticSetting, index) in (diagnosticSettings ?? []): {
-  name: diagnosticSetting.?name ?? '${name}-diagnosticSettings'
-  properties: {
-    storageAccountId: diagnosticSetting.?storageAccountResourceId
-    workspaceId: diagnosticSetting.?workspaceResourceId
-    eventHubAuthorizationRuleId: diagnosticSetting.?eventHubAuthorizationRuleResourceId
-    eventHubName: diagnosticSetting.?eventHubName
-    metrics: [for group in (diagnosticSetting.?metricCategories ?? [ { category: 'AllMetrics' } ]): {
-      category: group.category
-      enabled: group.?enabled ?? true
-      timeGrain: null
-    }]
-    logs: [for group in (diagnosticSetting.?logCategoriesAndGroups ?? [ { categoryGroup: 'allLogs' } ]): {
-      categoryGroup: group.?categoryGroup
-      category: group.?category
-      enabled: group.?enabled ?? true
-    }]
-    marketplacePartnerId: diagnosticSetting.?marketplacePartnerResourceId
-    logAnalyticsDestinationType: diagnosticSetting.?logAnalyticsDestinationType
+resource blobServices_diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = [
+  for (diagnosticSetting, index) in (diagnosticSettings ?? []): {
+    name: diagnosticSetting.?name ?? '${name}-diagnosticSettings'
+    properties: {
+      storageAccountId: diagnosticSetting.?storageAccountResourceId
+      workspaceId: diagnosticSetting.?workspaceResourceId
+      eventHubAuthorizationRuleId: diagnosticSetting.?eventHubAuthorizationRuleResourceId
+      eventHubName: diagnosticSetting.?eventHubName
+      metrics: [
+        for group in (diagnosticSetting.?metricCategories ?? [{ category: 'AllMetrics' }]): {
+          category: group.category
+          enabled: group.?enabled ?? true
+          timeGrain: null
+        }
+      ]
+      logs: [
+        for group in (diagnosticSetting.?logCategoriesAndGroups ?? [{ categoryGroup: 'allLogs' }]): {
+          categoryGroup: group.?categoryGroup
+          category: group.?category
+          enabled: group.?enabled ?? true
+        }
+      ]
+      marketplacePartnerId: diagnosticSetting.?marketplacePartnerResourceId
+      logAnalyticsDestinationType: diagnosticSetting.?logAnalyticsDestinationType
+    }
+    scope: blobServices
   }
-  scope: blobServices
-}]
+]
 
-module blobServices_container 'container/main.bicep' = [for (container, index) in (containers ?? []): {
-  name: '${deployment().name}-Container-${index}'
-  params: {
-    storageAccountName: storageAccount.name
-    name: container.name
-    defaultEncryptionScope: container.?defaultEncryptionScope
-    denyEncryptionScopeOverride: container.?denyEncryptionScopeOverride
-    enableNfsV3AllSquash: container.?enableNfsV3AllSquash
-    enableNfsV3RootSquash: container.?enableNfsV3RootSquash
-    immutableStorageWithVersioningEnabled: container.?immutableStorageWithVersioningEnabled
-    metadata: container.?metadata
-    publicAccess: container.?publicAccess
-    roleAssignments: container.?roleAssignments
-    immutabilityPolicyProperties: container.?immutabilityPolicyProperties
+module blobServices_container 'container/main.bicep' = [
+  for (container, index) in (containers ?? []): {
+    name: '${deployment().name}-Container-${index}'
+    params: {
+      storageAccountName: storageAccount.name
+      blobServiceName: blobServices.name
+      name: container.name
+      defaultEncryptionScope: container.?defaultEncryptionScope
+      denyEncryptionScopeOverride: container.?denyEncryptionScopeOverride
+      enableNfsV3AllSquash: container.?enableNfsV3AllSquash
+      enableNfsV3RootSquash: container.?enableNfsV3RootSquash
+      immutableStorageWithVersioningEnabled: container.?immutableStorageWithVersioningEnabled
+      metadata: container.?metadata
+      publicAccess: container.?publicAccess
+      roleAssignments: container.?roleAssignments
+      immutabilityPolicy: container.?immutabilityPolicy
+      enableTelemetry: enableReferencedModulesTelemetry
+    }
   }
-}]
+]
 
 @description('The name of the deployed blob service.')
 output name string = blobServices.name
@@ -160,46 +188,58 @@ output resourceGroupName string = resourceGroup().name
 //   Definitions   //
 // =============== //
 
-type diagnosticSettingType = {
-  @description('Optional. The name of diagnostic setting.')
-  name: string?
+@export()
+@description('The type for a cors rule.')
+type corsRuleType = {
+  @description('Required. A list of headers allowed to be part of the cross-origin request.')
+  allowedHeaders: string[]
 
-  @description('Optional. The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to `[]` to disable log collection.')
-  logCategoriesAndGroups: {
-    @description('Optional. Name of a Diagnostic Log category for a resource type this setting is applied to. Set the specific logs to collect here.')
-    category: string?
+  @description('Required. A list of HTTP methods that are allowed to be executed by the origin.')
+  allowedMethods: ('CONNECT' | 'DELETE' | 'GET' | 'HEAD' | 'MERGE' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT' | 'TRACE')[]
 
-    @description('Optional. Name of a Diagnostic Log category group for a resource type this setting is applied to. Set to `allLogs` to collect all logs.')
-    categoryGroup: string?
+  @description('Required. A list of origin domains that will be allowed via CORS, or "*" to allow all domains.')
+  allowedOrigins: string[]
 
-    @description('Optional. Enable or disable the category explicitly. Default is `true`.')
-    enabled: bool?
-  }[]?
+  @description('Required. A list of response headers to expose to CORS clients.')
+  exposedHeaders: string[]
 
-  @description('Optional. The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to `[]` to disable log collection.')
-  metricCategories: {
-    @description('Required. Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to `AllMetrics` to collect all metrics.')
-    category: string
+  @description('Required. The number of seconds that the client/browser should cache a preflight response.')
+  maxAgeInSeconds: int
+}
 
-    @description('Optional. Enable or disable the category explicitly. Default is `true`.')
-    enabled: bool?
-  }[]?
+import { immutabilityPolicyType } from 'container/main.bicep'
+import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.6.1'
 
-  @description('Optional. A string indicating whether the export to Log Analytics should use the default destination type, i.e. AzureDiagnostics, or use a destination type.')
-  logAnalyticsDestinationType: ('Dedicated' | 'AzureDiagnostics')?
+@export()
+@description('The type of a storage container.')
+type containerType = {
+  @description('Required. The name of the Storage Container to deploy.')
+  name: string
 
-  @description('Optional. Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.')
-  workspaceResourceId: string?
+  @description('Optional. Default the container to use specified encryption scope for all writes.')
+  defaultEncryptionScope: string?
 
-  @description('Optional. Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.')
-  storageAccountResourceId: string?
+  @description('Optional. Block override of encryption scope from the container default.')
+  denyEncryptionScopeOverride: bool?
 
-  @description('Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to.')
-  eventHubAuthorizationRuleResourceId: string?
+  @description('Optional. Enable NFSv3 all squash on blob container.')
+  enableNfsV3AllSquash: bool?
 
-  @description('Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.')
-  eventHubName: string?
+  @description('Optional. Enable NFSv3 root squash on blob container.')
+  enableNfsV3RootSquash: bool?
 
-  @description('Optional. The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs.')
-  marketplacePartnerResourceId: string?
-}[]?
+  @description('Optional. This is an immutable property, when set to true it enables object level immutability at the container level. The property is immutable and can only be set to true at the container creation time. Existing containers must undergo a migration process.')
+  immutableStorageWithVersioningEnabled: bool?
+
+  @description('Optional. Configure immutability policy.')
+  immutabilityPolicy: immutabilityPolicyType?
+
+  @description('Optional. A name-value pair to associate with the container as metadata.')
+  metadata: resourceInput<'Microsoft.Storage/storageAccounts/blobServices/containers@2024-01-01'>.properties.metadata?
+
+  @description('Optional. Specifies whether data in the container may be accessed publicly and the level of access.')
+  publicAccess: ('Container' | 'Blob' | 'None')?
+
+  @description('Optional. Array of role assignments to create.')
+  roleAssignments: roleAssignmentType[]?
+}

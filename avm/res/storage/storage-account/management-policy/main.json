@@ -4,12 +4,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "14052382142427178929"
+      "version": "0.39.26.7824",
+      "templateHash": "4538661605890101674"
     },
     "name": "Storage Account Management Policies",
-    "description": "This module deploys a Storage Account Management Policy.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a Storage Account Management Policy."
   },
   "parameters": {
     "storageAccountName": {
@@ -22,6 +21,9 @@
     "rules": {
       "type": "array",
       "metadata": {
+        "__bicep_resource_derived_type!": {
+          "source": "Microsoft.Storage/storageAccounts/managementPolicies@2024-01-01#properties/properties/properties/policy/properties/rules"
+        },
         "description": "Required. The Storage Account ManagementPolicies Rules."
       }
     }
@@ -29,7 +31,7 @@
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts/managementPolicies",
-      "apiVersion": "2023-01-01",
+      "apiVersion": "2024-01-01",
       "name": "[format('{0}/{1}', parameters('storageAccountName'), 'default')]",
       "properties": {
         "policy": {

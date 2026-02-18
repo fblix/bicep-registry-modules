@@ -4,12 +4,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "3709450248827326388"
+      "version": "0.37.4.10188",
+      "templateHash": "4364883831919014667"
     },
     "name": "Automation Account Job Schedules",
-    "description": "This module deploys an Azure Automation Account Job Schedule.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys an Azure Automation Account Job Schedule."
   },
   "parameters": {
     "name": {
@@ -55,7 +54,7 @@
   "resources": [
     {
       "type": "Microsoft.Automation/automationAccounts/jobSchedules",
-      "apiVersion": "2022-08-08",
+      "apiVersion": "2024-10-23",
       "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('name'))]",
       "properties": {
         "parameters": "[parameters('parameters')]",

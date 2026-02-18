@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -43,7 +43,7 @@ module nestedDependencies 'dependencies.bicep' = {
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -67,10 +67,11 @@ module testDeployment '../../../main.bicep' = [
     params: {
       name: '${namePrefix}${serviceShort}001'
       location: resourceLocation
+      skuTier: 'Regional'
       frontendIPConfigurations: [
         {
           name: 'publicIPConfig1'
-          publicIPAddressId: nestedDependencies.outputs.publicIPResourceId
+          publicIPAddressResourceId: nestedDependencies.outputs.publicIPResourceId
         }
       ]
       backendAddressPools: [
@@ -87,6 +88,11 @@ module testDeployment '../../../main.bicep' = [
           metricCategories: [
             {
               category: 'AllMetrics'
+            }
+          ]
+          logCategoriesAndGroups: [
+            {
+              categoryGroup: 'allLogs'
             }
           ]
           eventHubName: diagnosticDependencies.outputs.eventHubNamespaceEventHubName
@@ -167,11 +173,13 @@ module testDeployment '../../../main.bicep' = [
       ]
       roleAssignments: [
         {
+          name: '3a5b2a4a-3584-4d6b-9cf0-ceb1e4f88a5d'
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
         {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
@@ -191,9 +199,5 @@ module testDeployment '../../../main.bicep' = [
         Role: 'DeploymentValidation'
       }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

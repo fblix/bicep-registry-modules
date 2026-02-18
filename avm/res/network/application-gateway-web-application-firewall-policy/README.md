@@ -2,20 +2,27 @@
 
 This module deploys an Application Gateway Web Application Firewall (WAF) Policy.
 
+You can reference the module as follows:
+```bicep
+module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network/application-gateway-web-application-firewall-policy:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
 - [Usage examples](#Usage-examples)
 - [Parameters](#Parameters)
 - [Outputs](#Outputs)
-- [Cross-referenced modules](#Cross-referenced-modules)
 - [Data Collection](#Data-Collection)
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies` | [2022-11-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2022-11-01/ApplicationGatewayWebApplicationFirewallPolicies) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies` | 2025-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_applicationgatewaywebapplicationfirewallpolicies.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2025-01-01/ApplicationGatewayWebApplicationFirewallPolicies)</li></ul> |
 
 ## Usage examples
 
@@ -33,6 +40,8 @@ The following section provides usage examples for the module, which were used to
 
 This instance deploys the module with the minimum set of required parameters.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
 
 <details>
 
@@ -40,7 +49,6 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network/application-gateway-web-application-firewall-policy:<version>' = {
-  name: 'applicationGatewayWebApplicationFirewallPolicyDeployment'
   params: {
     // Required parameters
     managedRules: {
@@ -51,7 +59,7 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
         }
       ]
     }
-    name: 'nagwafpmin001'
+    name: 'nagwafptstmin001'
     // Non-required parameters
     location: '<location>'
   }
@@ -63,7 +71,7 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -82,7 +90,7 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
       }
     },
     "name": {
-      "value": "nagwafpmin001"
+      "value": "nagwafptstmin001"
     },
     // Non-required parameters
     "location": {
@@ -95,9 +103,35 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/application-gateway-web-application-firewall-policy:<version>'
+
+// Required parameters
+param managedRules = {
+  managedRuleSets: [
+    {
+      ruleSetType: 'OWASP'
+      ruleSetVersion: '3.2'
+    }
+  ]
+}
+param name = 'nagwafptstmin001'
+// Non-required parameters
+param location = '<location>'
+```
+
+</details>
+<p>
+
 ### Example 2: _Using large parameter set_
 
 This instance deploys the module with most of its features enabled.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
 
 
 <details>
@@ -106,7 +140,6 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network/application-gateway-web-application-firewall-policy:<version>' = {
-  name: 'applicationGatewayWebApplicationFirewallPolicyDeployment'
   params: {
     // Required parameters
     managedRules: {
@@ -123,11 +156,14 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
         }
       ]
     }
-    name: 'nagwafpmax001'
+    name: 'nagwafptstmax001'
     // Non-required parameters
     location: '<location>'
     policySettings: {
+      customBlockResponseBody: 'PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=='
+      customBlockResponseStatusCode: 403
       fileUploadLimitInMb: 10
+      jsChallengeCookieExpirationInMins: 60
       mode: 'Prevention'
       state: 'Enabled'
     }
@@ -145,7 +181,7 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -170,7 +206,7 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
       }
     },
     "name": {
-      "value": "nagwafpmax001"
+      "value": "nagwafptstmax001"
     },
     // Non-required parameters
     "location": {
@@ -178,7 +214,10 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
     },
     "policySettings": {
       "value": {
+        "customBlockResponseBody": "PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg==",
+        "customBlockResponseStatusCode": 403,
         "fileUploadLimitInMb": 10,
+        "jsChallengeCookieExpirationInMins": 60,
         "mode": "Prevention",
         "state": "Enabled"
       }
@@ -191,6 +230,49 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
       }
     }
   }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/application-gateway-web-application-firewall-policy:<version>'
+
+// Required parameters
+param managedRules = {
+  managedRuleSets: [
+    {
+      ruleGroupOverrides: []
+      ruleSetType: 'OWASP'
+      ruleSetVersion: '3.2'
+    }
+    {
+      ruleGroupOverrides: []
+      ruleSetType: 'Microsoft_BotManagerRuleSet'
+      ruleSetVersion: '0.1'
+    }
+  ]
+}
+param name = 'nagwafptstmax001'
+// Non-required parameters
+param location = '<location>'
+param policySettings = {
+  customBlockResponseBody: 'PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=='
+  customBlockResponseStatusCode: 403
+  fileUploadLimitInMb: 10
+  jsChallengeCookieExpirationInMins: 60
+  mode: 'Prevention'
+  state: 'Enabled'
+}
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
 }
 ```
 
@@ -201,6 +283,8 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
+
 
 <details>
 
@@ -208,7 +292,6 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network/application-gateway-web-application-firewall-policy:<version>' = {
-  name: 'applicationGatewayWebApplicationFirewallPolicyDeployment'
   params: {
     // Required parameters
     managedRules: {
@@ -224,11 +307,12 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
         }
       ]
     }
-    name: 'nagwafpwaf001'
+    name: 'nagwafptstwaf001'
     // Non-required parameters
     location: '<location>'
     policySettings: {
       fileUploadLimitInMb: 10
+      jsChallengeCookieExpirationInMins: 60
       mode: 'Prevention'
       state: 'Enabled'
     }
@@ -246,7 +330,7 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -270,7 +354,7 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
       }
     },
     "name": {
-      "value": "nagwafpwaf001"
+      "value": "nagwafptstwaf001"
     },
     // Non-required parameters
     "location": {
@@ -279,6 +363,7 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
     "policySettings": {
       "value": {
         "fileUploadLimitInMb": 10,
+        "jsChallengeCookieExpirationInMins": 60,
         "mode": "Prevention",
         "state": "Enabled"
       }
@@ -297,6 +382,45 @@ module applicationGatewayWebApplicationFirewallPolicy 'br/public:avm/res/network
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/application-gateway-web-application-firewall-policy:<version>'
+
+// Required parameters
+param managedRules = {
+  managedRuleSets: [
+    {
+      ruleGroupOverrides: []
+      ruleSetType: 'OWASP'
+      ruleSetVersion: '3.2'
+    }
+    {
+      ruleSetType: 'Microsoft_BotManagerRuleSet'
+      ruleSetVersion: '0.1'
+    }
+  ]
+}
+param name = 'nagwafptstwaf001'
+// Non-required parameters
+param location = '<location>'
+param policySettings = {
+  fileUploadLimitInMb: 10
+  jsChallengeCookieExpirationInMins: 60
+  mode: 'Prevention'
+  state: 'Enabled'
+}
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -368,7 +492,6 @@ Resource tags.
 - Required: No
 - Type: object
 
-
 ## Outputs
 
 | Output | Type | Description |
@@ -378,10 +501,6 @@ Resource tags.
 | `resourceGroupName` | string | The resource group the application gateway WAF policy was deployed into. |
 | `resourceId` | string | The resource ID of the application gateway WAF policy. |
 
-## Cross-referenced modules
-
-_None_
-
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

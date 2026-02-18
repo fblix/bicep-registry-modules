@@ -2,6 +2,14 @@
 
 This module deploys a Network Watcher.
 
+You can reference the module as follows:
+```bicep
+module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
@@ -13,13 +21,13 @@ This module deploys a Network Watcher.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Network/networkWatchers` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/networkWatchers) |
-| `Microsoft.Network/networkWatchers/connectionMonitors` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/networkWatchers/connectionMonitors) |
-| `Microsoft.Network/networkWatchers/flowLogs` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/networkWatchers/flowLogs) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Network/networkWatchers` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_networkwatchers.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/networkWatchers)</li></ul> |
+| `Microsoft.Network/networkWatchers/connectionMonitors` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_networkwatchers_connectionmonitors.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/networkWatchers/connectionMonitors)</li></ul> |
+| `Microsoft.Network/networkWatchers/flowLogs` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_networkwatchers_flowlogs.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/networkWatchers/flowLogs)</li></ul> |
 
 ## Usage examples
 
@@ -37,6 +45,8 @@ The following section provides usage examples for the module, which were used to
 
 This instance deploys the module with the minimum set of required parameters.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
 
 <details>
 
@@ -44,9 +54,8 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
-  name: 'networkWatcherDeployment'
   params: {
-    location: '<location>'
+
   }
 }
 ```
@@ -56,18 +65,27 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {
-    "location": {
-      "value": "<location>"
-    }
-  }
+  "parameters": {}
 }
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/network-watcher:<version>'
+
+
 ```
 
 </details>
@@ -77,6 +95,8 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
 
 This instance deploys the module with most of its features enabled.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
+
 
 <details>
 
@@ -84,7 +104,6 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
-  name: 'networkWatcherDeployment'
   params: {
     connectionMonitors: [
       {
@@ -129,7 +148,7 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
             disable: false
             name: 'test-http-Bing'
             sources: [
-              'subnet-001(${resourceGroup.name})'
+              'subnet-001(<value>)'
             ]
             testConfigurations: [
               'HTTP Bing Test'
@@ -142,14 +161,14 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
     flowLogs: [
       {
         enabled: false
-        storageId: '<storageId>'
+        storageResourceId: '<storageResourceId>'
         targetResourceId: '<targetResourceId>'
       }
       {
         formatVersion: 1
         name: 'nnwmax-fl-001'
         retentionInDays: 8
-        storageId: '<storageId>'
+        storageResourceId: '<storageResourceId>'
         targetResourceId: '<targetResourceId>'
         trafficAnalyticsInterval: 10
         workspaceResourceId: '<workspaceResourceId>'
@@ -159,11 +178,13 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
     name: '<name>'
     roleAssignments: [
       {
+        name: 'e8e93fb7-f450-41d5-ae86-a32d34e72578'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -188,7 +209,7 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -239,7 +260,7 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
               "disable": false,
               "name": "test-http-Bing",
               "sources": [
-                "subnet-001(${resourceGroup.name})"
+                "subnet-001(<value>)"
               ],
               "testConfigurations": [
                 "HTTP Bing Test"
@@ -254,14 +275,14 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
       "value": [
         {
           "enabled": false,
-          "storageId": "<storageId>",
+          "storageResourceId": "<storageResourceId>",
           "targetResourceId": "<targetResourceId>"
         },
         {
           "formatVersion": 1,
           "name": "nnwmax-fl-001",
           "retentionInDays": 8,
-          "storageId": "<storageId>",
+          "storageResourceId": "<storageResourceId>",
           "targetResourceId": "<targetResourceId>",
           "trafficAnalyticsInterval": 10,
           "workspaceResourceId": "<workspaceResourceId>"
@@ -277,11 +298,13 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
     "roleAssignments": {
       "value": [
         {
+          "name": "e8e93fb7-f450-41d5-ae86-a32d34e72578",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -307,9 +330,118 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/network-watcher:<version>'
+
+param connectionMonitors = [
+  {
+    endpoints: [
+      {
+        name: '<name>'
+        resourceId: '<resourceId>'
+        type: 'AzureVM'
+      }
+      {
+        address: 'www.bing.com'
+        name: 'Bing'
+        type: 'ExternalAddress'
+      }
+    ]
+    name: 'nnwmax-cm-001'
+    testConfigurations: [
+      {
+        httpConfiguration: {
+          method: 'Get'
+          port: 80
+          preferHTTPS: false
+          requestHeaders: []
+          validStatusCodeRanges: [
+            '200'
+          ]
+        }
+        name: 'HTTP Bing Test'
+        protocol: 'Http'
+        successThreshold: {
+          checksFailedPercent: 5
+          roundTripTimeMs: 100
+        }
+        testFrequencySec: 30
+      }
+    ]
+    testGroups: [
+      {
+        destinations: [
+          'Bing'
+        ]
+        disable: false
+        name: 'test-http-Bing'
+        sources: [
+          'subnet-001(<value>)'
+        ]
+        testConfigurations: [
+          'HTTP Bing Test'
+        ]
+      }
+    ]
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param flowLogs = [
+  {
+    enabled: false
+    storageResourceId: '<storageResourceId>'
+    targetResourceId: '<targetResourceId>'
+  }
+  {
+    formatVersion: 1
+    name: 'nnwmax-fl-001'
+    retentionInDays: 8
+    storageResourceId: '<storageResourceId>'
+    targetResourceId: '<targetResourceId>'
+    trafficAnalyticsInterval: 10
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param location = '<location>'
+param name = '<name>'
+param roleAssignments = [
+  {
+    name: 'e8e93fb7-f450-41d5-ae86-a32d34e72578'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
+
 ### Example 3: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -318,7 +450,6 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
-  name: 'networkWatcherDeployment'
   params: {
     connectionMonitors: [
       {
@@ -363,7 +494,7 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
             disable: false
             name: 'test-http-Bing'
             sources: [
-              'subnet-001(${resourceGroup.name})'
+              'subnet-001(<value>)'
             ]
             testConfigurations: [
               'HTTP Bing Test'
@@ -376,20 +507,19 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
     flowLogs: [
       {
         enabled: false
-        storageId: '<storageId>'
+        storageResourceId: '<storageResourceId>'
         targetResourceId: '<targetResourceId>'
       }
       {
         formatVersion: 1
         name: 'nnwwaf-fl-001'
         retentionInDays: 8
-        storageId: '<storageId>'
+        storageResourceId: '<storageResourceId>'
         targetResourceId: '<targetResourceId>'
         trafficAnalyticsInterval: 10
         workspaceResourceId: '<workspaceResourceId>'
       }
     ]
-    location: '<location>'
     name: '<name>'
     tags: {
       Environment: 'Non-Prod'
@@ -405,7 +535,7 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -456,7 +586,7 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
               "disable": false,
               "name": "test-http-Bing",
               "sources": [
-                "subnet-001(${resourceGroup.name})"
+                "subnet-001(<value>)"
               ],
               "testConfigurations": [
                 "HTTP Bing Test"
@@ -471,22 +601,19 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
       "value": [
         {
           "enabled": false,
-          "storageId": "<storageId>",
+          "storageResourceId": "<storageResourceId>",
           "targetResourceId": "<targetResourceId>"
         },
         {
           "formatVersion": 1,
           "name": "nnwwaf-fl-001",
           "retentionInDays": 8,
-          "storageId": "<storageId>",
+          "storageResourceId": "<storageResourceId>",
           "targetResourceId": "<targetResourceId>",
           "trafficAnalyticsInterval": 10,
           "workspaceResourceId": "<workspaceResourceId>"
         }
       ]
-    },
-    "location": {
-      "value": "<location>"
     },
     "name": {
       "value": "<name>"
@@ -505,6 +632,92 @@ module networkWatcher 'br/public:avm/res/network/network-watcher:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/network-watcher:<version>'
+
+param connectionMonitors = [
+  {
+    endpoints: [
+      {
+        name: '<name>'
+        resourceId: '<resourceId>'
+        type: 'AzureVM'
+      }
+      {
+        address: 'www.bing.com'
+        name: 'Bing'
+        type: 'ExternalAddress'
+      }
+    ]
+    name: 'nnwwaf-cm-001'
+    testConfigurations: [
+      {
+        httpConfiguration: {
+          method: 'Get'
+          port: 80
+          preferHTTPS: false
+          requestHeaders: []
+          validStatusCodeRanges: [
+            '200'
+          ]
+        }
+        name: 'HTTP Bing Test'
+        protocol: 'Http'
+        successThreshold: {
+          checksFailedPercent: 5
+          roundTripTimeMs: 100
+        }
+        testFrequencySec: 30
+      }
+    ]
+    testGroups: [
+      {
+        destinations: [
+          'Bing'
+        ]
+        disable: false
+        name: 'test-http-Bing'
+        sources: [
+          'subnet-001(<value>)'
+        ]
+        testConfigurations: [
+          'HTTP Bing Test'
+        ]
+      }
+    ]
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param flowLogs = [
+  {
+    enabled: false
+    storageResourceId: '<storageResourceId>'
+    targetResourceId: '<targetResourceId>'
+  }
+  {
+    formatVersion: 1
+    name: 'nnwwaf-fl-001'
+    retentionInDays: 8
+    storageResourceId: '<storageResourceId>'
+    targetResourceId: '<targetResourceId>'
+    trafficAnalyticsInterval: 10
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param name = '<name>'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -527,7 +740,114 @@ Array that contains the Connection Monitors.
 
 - Required: No
 - Type: array
-- Default: `[]`
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-connectionmonitorsname) | string | Name of the resource. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`autoStart`](#parameter-connectionmonitorsautostart) | bool | Determines if the connection monitor will start automatically once created. |
+| [`destination`](#parameter-connectionmonitorsdestination) | object | Describes the destination of connection monitor. |
+| [`endpoints`](#parameter-connectionmonitorsendpoints) | array | List of connection monitor endpoints. |
+| [`location`](#parameter-connectionmonitorslocation) | string | Location for all resources. |
+| [`monitoringIntervalInSeconds`](#parameter-connectionmonitorsmonitoringintervalinseconds) | int | Monitoring interval in seconds. |
+| [`notes`](#parameter-connectionmonitorsnotes) | string | Notes to be associated with the connection monitor. |
+| [`source`](#parameter-connectionmonitorssource) | object | Describes the source of connection monitor. |
+| [`tags`](#parameter-connectionmonitorstags) | object | Tags of the resource. |
+| [`testConfigurations`](#parameter-connectionmonitorstestconfigurations) | array | List of connection monitor test configurations. |
+| [`testGroups`](#parameter-connectionmonitorstestgroups) | array | List of connection monitor test groups. |
+| [`workspaceResourceId`](#parameter-connectionmonitorsworkspaceresourceid) | string | Specify the Log Analytics Workspace Resource ID. |
+
+### Parameter: `connectionMonitors.name`
+
+Name of the resource.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `connectionMonitors.autoStart`
+
+Determines if the connection monitor will start automatically once created.
+
+- Required: No
+- Type: bool
+
+### Parameter: `connectionMonitors.destination`
+
+Describes the destination of connection monitor.
+
+- Required: No
+- Type: object
+
+### Parameter: `connectionMonitors.endpoints`
+
+List of connection monitor endpoints.
+
+- Required: No
+- Type: array
+
+### Parameter: `connectionMonitors.location`
+
+Location for all resources.
+
+- Required: No
+- Type: string
+
+### Parameter: `connectionMonitors.monitoringIntervalInSeconds`
+
+Monitoring interval in seconds.
+
+- Required: No
+- Type: int
+- MinValue: 30
+- MaxValue: 1800
+
+### Parameter: `connectionMonitors.notes`
+
+Notes to be associated with the connection monitor.
+
+- Required: No
+- Type: string
+
+### Parameter: `connectionMonitors.source`
+
+Describes the source of connection monitor.
+
+- Required: No
+- Type: object
+
+### Parameter: `connectionMonitors.tags`
+
+Tags of the resource.
+
+- Required: No
+- Type: object
+
+### Parameter: `connectionMonitors.testConfigurations`
+
+List of connection monitor test configurations.
+
+- Required: No
+- Type: array
+
+### Parameter: `connectionMonitors.testGroups`
+
+List of connection monitor test groups.
+
+- Required: No
+- Type: array
+
+### Parameter: `connectionMonitors.workspaceResourceId`
+
+Specify the Log Analytics Workspace Resource ID.
+
+- Required: No
+- Type: string
 
 ### Parameter: `enableTelemetry`
 
@@ -543,7 +863,120 @@ Array that contains the Flow Logs.
 
 - Required: No
 - Type: array
-- Default: `[]`
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`storageResourceId`](#parameter-flowlogsstorageresourceid) | string | Resource ID of the diagnostic storage account. |
+| [`targetResourceId`](#parameter-flowlogstargetresourceid) | string | Resource ID of the NSG that must be enabled for Flow Logs. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`enabled`](#parameter-flowlogsenabled) | bool | If the flow log should be enabled. |
+| [`enabledFilteringCriteria`](#parameter-flowlogsenabledfilteringcriteria) | string | Field to filter network traffic logs based on SrcIP, SrcPort, DstIP, DstPort, Protocol, Encryption, Direction and Action. If not specified, all network traffic will be logged. |
+| [`formatVersion`](#parameter-flowlogsformatversion) | int | The flow log format version. |
+| [`location`](#parameter-flowlogslocation) | string | Location for all resources. |
+| [`name`](#parameter-flowlogsname) | string | Name of the resource. |
+| [`retentionInDays`](#parameter-flowlogsretentionindays) | int | Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely. |
+| [`tags`](#parameter-flowlogstags) | object | Tags of the resource. |
+| [`trafficAnalyticsInterval`](#parameter-flowlogstrafficanalyticsinterval) | int | The interval in minutes which would decide how frequently TA service should do flow analytics. |
+| [`workspaceResourceId`](#parameter-flowlogsworkspaceresourceid) | string | Specify the Log Analytics Workspace Resource ID. |
+
+### Parameter: `flowLogs.storageResourceId`
+
+Resource ID of the diagnostic storage account.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `flowLogs.targetResourceId`
+
+Resource ID of the NSG that must be enabled for Flow Logs.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `flowLogs.enabled`
+
+If the flow log should be enabled.
+
+- Required: No
+- Type: bool
+
+### Parameter: `flowLogs.enabledFilteringCriteria`
+
+Field to filter network traffic logs based on SrcIP, SrcPort, DstIP, DstPort, Protocol, Encryption, Direction and Action. If not specified, all network traffic will be logged.
+
+- Required: No
+- Type: string
+
+### Parameter: `flowLogs.formatVersion`
+
+The flow log format version.
+
+- Required: No
+- Type: int
+- Allowed:
+  ```Bicep
+  [
+    1
+    2
+  ]
+  ```
+
+### Parameter: `flowLogs.location`
+
+Location for all resources.
+
+- Required: No
+- Type: string
+
+### Parameter: `flowLogs.name`
+
+Name of the resource.
+
+- Required: No
+- Type: string
+
+### Parameter: `flowLogs.retentionInDays`
+
+Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.
+
+- Required: No
+- Type: int
+- MinValue: 0
+- MaxValue: 365
+
+### Parameter: `flowLogs.tags`
+
+Tags of the resource.
+
+- Required: No
+- Type: object
+
+### Parameter: `flowLogs.trafficAnalyticsInterval`
+
+The interval in minutes which would decide how frequently TA service should do flow analytics.
+
+- Required: No
+- Type: int
+- Allowed:
+  ```Bicep
+  [
+    10
+    60
+  ]
+  ```
+
+### Parameter: `flowLogs.workspaceResourceId`
+
+Specify the Log Analytics Workspace Resource ID.
+
+- Required: No
+- Type: string
 
 ### Parameter: `location`
 
@@ -566,6 +999,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -589,6 +1023,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `name`
 
 Name of the Network Watcher resource (hidden).
@@ -603,6 +1044,13 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -619,6 +1067,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -669,6 +1118,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -693,7 +1149,6 @@ Tags of the resource.
 - Required: No
 - Type: object
 
-
 ## Outputs
 
 | Output | Type | Description |
@@ -705,8 +1160,12 @@ Tags of the resource.
 
 ## Cross-referenced modules
 
-_None_
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

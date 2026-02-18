@@ -1,6 +1,5 @@
 metadata name = 'Service Bus Namespace Topic Authorization Rules'
 metadata description = 'This module deploys a Service Bus Namespace Topic Authorization Rule.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. The name of the service bus namespace topic.')
 param name string
@@ -19,15 +18,15 @@ param topicName string
 ])
 param rights array = []
 
-resource namespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' existing = {
+resource namespace 'Microsoft.ServiceBus/namespaces@2024-01-01' existing = {
   name: namespaceName
 
-  resource topic 'topics@2022-10-01-preview' existing = {
+  resource topic 'topics@2024-01-01' existing = {
     name: topicName
   }
 }
 
-resource authorizationRule 'Microsoft.ServiceBus/namespaces/topics/authorizationRules@2022-10-01-preview' = {
+resource authorizationRule 'Microsoft.ServiceBus/namespaces/topics/authorizationRules@2024-01-01' = {
   name: name
   parent: namespace::topic
   properties: {

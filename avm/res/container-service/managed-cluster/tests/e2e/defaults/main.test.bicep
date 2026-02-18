@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -38,18 +38,21 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
       managedIdentities: {
         systemAssigned: true
       }
-      primaryAgentPoolProfile: [
+      primaryAgentPoolProfiles: [
         {
           name: 'systempool'
           count: 3
-          vmSize: 'Standard_DS2_v2'
+          vmSize: 'Standard_DS4_v2'
           mode: 'System'
         }
       ]
+      aadProfile: {
+        enableAzureRBAC: true
+        managed: true
+      }
     }
   }
 ]

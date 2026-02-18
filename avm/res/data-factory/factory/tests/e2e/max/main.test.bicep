@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -39,13 +39,12 @@ module nestedDependencies 'dependencies.bicep' = {
     keyVaultName: 'dep-${namePrefix}-kv-${serviceShort}'
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
     storageAccountName: 'dep${namePrefix}st${serviceShort}'
-    location: resourceLocation
   }
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -53,7 +52,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -96,9 +94,15 @@ module testDeployment '../../../main.bicep' = [
         }
       }
       integrationRuntimes: [
+        // The AutoResolveIntegrationRuntime is the default integration runtime and does not need to be defined. It is not a virtual network managed integration runtime by default
         {
+          name: 'TestRuntime'
+          type: 'SelfHosted'
+        }
+        {
+          // Creating a second integration runtime with a custom name and has a managed virtual network. The name can be anything, but it must be unique within the data factory. We will connect a linked service to this integration runtime.
           managedVirtualNetworkName: 'default'
-          name: 'AutoResolveIntegrationRuntime'
+          name: 'IRvnetManaged'
           type: 'Managed'
           typeProperties: {
             computeProperties: {
@@ -106,32 +110,61 @@ module testDeployment '../../../main.bicep' = [
             }
           }
         }
-
+      ]
+      linkedServices: [
         {
-          name: 'TestRuntime'
-          type: 'SelfHosted'
+          // This will connect to the AutoResolveIntegrationRuntime as it does not have a specific integration runtime defined and by default uses the AutoResolveIntegrationRuntime
+          name: 'SQLdbLinkedservice'
+          type: 'AzureSQLDatabase'
+          typeProperties: {
+            // An example of a connection string to an Azure SQL Database
+            connectionString: 'integrated security=False;encrypt=True;connection timeout=30;data source=mydatabase.${environment().suffixes.sqlServerHostname};initial catalog=mydatabase;user id=myuser'
+          }
+        }
+        {
+          // This will connect to the IRvnetManaged integration runtime as it is specifically defined
+          name: 'LakeStoreLinkedservice'
+          integrationRuntimeName: 'IRvnetManaged'
+          description: 'This is a description for the linked service using the IRvnetManaged integration runtime.'
+          parameters: {
+            storageAccountName: {
+              type: 'String'
+              defaultValue: 'madeupstorageaccname'
+            }
+          }
+          type: 'AzureBlobFS'
+          typeProperties: {
+            url: '@{concat(\'https://\', linkedService().storageAccountName, \'.dfs.${environment().suffixes.storage}\')}'
+          }
         }
       ]
       lock: {
         kind: 'CanNotDelete'
         name: 'myCustomLockName'
       }
-      managedPrivateEndpoints: [
-        {
-          fqdns: [
-            nestedDependencies.outputs.storageAccountBlobEndpoint
-          ]
-          groupId: 'blob'
-          name: '${nestedDependencies.outputs.storageAccountName}-managed-privateEndpoint'
-          privateLinkResourceId: nestedDependencies.outputs.storageAccountResourceId
-        }
-      ]
-      managedVirtualNetworkName: 'default'
+      managedVirtualNetwork: {
+        name: 'default'
+        managedPrivateEndpoints: [
+          {
+            fqdns: [
+              nestedDependencies.outputs.storageAccountBlobEndpoint
+            ]
+            groupId: 'blob'
+            name: '${nestedDependencies.outputs.storageAccountName}-managed-privateEndpoint'
+            privateLinkResourceId: nestedDependencies.outputs.storageAccountResourceId
+          }
+        ]
+      }
       privateEndpoints: [
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          service: 'dataFactory'
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
           tags: {
             'hidden-title': 'This is visible in the resource name'
@@ -139,19 +172,26 @@ module testDeployment '../../../main.bicep' = [
           }
         }
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          service: 'portal'
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
         }
       ]
       roleAssignments: [
         {
+          name: '12093237-f40a-4f36-868f-accbeebf540c'
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
         {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
@@ -177,9 +217,5 @@ module testDeployment '../../../main.bicep' = [
         Role: 'DeploymentValidation'
       }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

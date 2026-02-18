@@ -14,9 +14,6 @@ inputs:
     description: "The path to the test file"
     required: true
     default: ""
-  subscriptionId:
-    description: "The subscription ID to deploy to"
-    required: false
   managementGroupId:
     description: "The management group ID to deploy to"
     required: false
@@ -29,8 +26,11 @@ inputs:
     default: $false
   psruleBaseline:
     description: "The PSRule baseline to be used"
-    required: true
+    required: false
     default: "Azure.Default"
+  softFailure:
+    description: "Enable or disable soft failure on the PSRule check"
+    required: true
 
 runs:
   using: "composite"
@@ -46,8 +46,8 @@ runs:
           Write-Output '::group::Replace tokens in template file'
 
           # Load used functions
-          . (Join-Path $env:GITHUB_WORKSPACE 'avm' 'utilities' 'pipelines' 'sharedScripts' 'tokenReplacement' 'Convert-TokensInFileList.ps1')
-          . (Join-Path $env:GITHUB_WORKSPACE 'avm' 'utilities' 'pipelines' 'sharedScripts' 'Get-LocallyReferencedFileList.ps1')
+          . (Join-Path $env:GITHUB_WORKSPACE 'utilities' 'pipelines' 'sharedScripts' 'tokenReplacement' 'Convert-TokensInFileList.ps1')
+          . (Join-Path $env:GITHUB_WORKSPACE 'utilities' 'pipelines' 'sharedScripts' 'Get-LocallyReferencedFileList.ps1')
 
           $templateFilePath = Join-Path $env:GITHUB_WORKSPACE '${{ inputs.templateFilePath }}'
 
@@ -68,9 +68,9 @@ runs:
 
           # Add enforced tokens
           $ConvertTokensInputs.Tokens += @{
-            subscriptionId    = '${{ inputs.subscriptionId }}'
+            subscriptionId    = '${{ env.VALIDATE_SUBSCRIPTION_ID }}'
             managementGroupId = '${{ inputs.managementGroupId }}'
-            tenantId          = '${{ env.ARM_TENANT_ID }}'
+            tenantId          = '${{ env.VALIDATE_TENANT_ID }}'
           }
 
           # Add local (source control) tokens
@@ -103,23 +103,11 @@ runs:
 
     # [PSRule validation] task(s)
     #-----------------------------
-    - name: Run PSRule analysis - All Pillars (Azure.Default)
+    - name: Run PSRule analysis
       uses: microsoft/ps-rule@v2.9.0
-      if: ${{ inputs.psruleBaseline == 'Azure.Default' }}
-      continue-on-error: true
-      with:
-        modules: "PSRule.Rules.Azure"
-        baseline: "${{ inputs.psruleBaseline }}"
-        inputPath: "${{ inputs.templateFilePath}}"
-        outputFormat: Csv
-        outputPath: "${{ inputs.templateFilePath}}-PSRule-output.csv"
-        option: "${{ github.workspace }}/${{ inputs.psrulePath}}/ps-rule.yaml" # Path to PSRule configuration options file
-        source: "${{ inputs.psrulePath}}/.ps-rule/" # Path to folder containing suppression rules to use for analysis.
-        summary: false # Disabling as taken care in customized task
-
-    - name: Run PSRule analysis - Reliability Pillar Only (Azure.Pillar.Reliability)
-      uses: microsoft/ps-rule@v2.9.0
-      if: ${{ inputs.psruleBaseline == 'Azure.Pillar.Reliability' }}
+      env:
+        CONTINUE_ON_ERROR: ${{ inputs.softFailure }}
+      continue-on-error: ${{ fromJSON(env.CONTINUE_ON_ERROR) }}
       with:
         modules: "PSRule.Rules.Azure"
         prerelease: true
@@ -131,6 +119,8 @@ runs:
         source: "${{ inputs.psrulePath}}/.ps-rule/" # Path to folder containing suppression rules to use for analysis.
         summary: false # Disabling as taken care in customized task
 
+    # [Print to Summary] task(s)
+    #-----------------------------
     - name: "Parse CSV content"
       if: always()
       uses: azure/powershell@v2
@@ -141,7 +131,7 @@ runs:
           Write-Output '::group::Parse CSV content'
 
           # Load used functions
-          . (Join-Path $env:GITHUB_WORKSPACE 'avm' 'utilities' 'pipelines' 'staticValidation' 'psrule' 'Set-PSRuleGitHubOutput.ps1')
+          . (Join-Path $env:GITHUB_WORKSPACE 'utilities' 'pipelines' 'staticValidation' 'psrule' 'Set-PSRuleGitHubOutput.ps1')
 
           # Populate parameter input
           $ParameterInput = @{

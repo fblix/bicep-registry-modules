@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -45,7 +45,7 @@ module nestedDependencies 'dependencies.bicep' = {
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -69,6 +69,15 @@ module testDeployment '../../../main.bicep' = [
     params: {
       name: '${namePrefix}${serviceShort}001'
       location: resourceLocation
+      managedIdentities: {
+        userAssignedResourceIds: [
+          nestedDependencies.outputs.managedIdentityResourceId
+        ]
+      }
+      publicNetworkAccess: 'Disabled' // Use private endpoints only for security
+      minimumTlsVersionAllowed: '1.2'
+      inputSchema: 'CloudEventSchemaV1_0'
+      dataResidencyBoundary: 'WithinRegion' // Ensure data stays within region
       diagnosticSettings: [
         {
           name: 'customSetting'
@@ -93,15 +102,21 @@ module testDeployment '../../../main.bicep' = [
           }
           retryPolicy: {
             maxDeliveryAttempts: 10
-            eventTimeToLive: '120'
+            eventTimeToLiveInMinutes: 120
           }
           eventDeliverySchema: 'CloudEventSchemaV1_0'
-          destination: {
-            endpointType: 'StorageQueue'
-            properties: {
-              resourceId: nestedDependencies.outputs.storageAccountResourceId
-              queueMessageTimeToLiveInSeconds: 86400
-              queueName: nestedDependencies.outputs.queueName
+          deliveryWithResourceIdentity: {
+            identity: {
+              type: 'UserAssigned'
+              userAssignedIdentity: nestedDependencies.outputs.managedIdentityResourceId
+            }
+            destination: {
+              endpointType: 'StorageQueue'
+              properties: {
+                resourceId: nestedDependencies.outputs.storageAccountResourceId
+                queueMessageTimeToLiveInSeconds: 86400
+                queueName: nestedDependencies.outputs.queueName
+              }
             }
           }
         }
@@ -118,9 +133,14 @@ module testDeployment '../../../main.bicep' = [
       }
       privateEndpoints: [
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
+          service: 'topic'
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
           roleAssignments: [
             {
@@ -144,19 +164,26 @@ module testDeployment '../../../main.bicep' = [
           }
         }
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
+          service: 'topic'
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
         }
       ]
       roleAssignments: [
         {
+          name: 'f80d2f24-53f6-41b3-811f-668b2273dcf8'
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
         {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
@@ -176,9 +203,5 @@ module testDeployment '../../../main.bicep' = [
         Role: 'DeploymentValidation'
       }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

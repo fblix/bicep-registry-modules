@@ -1,6 +1,19 @@
 # Azure Virtual Desktop Host Pool `[Microsoft.DesktopVirtualization/hostPools]`
 
+> ⚠️THIS MODULE IS CURRENTLY ORPHANED.⚠️
+>
+> - Only security and bug fixes are being handled by the AVM core team at present.
+> - If interested in becoming the module owner of this orphaned module (must be Microsoft FTE), please look for the related "orphaned module" GitHub issue [here](https://aka.ms/AVM/OrphanedModules)!
+
 This module deploys an Azure Virtual Desktop Host Pool
+
+You can reference the module as follows:
+```bicep
+module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
 
 ## Navigation
 
@@ -13,14 +26,14 @@ This module deploys an Azure Virtual Desktop Host Pool
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.DesktopVirtualization/hostPools` | [2023-09-05](https://learn.microsoft.com/en-us/azure/templates/Microsoft.DesktopVirtualization/2023-09-05/hostPools) |
-| `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
-| `Microsoft.Network/privateEndpoints` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints) |
-| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints/privateDnsZoneGroups) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.DesktopVirtualization/hostPools` | 2025-03-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.desktopvirtualization_hostpools.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.DesktopVirtualization/2025-03-01-preview/hostPools)</li></ul> |
+| `Microsoft.Insights/diagnosticSettings` | 2021-05-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.insights_diagnosticsettings.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings)</li></ul> |
+| `Microsoft.Network/privateEndpoints` | 2024-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/privateEndpoints)</li></ul> |
+| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | 2024-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints_privatednszonegroups.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/privateEndpoints/privateDnsZoneGroups)</li></ul> |
 
 ## Usage examples
 
@@ -38,6 +51,8 @@ The following section provides usage examples for the module, which were used to
 
 This instance deploys the module with the minimum set of required parameters.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
 
 <details>
 
@@ -45,12 +60,8 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' = {
-  name: 'hostPoolDeployment'
   params: {
-    // Required parameters
     name: 'dvhpmin002'
-    // Non-required parameters
-    location: '<location>'
   }
 }
 ```
@@ -60,23 +71,31 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    // Required parameters
     "name": {
       "value": "dvhpmin002"
-    },
-    // Non-required parameters
-    "location": {
-      "value": "<location>"
     }
   }
 }
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/desktop-virtualization/host-pool:<version>'
+
+param name = 'dvhpmin002'
 ```
 
 </details>
@@ -86,6 +105,8 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
 
 This instance deploys the module with most of its features enabled.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
+
 
 <details>
 
@@ -93,7 +114,6 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' = {
-  name: 'hostPoolDeployment'
   params: {
     // Required parameters
     name: 'dvhpmax001'
@@ -129,6 +149,7 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
         workspaceResourceId: '<workspaceResourceId>'
       }
     ]
+    directUDP: 'Enabled'
     enableTelemetry: true
     friendlyName: 'AVDv2'
     hostPoolType: 'Pooled'
@@ -138,30 +159,44 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
       kind: 'CanNotDelete'
       name: 'myCustomLockName'
     }
+    managedPrivateUDP: 'Enabled'
+    managementType: 'Automated'
     maxSessionLimit: 99999
     personalDesktopAssignmentType: 'Automatic'
     privateEndpoints: [
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         subnetResourceId: '<subnetResourceId>'
       }
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         subnetResourceId: '<subnetResourceId>'
       }
     ]
     publicNetworkAccess: 'Disabled'
+    publicUDP: 'Enabled'
+    relayUDP: 'Enabled'
     roleAssignments: [
       {
+        name: '52c43567-917f-4c56-8c9b-6cadeef37b51'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -203,7 +238,7 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -254,6 +289,9 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
         }
       ]
     },
+    "directUDP": {
+      "value": "Enabled"
+    },
     "enableTelemetry": {
       "value": true
     },
@@ -275,6 +313,12 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
         "name": "myCustomLockName"
       }
     },
+    "managedPrivateUDP": {
+      "value": "Enabled"
+    },
+    "managementType": {
+      "value": "Automated"
+    },
     "maxSessionLimit": {
       "value": 99999
     },
@@ -284,15 +328,23 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
     "privateEndpoints": {
       "value": [
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "subnetResourceId": "<subnetResourceId>"
         },
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "subnetResourceId": "<subnetResourceId>"
         }
       ]
@@ -300,14 +352,22 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
     "publicNetworkAccess": {
       "value": "Disabled"
     },
+    "publicUDP": {
+      "value": "Enabled"
+    },
+    "relayUDP": {
+      "value": "Enabled"
+    },
     "roleAssignments": {
       "value": [
         {
+          "name": "52c43567-917f-4c56-8c9b-6cadeef37b51",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -352,9 +412,137 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/desktop-virtualization/host-pool:<version>'
+
+// Required parameters
+param name = 'dvhpmax001'
+// Non-required parameters
+param agentUpdate = {
+  maintenanceWindows: [
+    {
+      dayOfWeek: 'Friday'
+      hour: 7
+    }
+    {
+      dayOfWeek: 'Saturday'
+      hour: 8
+    }
+  ]
+  maintenanceWindowTimeZone: 'Alaskan Standard Time'
+  type: 'Scheduled'
+  useSessionHostLocalTime: false
+}
+param customRdpProperty = 'audiocapturemode:i:1;audiomode:i:0;drivestoredirect:s:;redirectclipboard:i:1;redirectcomports:i:1;redirectprinters:i:1;redirectsmartcards:i:1;screen mode id:i:2;'
+param description = 'My first AVD Host Pool'
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    logCategoriesAndGroups: [
+      {
+        categoryGroup: 'allLogs'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param directUDP = 'Enabled'
+param enableTelemetry = true
+param friendlyName = 'AVDv2'
+param hostPoolType = 'Pooled'
+param loadBalancerType = 'BreadthFirst'
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param managedPrivateUDP = 'Enabled'
+param managementType = 'Automated'
+param maxSessionLimit = 99999
+param personalDesktopAssignmentType = 'Automatic'
+param privateEndpoints = [
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    subnetResourceId: '<subnetResourceId>'
+  }
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    subnetResourceId: '<subnetResourceId>'
+  }
+]
+param publicNetworkAccess = 'Disabled'
+param publicUDP = 'Enabled'
+param relayUDP = 'Enabled'
+param roleAssignments = [
+  {
+    name: '52c43567-917f-4c56-8c9b-6cadeef37b51'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+param vmTemplate = {
+  customImageId: '<customImageId>'
+  domain: 'domainname.onmicrosoft.com'
+  galleryImageOffer: 'office-365'
+  galleryImagePublisher: 'microsoftwindowsdesktop'
+  galleryImageSKU: '20h1-evd-o365pp'
+  imageType: 'Gallery'
+  imageUri: '<imageUri>'
+  namePrefix: 'avdv2'
+  osDiskType: 'StandardSSD_LRS'
+  useManagedDisks: true
+  vmSize: {
+    cores: 2
+    id: 'Standard_D2s_v3'
+    ram: 8
+  }
+}
+```
+
+</details>
+<p>
+
 ### Example 3: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -363,7 +551,6 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' = {
-  name: 'hostPoolDeployment'
   params: {
     // Required parameters
     name: 'dvhpwaf002'
@@ -376,7 +563,6 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
         workspaceResourceId: '<workspaceResourceId>'
       }
     ]
-    location: '<location>'
     tags: {
       Environment: 'Non-Prod'
       'hidden-title': 'This is visible in the resource name'
@@ -391,7 +577,7 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -413,9 +599,6 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
         }
       ]
     },
-    "location": {
-      "value": "<location>"
-    },
     "tags": {
       "value": {
         "Environment": "Non-Prod",
@@ -430,6 +613,33 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/desktop-virtualization/host-pool:<version>'
+
+// Required parameters
+param name = 'dvhpwaf002'
+// Non-required parameters
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -447,17 +657,22 @@ module hostPool 'br/public:avm/res/desktop-virtualization/host-pool:<version>' =
 | [`customRdpProperty`](#parameter-customrdpproperty) | string | Host Pool RDP properties. |
 | [`description`](#parameter-description) | string | Description of the scaling plan. |
 | [`diagnosticSettings`](#parameter-diagnosticsettings) | array | The diagnostic settings of the service. |
+| [`directUDP`](#parameter-directudp) | string | Where direct UDP connectivity is established between the client and the session host when using a private connection, such as a virtual private network (VPN).<br>- Default: AVD-wide settings are used to determine connection availability<br>- Enabled: UDP will attempt this connection type when making connections. This means that this connection is possible, but is not guaranteed, as there are other factors that may prevent this connection type<br>- Disabled: UDP will not attempt this connection type when making connections. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`friendlyName`](#parameter-friendlyname) | string | Friendly name of the scaling plan. |
 | [`hostPoolType`](#parameter-hostpooltype) | string | Set this parameter to Personal if you would like to enable Persistent Desktop experience. Defaults to Pooled. |
 | [`loadBalancerType`](#parameter-loadbalancertype) | string | Type of load balancer algorithm. |
 | [`location`](#parameter-location) | string | Location of the scaling plan. Defaults to resource group location. |
 | [`lock`](#parameter-lock) | object | The lock settings of the service. |
+| [`managedPrivateUDP`](#parameter-managedprivateudp) | string | Where direct UDP connectivity is established between the client and the session host when using a private connection, such as a virtual private network (VPN).<br>- Default: AVD-wide settings are used to determine connection availability<br>- Enabled: UDP will attempt this connection type when making connections. This means that this connection is possible, but is not guaranteed, as there are other factors that may prevent this connection type<br>- Disabled: UDP will not attempt this connection type when making connections. |
+| [`managementType`](#parameter-managementtype) | string | The type of management for this hostpool. Note: If set to `Automated`, no registrationToken is returned by the resource. |
 | [`maxSessionLimit`](#parameter-maxsessionlimit) | int | Maximum number of sessions. |
 | [`personalDesktopAssignmentType`](#parameter-personaldesktopassignmenttype) | string | Set the type of assignment for a Personal Host Pool type. |
 | [`preferredAppGroupType`](#parameter-preferredappgrouptype) | string | The type of preferred application group type, default to Desktop Application Group. |
-| [`privateEndpoints`](#parameter-privateendpoints) | array | Configuration details for private endpoints. |
+| [`privateEndpoints`](#parameter-privateendpoints) | array | Configuration details for private endpoints. For security reasons, it is recommended to use private endpoints whenever possible. |
 | [`publicNetworkAccess`](#parameter-publicnetworkaccess) | string | Set public network access. |
+| [`publicUDP`](#parameter-publicudp) | string | Where direct UDP connectivity is established between the client and the session host via public network using Simple Traversal Underneath NAT (STUN) protocol.<br>- Default: AVD-wide settings are used to determine connection availability<br>- Enabled: UDP will attempt this connection type when making connections. This means that this connection is possible, but is not guaranteed, as there are other factors that may prevent this connection type<br>- Disabled: UDP will not attempt this connection type when making connections. |
+| [`relayUDP`](#parameter-relayudp) | string | Where indirect UDP connectivity is established between the client and the session host via public network using Traversal Using Relay NAT (TURN) protocol.<br>- Default: AVD-wide settings are used to determine connection availability<br>- Enabled: UDP will attempt this connection type when making connections. This means that this connection is possible, but is not guaranteed, as there are other factors that may prevent this connection type<br>- Disabled: UDP will not attempt this connection type when making connections. |
 | [`ring`](#parameter-ring) | int | The ring number of HostPool. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
 | [`ssoadfsAuthority`](#parameter-ssoadfsauthority) | string | URL to customer ADFS server for signing WVD SSO certificates. |
@@ -492,6 +707,13 @@ The session host configuration for updating agent, monitoring agent, and stack c
 - Default:
   ```Bicep
   {
+      maintenanceWindows: [
+        {
+          dayOfWeek: 'Sunday'
+          hour: 12
+        }
+      ]
+      type: 'Scheduled'
       useSessionHostLocalTime: true
   }
   ```
@@ -510,7 +732,6 @@ Description of the scaling plan.
 
 - Required: No
 - Type: string
-- Default: `''`
 
 ### Parameter: `diagnosticSettings`
 
@@ -624,6 +845,14 @@ Resource ID of the diagnostic log analytics workspace. For security reasons, it 
 - Required: No
 - Type: string
 
+### Parameter: `directUDP`
+
+Where direct UDP connectivity is established between the client and the session host when using a private connection, such as a virtual private network (VPN).<br>- Default: AVD-wide settings are used to determine connection availability<br>- Enabled: UDP will attempt this connection type when making connections. This means that this connection is possible, but is not guaranteed, as there are other factors that may prevent this connection type<br>- Disabled: UDP will not attempt this connection type when making connections.
+
+- Required: No
+- Type: string
+- Default: `'Default'`
+
 ### Parameter: `enableTelemetry`
 
 Enable/Disable usage telemetry for module.
@@ -638,7 +867,6 @@ Friendly name of the scaling plan.
 
 - Required: No
 - Type: string
-- Default: `''`
 
 ### Parameter: `hostPoolType`
 
@@ -692,6 +920,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -714,6 +943,29 @@ Specify the name of lock.
 
 - Required: No
 - Type: string
+
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
+### Parameter: `managedPrivateUDP`
+
+Where direct UDP connectivity is established between the client and the session host when using a private connection, such as a virtual private network (VPN).<br>- Default: AVD-wide settings are used to determine connection availability<br>- Enabled: UDP will attempt this connection type when making connections. This means that this connection is possible, but is not guaranteed, as there are other factors that may prevent this connection type<br>- Disabled: UDP will not attempt this connection type when making connections.
+
+- Required: No
+- Type: string
+- Default: `'Default'`
+
+### Parameter: `managementType`
+
+The type of management for this hostpool. Note: If set to `Automated`, no registrationToken is returned by the resource.
+
+- Required: No
+- Type: string
+- Default: `'Standard'`
 
 ### Parameter: `maxSessionLimit`
 
@@ -757,7 +1009,7 @@ The type of preferred application group type, default to Desktop Application Gro
 
 ### Parameter: `privateEndpoints`
 
-Configuration details for private endpoints.
+Configuration details for private endpoints. For security reasons, it is recommended to use private endpoints whenever possible.
 
 - Required: No
 - Type: array
@@ -772,22 +1024,22 @@ Configuration details for private endpoints.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`applicationSecurityGroupResourceIds`](#parameter-privateendpointsapplicationsecuritygroupresourceids) | array | Application security groups in which the private endpoint IP configuration is included. |
+| [`applicationSecurityGroupResourceIds`](#parameter-privateendpointsapplicationsecuritygroupresourceids) | array | Application security groups in which the Private Endpoint IP configuration is included. |
 | [`customDnsConfigs`](#parameter-privateendpointscustomdnsconfigs) | array | Custom DNS configurations. |
-| [`customNetworkInterfaceName`](#parameter-privateendpointscustomnetworkinterfacename) | string | The custom name of the network interface attached to the private endpoint. |
+| [`customNetworkInterfaceName`](#parameter-privateendpointscustomnetworkinterfacename) | string | The custom name of the network interface attached to the Private Endpoint. |
 | [`enableTelemetry`](#parameter-privateendpointsenabletelemetry) | bool | Enable/Disable usage telemetry for module. |
-| [`ipConfigurations`](#parameter-privateendpointsipconfigurations) | array | A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints. |
+| [`ipConfigurations`](#parameter-privateendpointsipconfigurations) | array | A list of IP configurations of the Private Endpoint. This will be used to map to the first-party Service endpoints. |
 | [`isManualConnection`](#parameter-privateendpointsismanualconnection) | bool | If Manual Private Link Connection is required. |
-| [`location`](#parameter-privateendpointslocation) | string | The location to deploy the private endpoint to. |
+| [`location`](#parameter-privateendpointslocation) | string | The location to deploy the Private Endpoint to. |
 | [`lock`](#parameter-privateendpointslock) | object | Specify the type of lock. |
 | [`manualConnectionRequestMessage`](#parameter-privateendpointsmanualconnectionrequestmessage) | string | A message passed to the owner of the remote resource with the manual connection request. |
-| [`name`](#parameter-privateendpointsname) | string | The name of the private endpoint. |
-| [`privateDnsZoneGroupName`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided. |
-| [`privateDnsZoneResourceIds`](#parameter-privateendpointsprivatednszoneresourceids) | array | The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones. |
-| [`resourceGroupName`](#parameter-privateendpointsresourcegroupname) | string | Specify if you want to deploy the Private Endpoint into a different resource group than the main resource. |
+| [`name`](#parameter-privateendpointsname) | string | The name of the Private Endpoint. |
+| [`privateDnsZoneGroup`](#parameter-privateendpointsprivatednszonegroup) | object | The private DNS Zone Group to configure for the Private Endpoint. |
+| [`privateLinkServiceConnectionName`](#parameter-privateendpointsprivatelinkserviceconnectionname) | string | The name of the private link connection to create. |
+| [`resourceGroupResourceId`](#parameter-privateendpointsresourcegroupresourceid) | string | The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used. |
 | [`roleAssignments`](#parameter-privateendpointsroleassignments) | array | Array of role assignments to create. |
-| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the private endpoint for. For example "vault", "mysqlServer" or "dataFactory". |
-| [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/resource groups in this deployment. |
+| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the Private Endpoint for. For example "vault" for a Key Vault Private Endpoint. |
+| [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/Resource Groups in this deployment. |
 
 ### Parameter: `privateEndpoints.subnetResourceId`
 
@@ -798,7 +1050,7 @@ Resource ID of the subnet where the endpoint needs to be created.
 
 ### Parameter: `privateEndpoints.applicationSecurityGroupResourceIds`
 
-Application security groups in which the private endpoint IP configuration is included.
+Application security groups in which the Private Endpoint IP configuration is included.
 
 - Required: No
 - Type: array
@@ -814,15 +1066,13 @@ Custom DNS configurations.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | Fqdn that resolves to private endpoint IP address. |
 | [`ipAddresses`](#parameter-privateendpointscustomdnsconfigsipaddresses) | array | A list of private IP addresses of the private endpoint. |
 
-### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+**Optional parameters**
 
-Fqdn that resolves to private endpoint IP address.
-
-- Required: No
-- Type: string
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | FQDN that resolves to private endpoint IP address. |
 
 ### Parameter: `privateEndpoints.customDnsConfigs.ipAddresses`
 
@@ -831,9 +1081,16 @@ A list of private IP addresses of the private endpoint.
 - Required: Yes
 - Type: array
 
+### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+
+FQDN that resolves to private endpoint IP address.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.customNetworkInterfaceName`
 
-The custom name of the network interface attached to the private endpoint.
+The custom name of the network interface attached to the Private Endpoint.
 
 - Required: No
 - Type: string
@@ -847,7 +1104,7 @@ Enable/Disable usage telemetry for module.
 
 ### Parameter: `privateEndpoints.ipConfigurations`
 
-A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints.
+A list of IP configurations of the Private Endpoint. This will be used to map to the first-party Service endpoints.
 
 - Required: No
 - Type: array
@@ -911,7 +1168,7 @@ If Manual Private Link Connection is required.
 
 ### Parameter: `privateEndpoints.location`
 
-The location to deploy the private endpoint to.
+The location to deploy the Private Endpoint to.
 
 - Required: No
 - Type: string
@@ -929,6 +1186,7 @@ Specify the type of lock.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-privateendpointslockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-privateendpointslockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-privateendpointslocknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `privateEndpoints.lock.kind`
 
@@ -952,6 +1210,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.manualConnectionRequestMessage`
 
 A message passed to the owner of the remote resource with the manual connection request.
@@ -961,28 +1226,80 @@ A message passed to the owner of the remote resource with the manual connection 
 
 ### Parameter: `privateEndpoints.name`
 
-The name of the private endpoint.
+The name of the Private Endpoint.
 
 - Required: No
 - Type: string
 
-### Parameter: `privateEndpoints.privateDnsZoneGroupName`
+### Parameter: `privateEndpoints.privateDnsZoneGroup`
 
-The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided.
-
-- Required: No
-- Type: string
-
-### Parameter: `privateEndpoints.privateDnsZoneResourceIds`
-
-The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones.
+The private DNS Zone Group to configure for the Private Endpoint.
 
 - Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneGroupConfigs`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigs) | array | The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the Private DNS Zone Group. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs`
+
+The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones.
+
+- Required: Yes
 - Type: array
 
-### Parameter: `privateEndpoints.resourceGroupName`
+**Required parameters**
 
-Specify if you want to deploy the Private Endpoint into a different resource group than the main resource.
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneResourceId`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsprivatednszoneresourceid) | string | The resource id of the private DNS zone. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsname) | string | The name of the private DNS Zone Group config. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.privateDnsZoneResourceId`
+
+The resource id of the private DNS zone.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.name`
+
+The name of the private DNS Zone Group config.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.name`
+
+The name of the Private DNS Zone Group.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.privateLinkServiceConnectionName`
+
+The name of the private link connection to create.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.resourceGroupResourceId`
+
+The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used.
 
 - Required: No
 - Type: string
@@ -993,6 +1310,17 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'DNS Resolver Contributor'`
+  - `'DNS Zone Contributor'`
+  - `'Domain Services Contributor'`
+  - `'Domain Services Reader'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Private DNS Zone Contributor'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
 
 **Required parameters**
 
@@ -1009,6 +1337,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-privateendpointsroleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-privateendpointsroleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-privateendpointsroleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-privateendpointsroleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-privateendpointsroleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `privateEndpoints.roleAssignments.principalId`
@@ -1059,6 +1388,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1078,14 +1414,14 @@ The principal type of the assigned principal ID.
 
 ### Parameter: `privateEndpoints.service`
 
-The subresource to deploy the private endpoint for. For example "vault", "mysqlServer" or "dataFactory".
+The subresource to deploy the Private Endpoint for. For example "vault" for a Key Vault Private Endpoint.
 
 - Required: No
 - Type: string
 
 ### Parameter: `privateEndpoints.tags`
 
-Tags to be applied on all resources/resource groups in this deployment.
+Tags to be applied on all resources/Resource Groups in this deployment.
 
 - Required: No
 - Type: object
@@ -1107,13 +1443,28 @@ Set public network access.
   ]
   ```
 
+### Parameter: `publicUDP`
+
+Where direct UDP connectivity is established between the client and the session host via public network using Simple Traversal Underneath NAT (STUN) protocol.<br>- Default: AVD-wide settings are used to determine connection availability<br>- Enabled: UDP will attempt this connection type when making connections. This means that this connection is possible, but is not guaranteed, as there are other factors that may prevent this connection type<br>- Disabled: UDP will not attempt this connection type when making connections.
+
+- Required: No
+- Type: string
+- Default: `'Default'`
+
+### Parameter: `relayUDP`
+
+Where indirect UDP connectivity is established between the client and the session host via public network using Traversal Using Relay NAT (TURN) protocol.<br>- Default: AVD-wide settings are used to determine connection availability<br>- Enabled: UDP will attempt this connection type when making connections. This means that this connection is possible, but is not guaranteed, as there are other factors that may prevent this connection type<br>- Disabled: UDP will not attempt this connection type when making connections.
+
+- Required: No
+- Type: string
+- Default: `'Default'`
+
 ### Parameter: `ring`
 
 The ring number of HostPool.
 
 - Required: No
 - Type: int
-- Default: `-1`
 
 ### Parameter: `roleAssignments`
 
@@ -1121,6 +1472,29 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Owner'`
+  - `'Contributor'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
+  - `'Application Group Contributor'`
+  - `'Desktop Virtualization Application Group Contributor'`
+  - `'Desktop Virtualization Application Group Reader'`
+  - `'Desktop Virtualization Contributor'`
+  - `'Desktop Virtualization Host Pool Contributor'`
+  - `'Desktop Virtualization Host Pool Reader'`
+  - `'Desktop Virtualization Power On Off Contributor'`
+  - `'Desktop Virtualization Reader'`
+  - `'Desktop Virtualization Session Host Operator'`
+  - `'Desktop Virtualization User'`
+  - `'Desktop Virtualization User Session Operator'`
+  - `'Desktop Virtualization Virtual Machine Contributor'`
+  - `'Desktop Virtualization Workspace Contributor'`
+  - `'Desktop Virtualization Workspace Reader'`
+  - `'Managed Application Contributor Role'`
+  - `'Managed Application Operator Role'`
+  - `'Managed Applications Reader'`
 
 **Required parameters**
 
@@ -1137,6 +1511,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -1187,6 +1562,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1210,7 +1592,6 @@ URL to customer ADFS server for signing WVD SSO certificates.
 
 - Required: No
 - Type: string
-- Default: `''`
 
 ### Parameter: `ssoClientId`
 
@@ -1218,7 +1599,6 @@ ClientId for the registered Relying Party used to issue WVD SSO certificates.
 
 - Required: No
 - Type: string
-- Default: `''`
 
 ### Parameter: `ssoClientSecretKeyVaultPath`
 
@@ -1226,7 +1606,6 @@ Path to Azure KeyVault storing the secret used for communication to ADFS.
 
 - Required: No
 - Type: string
-- Default: `''`
 
 ### Parameter: `ssoSecretType`
 
@@ -1234,7 +1613,6 @@ The type of single sign on Secret Type.
 
 - Required: No
 - Type: string
-- Default: `''`
 - Allowed:
   ```Bicep
   [
@@ -1293,13 +1671,14 @@ Do not provide a value! This date value is used to generate a registration token
 - Type: string
 - Default: `[utcNow('u')]`
 
-
 ## Outputs
 
 | Output | Type | Description |
 | :-- | :-- | :-- |
 | `location` | string | The location of the host pool. |
 | `name` | string | The name of the host pool. |
+| `privateEndpoints` | array | The private endpoints of the host pool. |
+| `registrationToken` | securestring | The registration token of the host pool. ONLY has a value if `managementType` is set to `Standard, otherwise null. |
 | `resourceGroupName` | string | The name of the resource group the host pool was created in. |
 | `resourceId` | string | The resource ID of the host pool. |
 
@@ -1309,8 +1688,10 @@ This section gives you an overview of all local-referenced module files (i.e., o
 
 | Reference | Type |
 | :-- | :-- |
-| `br/public:avm/res/network/private-endpoint:0.4.1` | Remote reference |
+| `br/public:avm/res/network/private-endpoint:0.11.0` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.0` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

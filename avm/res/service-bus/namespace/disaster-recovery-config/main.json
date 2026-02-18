@@ -4,12 +4,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "3332271240583753856"
+      "version": "0.39.26.7824",
+      "templateHash": "5536916122228196610"
     },
     "name": "Service Bus Namespace Disaster Recovery Configs",
-    "description": "This module deploys a Service Bus Namespace Disaster Recovery Config",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a Service Bus Namespace Disaster Recovery Config"
   },
   "parameters": {
     "namespaceName": {
@@ -45,7 +44,7 @@
   "resources": [
     {
       "type": "Microsoft.ServiceBus/namespaces/disasterRecoveryConfigs",
-      "apiVersion": "2022-10-01-preview",
+      "apiVersion": "2024-01-01",
       "name": "[format('{0}/{1}', parameters('namespaceName'), parameters('name'))]",
       "properties": {
         "alternateName": "[parameters('alternateName')]",

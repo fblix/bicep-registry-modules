@@ -26,9 +26,17 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
+}
+
+module nestedDependencies 'dependencies.bicep' = {
+  scope: resourceGroup
+  name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
+  params: {
+    managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
+  }
 }
 
 // ============== //
@@ -42,10 +50,17 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
       azureMonitorAlertSettingsAlertsForAllJobFailures: 'Disabled'
       managedIdentities: {
         systemAssigned: true
+        userAssignedResourceIds: [
+          nestedDependencies.outputs.managedIdentityResourceId
+        ]
+      }
+      immutabilitySettingState: 'Locked'
+      softDeleteSettings: {
+        retentionDurationInDays: 14
+        state: 'On'
       }
       backupPolicies: [
         {
@@ -109,15 +124,6 @@ module testDeployment '../../../main.bicep' = [
           }
         }
       ]
-      lock: {
-        kind: 'CanNotDelete'
-        name: 'myCustomLockName'
-      }
-      tags: {
-        'hidden-title': 'This is visible in the resource name'
-        Environment: 'Non-Prod'
-        Role: 'DeploymentValidation'
-      }
     }
   }
 ]

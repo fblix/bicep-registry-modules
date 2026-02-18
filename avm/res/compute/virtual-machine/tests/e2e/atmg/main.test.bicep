@@ -1,3 +1,4 @@
+// WARNING: this test is disabled, as there is an known issue on Azure, preventing deployment, see https://techcommunity.microsoft.com/t5/azure-infrastructure/enabling-azure-automanage-or-creating-a-custom-configuration/m-p/4251861
 targetScope = 'subscription'
 
 metadata name = 'Using automanage for the VM.'
@@ -11,8 +12,9 @@ metadata description = 'This instance deploys the module with registering to an 
 @maxLength(90)
 param resourceGroupName string = 'dep-${namePrefix}-compute.virtualMachines-${serviceShort}-rg'
 
-@description('Optional. The location to deploy resources to.')
-param resourceLocation string = deployment().location
+// Capacity constraints for VM type
+#disable-next-line no-hardcoded-location
+var enforcedLocation = 'uksouth'
 
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 param serviceShort string = 'cvmlinatmg'
@@ -20,26 +22,21 @@ param serviceShort string = 'cvmlinatmg'
 @description('Optional. A token to inject into the name of each resource.')
 param namePrefix string = '#_namePrefix_#'
 
-// Set to fixed location as the RP function returns unsupported locations (configurationProfileAssignments)
-// Right now (2024/04) the following locations are supported: centralus, eastus, eastus2, southcentralus, westus, westus2, westcentralus, northeurope, westeurope, canadacentral, japaneast, uksouth, australiasoutheast, australiaeast, southeastasia, westus3
-param enforcedLocation string = 'westeurope'
-
 // ============ //
 // Dependencies //
 // ============ //
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
-  location: resourceLocation
+  location: enforcedLocation
 }
 
 module nestedDependencies 'dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, enforcedLocation)}-nestedDependencies'
   params: {
-    location: enforcedLocation
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
     sshDeploymentScriptName: 'dep-${namePrefix}-ds-${serviceShort}'
     sshKeyName: 'dep-${namePrefix}-ssh-${serviceShort}'
@@ -51,14 +48,9 @@ module nestedDependencies 'dependencies.bicep' = {
 // Test Execution //
 // ============== //
 
-// resource sshKey 'Microsoft.Compute/sshPublicKeys@2022-03-01' existing = {
-//   name: sshKeyName
-//   scope: resourceGroup
-// }
-
 @batchSize(1)
 module testDeployment '../../../main.bicep' = [
-  for iteration in ['init', 'idem']: {
+  for iteration in ['init', 'idem']: if (false) {
     scope: resourceGroup
     name: '${uniqueString(deployment().name, enforcedLocation)}-test-${serviceShort}-${iteration}'
     params: {
@@ -71,7 +63,7 @@ module testDeployment '../../../main.bicep' = [
         sku: '22_04-lts-gen2'
         version: 'latest'
       }
-      availabilityZone: 0
+      availabilityZone: -1
       nicConfigurations: [
         {
           ipConfigurations: [
@@ -79,12 +71,12 @@ module testDeployment '../../../main.bicep' = [
               name: 'ipconfig01'
               pipConfiguration: {
                 publicIpNameSuffix: '-pip-01'
+                availabilityZones: [
+                  1
+                  2
+                  3
+                ]
               }
-              zones: [
-                '1'
-                '2'
-                '3'
-              ]
               subnetResourceId: nestedDependencies.outputs.subnetResourceId
             }
           ]
@@ -98,7 +90,7 @@ module testDeployment '../../../main.bicep' = [
         }
       }
       osType: 'Linux'
-      vmSize: 'Standard_DS2_v2'
+      vmSize: 'Standard_D2s_v3'
       configurationProfile: '/providers/Microsoft.Automanage/bestPractices/AzureBestPracticesProduction'
       disablePasswordAuthentication: true
       publicKeys: [
@@ -108,8 +100,5 @@ module testDeployment '../../../main.bicep' = [
         }
       ]
     }
-    dependsOn: [
-      nestedDependencies // Required to leverage `existing` SSH key reference
-    ]
   }
 ]

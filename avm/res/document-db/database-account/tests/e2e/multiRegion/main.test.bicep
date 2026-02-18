@@ -11,36 +11,22 @@ metadata description = 'This instance deploys the module in multiple regions wit
 @maxLength(90)
 param resourceGroupName string = 'dep-${namePrefix}-documentdb.databaseaccounts-${serviceShort}-rg'
 
-@description('Optional. The location to deploy resources to.')
-param resourceLocation string = deployment().location
-
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 param serviceShort string = 'dddaumr'
 
 @description('Optional. A token to inject into the name of each resource.')
 param namePrefix string = '#_namePrefix_#'
 
-// Pipeline is selecting random regions which dont support all cosmos features and have constraints when creating new cosmos
-var enforcedLocation = 'eastasia'
-
-// ============ //
-// Dependencies //
-// ============ //
-
-module nestedDependencies 'dependencies.bicep' = {
-  scope: resourceGroup
-  name: '${uniqueString(deployment().name, enforcedLocation)}-nestedDependencies'
-  params: {
-    location: enforcedLocation
-    managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
-    pairedRegionScriptName: 'dep-${namePrefix}-ds-${serviceShort}'
-  }
-}
+// The default pipeline is selecting random regions which don't have capacity for Azure Cosmos DB or support all Azure Cosmos DB features when creating new accounts.
+#disable-next-line no-hardcoded-location
+var enforcedLocation = 'eastus2'
+#disable-next-line no-hardcoded-location
+var enforcedSecondLocation = 'westus3'
 
 // ============== //
 // General resources
 // ============== //
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: enforcedLocation
 }
@@ -53,24 +39,23 @@ module testDeployment '../../../main.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, enforcedLocation)}-test-${serviceShort}'
   params: {
-    automaticFailover: false
-    location: enforcedLocation
+    name: '${namePrefix}-multi-region'
+    enableAutomaticFailover: true
+    enableMultipleWriteLocations: true
     backupPolicyType: 'Periodic'
     backupIntervalInMinutes: 300
-    backupStorageRedundancy: 'Zone'
+    backupStorageRedundancy: 'Geo'
     backupRetentionIntervalInHours: 16
-    enableMultipleWriteLocations: true
-    name: '${namePrefix}-multi-region'
-    locations: [
+    failoverLocations: [
       {
         failoverPriority: 0
-        isZoneRedundant: true
+        isZoneRedundant: false
         locationName: enforcedLocation
       }
       {
         failoverPriority: 1
-        isZoneRedundant: true
-        locationName: nestedDependencies.outputs.pairedRegionName
+        isZoneRedundant: false
+        locationName: enforcedSecondLocation
       }
     ]
     sqlDatabases: [

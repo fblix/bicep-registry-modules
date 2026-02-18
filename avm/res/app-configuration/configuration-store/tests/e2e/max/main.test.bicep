@@ -20,13 +20,16 @@ param serviceShort string = 'accmax'
 @description('Optional. A token to inject into the name of each resource.')
 param namePrefix string = '#_namePrefix_#'
 
+@description('Optional. Disables all authentication methods other than AAD authentication.')
+param disableLocalAuth bool = false
+
 // ============ //
 // Dependencies //
 // ============ //
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -36,13 +39,12 @@ module nestedDependencies 'dependencies.bicep' = {
   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
   params: {
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
-    location: resourceLocation
   }
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -50,7 +52,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -66,7 +67,16 @@ module testDeployment '../../../main.bicep' = [
     params: {
       name: '${namePrefix}${serviceShort}001'
       location: resourceLocation
+      disableLocalAuth: disableLocalAuth
       createMode: 'Default'
+      replicaLocations: [
+        {
+          replicaLocation: 'centralus'
+          name: 'mycentralusreplica'
+        }
+        { replicaLocation: 'westus' }
+      ]
+      enablePurgeProtection: false //Only for Testing purposes. Waf Aligned is true
       diagnosticSettings: [
         {
           name: 'customSetting'
@@ -81,15 +91,27 @@ module testDeployment '../../../main.bicep' = [
           workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
         }
       ]
-      disableLocalAuth: false
-      enablePurgeProtection: false
       keyValues: [
         {
           contentType: 'contentType'
           name: 'keyName'
           roleAssignments: [
             {
-              roleDefinitionIdOrName: 'Reader'
+              name: '56e2c190-b31e-4518-84de-170b8a5c1b24'
+              roleDefinitionIdOrName: 'Owner'
+              principalId: nestedDependencies.outputs.managedIdentityPrincipalId
+              principalType: 'ServicePrincipal'
+            }
+            {
+              roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+              principalId: nestedDependencies.outputs.managedIdentityPrincipalId
+              principalType: 'ServicePrincipal'
+            }
+            {
+              roleDefinitionIdOrName: subscriptionResourceId(
+                'Microsoft.Authorization/roleDefinitions',
+                'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+              )
               principalId: nestedDependencies.outputs.managedIdentityPrincipalId
               principalType: 'ServicePrincipal'
             }
@@ -107,11 +129,13 @@ module testDeployment '../../../main.bicep' = [
       }
       roleAssignments: [
         {
+          name: '695044c2-3f1f-4843-970a-bed584b95a9a'
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
         {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'

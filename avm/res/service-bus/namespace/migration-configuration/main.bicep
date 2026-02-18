@@ -1,6 +1,5 @@
 metadata name = 'Service Bus Namespace Migration Configuration'
 metadata description = 'This module deploys a Service Bus Namespace Migration Configuration.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Conditional. The name of the parent Service Bus Namespace for the Service Bus Queue. Required if the template is used in a standalone deployment.')
 @minLength(1)
@@ -13,11 +12,11 @@ param postMigrationName string
 @description('Required. Existing premium Namespace resource ID which has no entities, will be used for migration.')
 param targetNamespaceResourceId string
 
-resource namespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' existing = {
+resource namespace 'Microsoft.ServiceBus/namespaces@2024-01-01' existing = {
   name: namespaceName
 }
 
-resource migrationConfiguration 'Microsoft.ServiceBus/namespaces/migrationConfigurations@2022-10-01-preview' = {
+resource migrationConfiguration 'Microsoft.ServiceBus/namespaces/migrationConfigurations@2024-01-01' = {
   name: '$default'
   parent: namespace
   properties: {

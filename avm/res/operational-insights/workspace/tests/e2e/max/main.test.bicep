@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -35,16 +35,16 @@ module nestedDependencies 'dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
   params: {
-    location: resourceLocation
     storageAccountName: 'dep${namePrefix}sa${serviceShort}'
     automationAccountName: 'dep-${namePrefix}-auto-${serviceShort}'
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
+    pairedRegionScriptName: 'dep-${namePrefix}-ds-${serviceShort}'
   }
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -52,7 +52,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -68,7 +67,8 @@ module testDeployment '../../../main.bicep' = [
     params: {
       name: '${namePrefix}${serviceShort}001'
       location: resourceLocation
-      dailyQuotaGb: 10
+      dailyQuotaGb: '0.5' // string workaround as 'float' values are not supported in Bicep, yet the resource providers expects them. Related issue: https://github.com/Azure/bicep/issues/1386
+
       dataSources: [
         {
           eventLogName: 'Application'
@@ -173,13 +173,40 @@ module testDeployment '../../../main.bicep' = [
           workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
         }
       ]
+      features: {
+        enableLogAccessUsingOnlyResourcePermissions: true
+        disableLocalAuth: true
+        enableDataExport: true
+        immediatePurgeDataOn30Days: true
+      }
+      replication: {
+        enabled: true
+        location: nestedDependencies.outputs.pairedRegionName
+      }
       gallerySolutions: [
         {
-          name: 'AzureAutomation'
-          product: 'OMSGallery'
-          publisher: 'Microsoft'
+          name: 'AzureAutomation(${namePrefix}${serviceShort}001)'
+          plan: {
+            product: 'OMSGallery/AzureAutomation'
+          }
+        }
+        {
+          name: 'SecurityInsights(${namePrefix}${serviceShort}001)'
+          plan: {
+            product: 'OMSGallery/SecurityInsights'
+            publisher: 'Microsoft'
+          }
+        }
+        {
+          name: 'SQLAuditing(${namePrefix}${serviceShort}001)'
+          plan: {
+            name: 'SQLAuditing(${namePrefix}${serviceShort}001)'
+            product: 'SQLAuditing'
+            publisher: 'Microsoft'
+          }
         }
       ]
+      onboardWorkspaceToSentinel: true
       linkedServices: [
         {
           name: 'Automation'
@@ -189,7 +216,9 @@ module testDeployment '../../../main.bicep' = [
       linkedStorageAccounts: [
         {
           name: 'Query'
-          resourceId: nestedDependencies.outputs.storageAccountResourceId
+          storageAccountIds: [
+            nestedDependencies.outputs.storageAccountResourceId
+          ]
         }
       ]
       tables: [
@@ -200,11 +229,11 @@ module testDeployment '../../../main.bicep' = [
             columns: [
               {
                 name: 'TimeGenerated'
-                type: 'DateTime'
+                type: 'dateTime'
               }
               {
                 name: 'RawData'
-                type: 'String'
+                type: 'string'
               }
             ]
           }
@@ -238,27 +267,27 @@ module testDeployment '../../../main.bicep' = [
             columns: [
               {
                 name: 'TimeGenerated'
-                type: 'DateTime'
+                type: 'dateTime'
               }
               {
                 name: 'EventTime'
-                type: 'DateTime'
+                type: 'dateTime'
               }
               {
                 name: 'EventLevel'
-                type: 'String'
+                type: 'string'
               }
               {
                 name: 'EventCode'
-                type: 'Int'
+                type: 'int'
               }
               {
                 name: 'Message'
-                type: 'String'
+                type: 'string'
               }
               {
                 name: 'RawData'
-                type: 'String'
+                type: 'string'
               }
             ]
           }
@@ -319,7 +348,6 @@ module testDeployment '../../../main.bicep' = [
           ]
         }
       ]
-      useResourcePermissions: true
       tags: {
         'hidden-title': 'This is visible in the resource name'
         Environment: 'Non-Prod'
@@ -330,11 +358,13 @@ module testDeployment '../../../main.bicep' = [
       }
       roleAssignments: [
         {
+          name: 'c3d53092-840c-4025-9c02-9bcb7895789c'
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
         {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
@@ -349,9 +379,5 @@ module testDeployment '../../../main.bicep' = [
         }
       ]
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

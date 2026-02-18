@@ -4,12 +4,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "7745744247225628529"
+      "version": "0.39.26.7824",
+      "templateHash": "2674842963224947050"
     },
     "name": "Service Bus Namespace Network Rule Sets",
-    "description": "This module deploys a ServiceBus Namespace Network Rule Set.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a ServiceBus Namespace Network Rule Set."
   },
   "parameters": {
     "namespaceName": {
@@ -70,7 +69,7 @@
         "name": "networkRules",
         "count": "[length(parameters('virtualNetworkRules'))]",
         "input": {
-          "ignoreMissingVnetServiceEndpoint": "[if(contains(parameters('virtualNetworkRules')[copyIndex('networkRules')], 'ignoreMissingVnetServiceEndpoint'), parameters('virtualNetworkRules')[copyIndex('networkRules')].ignoreMissingVnetServiceEndpoint, null())]",
+          "ignoreMissingVnetServiceEndpoint": "[tryGet(parameters('virtualNetworkRules')[copyIndex('networkRules')], 'ignoreMissingVnetServiceEndpoint')]",
           "subnet": "[if(contains(parameters('virtualNetworkRules')[copyIndex('networkRules')], 'subnetResourceId'), createObject('id', parameters('virtualNetworkRules')[copyIndex('networkRules')].subnetResourceId), null())]"
         }
       }
@@ -79,7 +78,7 @@
   "resources": [
     {
       "type": "Microsoft.ServiceBus/namespaces/networkRuleSets",
-      "apiVersion": "2022-10-01-preview",
+      "apiVersion": "2024-01-01",
       "name": "[format('{0}/{1}', parameters('namespaceName'), 'default')]",
       "properties": {
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]",

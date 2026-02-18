@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -36,21 +36,22 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 // ============== //
 
 @batchSize(1)
-module testDeployment '../../../main.bicep' = [for iteration in [ 'init', 'idem' ]: {
-  scope: resourceGroup
-  name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
-  params: {
-    location: resourceLocation
-    name: '${namePrefix}${serviceShort}001'
-    skuName: 'Premium_LRS'
-    kind: 'FileStorage'
-    fileServices: {
-      shares: [
-        {
-          name: 'nfsfileshare'
-          enabledProtocols: 'NFS'
-        }
-      ]
+module testDeployment '../../../main.bicep' = [
+  for iteration in ['init', 'idem']: {
+    scope: resourceGroup
+    name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
+    params: {
+      name: '${namePrefix}${serviceShort}001'
+      skuName: 'Premium_LRS'
+      kind: 'FileStorage'
+      fileServices: {
+        shares: [
+          {
+            name: 'nfsfileshare'
+            enabledProtocols: 'NFS'
+          }
+        ]
+      }
     }
   }
-}]
+]

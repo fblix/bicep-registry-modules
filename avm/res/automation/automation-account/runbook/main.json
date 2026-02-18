@@ -5,12 +5,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "14714097202201612277"
+      "version": "0.37.4.10188",
+      "templateHash": "1719728153394600761"
     },
     "name": "Automation Account Runbooks",
-    "description": "This module deploys an Azure Automation Account Runbook.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys an Azure Automation Account Runbook."
   },
   "parameters": {
     "name": {
@@ -32,7 +31,11 @@
         "GraphPowerShell",
         "GraphPowerShellWorkflow",
         "PowerShell",
-        "PowerShellWorkflow"
+        "PowerShell72",
+        "PowerShellWorkflow",
+        "Python2",
+        "Python3",
+        "Script"
       ],
       "metadata": {
         "description": "Required. The type of the runbook."
@@ -108,33 +111,29 @@
     "automationAccount": {
       "existing": true,
       "type": "Microsoft.Automation/automationAccounts",
-      "apiVersion": "2022-08-08",
+      "apiVersion": "2024-10-23",
       "name": "[parameters('automationAccountName')]"
     },
     "storageAccount": {
       "condition": "[not(empty(parameters('scriptStorageAccountResourceId')))]",
       "existing": true,
       "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2022-09-01",
-      "subscriptionId": "[split(coalesce(parameters('scriptStorageAccountResourceId'), '//'), '/')[2]]",
-      "resourceGroup": "[split(coalesce(parameters('scriptStorageAccountResourceId'), '////'), '/')[4]]",
-      "name": "[last(split(coalesce(parameters('scriptStorageAccountResourceId'), 'dummyVault'), '/'))]"
+      "apiVersion": "2025-01-01",
+      "subscriptionId": "[split(parameters('scriptStorageAccountResourceId'), '/')[2]]",
+      "resourceGroup": "[split(parameters('scriptStorageAccountResourceId'), '/')[4]]",
+      "name": "[last(split(parameters('scriptStorageAccountResourceId'), '/'))]"
     },
     "runbook": {
       "type": "Microsoft.Automation/automationAccounts/runbooks",
-      "apiVersion": "2022-08-08",
+      "apiVersion": "2023-11-01",
       "name": "[format('{0}/{1}', parameters('automationAccountName'), parameters('name'))]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "properties": {
         "runbookType": "[parameters('type')]",
         "description": "[parameters('description')]",
-        "publishContentLink": "[if(not(empty(parameters('uri'))), if(empty(parameters('uri')), null(), createObject('uri', if(not(empty(parameters('uri'))), if(empty(parameters('scriptStorageAccountResourceId')), parameters('uri'), format('{0}?{1}', parameters('uri'), listAccountSas(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(coalesce(parameters('scriptStorageAccountResourceId'), '//'), '/')[2], split(coalesce(parameters('scriptStorageAccountResourceId'), '////'), '/')[4]), 'Microsoft.Storage/storageAccounts', last(split(coalesce(parameters('scriptStorageAccountResourceId'), 'dummyVault'), '/'))), '2021-04-01', variables('accountSasProperties')).accountSasToken)), null()), 'version', if(not(empty(parameters('version'))), parameters('version'), null()))), null())]"
-      },
-      "dependsOn": [
-        "automationAccount",
-        "storageAccount"
-      ]
+        "publishContentLink": "[if(not(empty(parameters('uri'))), if(empty(parameters('uri')), null(), createObject('uri', if(not(empty(parameters('uri'))), if(empty(parameters('scriptStorageAccountResourceId')), parameters('uri'), format('{0}?{1}', parameters('uri'), listAccountSas('storageAccount', '2021-04-01', variables('accountSasProperties')).accountSasToken)), null()), 'version', if(not(empty(parameters('version'))), parameters('version'), null()))), null())]"
+      }
     }
   },
   "outputs": {
@@ -164,7 +163,7 @@
       "metadata": {
         "description": "The location the resource was deployed into."
       },
-      "value": "[reference('runbook', '2022-08-08', 'full').location]"
+      "value": "[reference('runbook', '2023-11-01', 'full').location]"
     }
   }
 }

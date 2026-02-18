@@ -2,6 +2,14 @@
 
 This module deploys a Front Door Web Application Firewall (WAF) Policy.
 
+You can reference the module as follows:
+```bicep
+module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-door-web-application-firewall-policy:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
@@ -13,11 +21,11 @@ This module deploys a Front Door Web Application Firewall (WAF) Policy.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Network/FrontDoorWebApplicationFirewallPolicies` | [2022-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2022-05-01/FrontDoorWebApplicationFirewallPolicies) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Network/FrontDoorWebApplicationFirewallPolicies` | 2024-02-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_frontdoorwebapplicationfirewallpolicies.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-02-01/FrontDoorWebApplicationFirewallPolicies)</li></ul> |
 
 ## Usage examples
 
@@ -35,6 +43,8 @@ The following section provides usage examples for the module, which were used to
 
 This instance deploys the module with the minimum set of required parameters.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
 
 <details>
 
@@ -42,7 +52,6 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-door-web-application-firewall-policy:<version>' = {
-  name: 'frontDoorWebApplicationFirewallPolicyDeployment'
   params: {
     // Required parameters
     name: 'nagwafpmin001'
@@ -57,7 +66,7 @@ module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-do
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -79,9 +88,27 @@ module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-do
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/front-door-web-application-firewall-policy:<version>'
+
+// Required parameters
+param name = 'nagwafpmin001'
+// Non-required parameters
+param location = '<location>'
+```
+
+</details>
+<p>
+
 ### Example 2: _Using large parameter set_
 
 This instance deploys the module with most of its features enabled.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
 
 
 <details>
@@ -90,7 +117,6 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-door-web-application-firewall-policy:<version>' = {
-  name: 'frontDoorWebApplicationFirewallPolicyDeployment'
   params: {
     // Required parameters
     name: 'nagwafpmax001'
@@ -164,11 +190,13 @@ module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-do
     }
     roleAssignments: [
       {
+        name: 'bb049c96-2571-4a25-b760-444ab25d86ed'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -194,7 +222,7 @@ module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-do
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -286,11 +314,13 @@ module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-do
     "roleAssignments": {
       "value": [
         {
+          "name": "bb049c96-2571-4a25-b760-444ab25d86ed",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -319,9 +349,118 @@ module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-do
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/front-door-web-application-firewall-policy:<version>'
+
+// Required parameters
+param name = 'nagwafpmax001'
+// Non-required parameters
+param customRules = {
+  rules: [
+    {
+      action: 'Block'
+      enabledState: 'Enabled'
+      matchConditions: [
+        {
+          matchValue: [
+            'CH'
+          ]
+          matchVariable: 'RemoteAddr'
+          negateCondition: false
+          operator: 'GeoMatch'
+          selector: '<selector>'
+          transforms: []
+        }
+        {
+          matchValue: [
+            'windows'
+          ]
+          matchVariable: 'RequestHeader'
+          negateCondition: false
+          operator: 'Contains'
+          selector: 'UserAgent'
+          transforms: []
+        }
+        {
+          matchValue: [
+            '?>'
+            '<?php'
+          ]
+          matchVariable: 'QueryString'
+          negateCondition: false
+          operator: 'Contains'
+          transforms: [
+            'Lowercase'
+            'UrlDecode'
+          ]
+        }
+      ]
+      name: 'CustomRule1'
+      priority: 2
+      rateLimitDurationInMinutes: 1
+      rateLimitThreshold: 10
+      ruleType: 'MatchRule'
+    }
+  ]
+}
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param managedRules = {
+  managedRuleSets: [
+    {
+      ruleSetType: 'Microsoft_BotManagerRuleSet'
+      ruleSetVersion: '1.0'
+    }
+  ]
+}
+param policySettings = {
+  customBlockResponseBody: 'PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=='
+  customBlockResponseStatusCode: 200
+  mode: 'Prevention'
+  redirectUrl: 'http://www.bing.com'
+}
+param roleAssignments = [
+  {
+    name: 'bb049c96-2571-4a25-b760-444ab25d86ed'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param sku = 'Premium_AzureFrontDoor'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
+
 ### Example 3: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -330,7 +469,6 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-door-web-application-firewall-policy:<version>' = {
-  name: 'frontDoorWebApplicationFirewallPolicyDeployment'
   params: {
     // Required parameters
     name: 'nagwafpwaf001'
@@ -413,7 +551,7 @@ module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-do
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -513,6 +651,89 @@ module frontDoorWebApplicationFirewallPolicy 'br/public:avm/res/network/front-do
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/network/front-door-web-application-firewall-policy:<version>'
+
+// Required parameters
+param name = 'nagwafpwaf001'
+// Non-required parameters
+param customRules = {
+  rules: [
+    {
+      action: 'Block'
+      enabledState: 'Enabled'
+      matchConditions: [
+        {
+          matchValue: [
+            'CH'
+          ]
+          matchVariable: 'RemoteAddr'
+          negateCondition: false
+          operator: 'GeoMatch'
+          selector: '<selector>'
+          transforms: []
+        }
+        {
+          matchValue: [
+            'windows'
+          ]
+          matchVariable: 'RequestHeader'
+          negateCondition: false
+          operator: 'Contains'
+          selector: 'UserAgent'
+          transforms: []
+        }
+        {
+          matchValue: [
+            '?>'
+            '<?php'
+          ]
+          matchVariable: 'QueryString'
+          negateCondition: false
+          operator: 'Contains'
+          transforms: [
+            'Lowercase'
+            'UrlDecode'
+          ]
+        }
+      ]
+      name: 'CustomRule1'
+      priority: 2
+      rateLimitDurationInMinutes: 1
+      rateLimitThreshold: 10
+      ruleType: 'MatchRule'
+    }
+  ]
+}
+param location = '<location>'
+param managedRules = {
+  managedRuleSets: [
+    {
+      ruleSetType: 'Microsoft_BotManagerRuleSet'
+      ruleSetVersion: '1.0'
+    }
+  ]
+}
+param policySettings = {
+  customBlockResponseBody: 'PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=='
+  customBlockResponseStatusCode: 200
+  mode: 'Prevention'
+  redirectUrl: 'http://www.bing.com'
+}
+param sku = 'Premium_AzureFrontDoor'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -574,6 +795,116 @@ The custom rules inside the policy.
   }
   ```
 
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`rules`](#parameter-customrulesrules) | array | List of rules. |
+
+### Parameter: `customRules.rules`
+
+List of rules.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`action`](#parameter-customrulesrulesaction) | string | Describes what action to be applied when rule matches. |
+| [`enabledState`](#parameter-customrulesrulesenabledstate) | string | Describes if the custom rule is in enabled or disabled state. |
+| [`matchConditions`](#parameter-customrulesrulesmatchconditions) | array | List of match conditions. See https://learn.microsoft.com/en-us/azure/templates/microsoft.network/frontdoorwebapplicationfirewallpolicies#matchcondition for details. |
+| [`name`](#parameter-customrulesrulesname) | string | Describes the name of the rule. |
+| [`priority`](#parameter-customrulesrulespriority) | int | Describes priority of the rule. Rules with a lower value will be evaluated before rules with a higher value. |
+| [`ruleType`](#parameter-customrulesrulesruletype) | string | Describes type of rule. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`rateLimitDurationInMinutes`](#parameter-customrulesrulesratelimitdurationinminutes) | int | Time window for resetting the rate limit count. Default is 1 minute. |
+| [`rateLimitThreshold`](#parameter-customrulesrulesratelimitthreshold) | int | Number of allowed requests per client within the time window. |
+
+### Parameter: `customRules.rules.action`
+
+Describes what action to be applied when rule matches.
+
+- Required: Yes
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Allow'
+    'Block'
+    'Log'
+    'Redirect'
+  ]
+  ```
+
+### Parameter: `customRules.rules.enabledState`
+
+Describes if the custom rule is in enabled or disabled state.
+
+- Required: Yes
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Disabled'
+    'Enabled'
+  ]
+  ```
+
+### Parameter: `customRules.rules.matchConditions`
+
+List of match conditions. See https://learn.microsoft.com/en-us/azure/templates/microsoft.network/frontdoorwebapplicationfirewallpolicies#matchcondition for details.
+
+- Required: Yes
+- Type: array
+
+### Parameter: `customRules.rules.name`
+
+Describes the name of the rule.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `customRules.rules.priority`
+
+Describes priority of the rule. Rules with a lower value will be evaluated before rules with a higher value.
+
+- Required: Yes
+- Type: int
+
+### Parameter: `customRules.rules.ruleType`
+
+Describes type of rule.
+
+- Required: Yes
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'MatchRule'
+    'RateLimitRule'
+  ]
+  ```
+
+### Parameter: `customRules.rules.rateLimitDurationInMinutes`
+
+Time window for resetting the rate limit count. Default is 1 minute.
+
+- Required: No
+- Type: int
+
+### Parameter: `customRules.rules.rateLimitThreshold`
+
+Number of allowed requests per client within the time window.
+
+- Required: No
+- Type: int
+
 ### Parameter: `enableTelemetry`
 
 Enable/Disable usage telemetry for module.
@@ -603,6 +934,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -622,6 +954,13 @@ Specify the type of lock.
 ### Parameter: `lock.name`
 
 Specify the name of lock.
+
+- Required: No
+- Type: string
+
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
 
 - Required: No
 - Type: string
@@ -653,6 +992,77 @@ Describes the managedRules structure.
   }
   ```
 
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`managedRuleSets`](#parameter-managedrulesmanagedrulesets) | array | List of rule sets. |
+
+### Parameter: `managedRules.managedRuleSets`
+
+List of rule sets.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`ruleSetType`](#parameter-managedrulesmanagedrulesetsrulesettype) | string | Defines the rule set type to use. |
+| [`ruleSetVersion`](#parameter-managedrulesmanagedrulesetsrulesetversion) | string | Defines the version of the rule set to use. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`exclusions`](#parameter-managedrulesmanagedrulesetsexclusions) | array | Describes the exclusions that are applied to all rules in the set. |
+| [`ruleGroupOverrides`](#parameter-managedrulesmanagedrulesetsrulegroupoverrides) | array | Defines the rule group overrides to apply to the rule set. |
+| [`ruleSetAction`](#parameter-managedrulesmanagedrulesetsrulesetaction) | string | Defines the rule set action. |
+
+### Parameter: `managedRules.managedRuleSets.ruleSetType`
+
+Defines the rule set type to use.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `managedRules.managedRuleSets.ruleSetVersion`
+
+Defines the version of the rule set to use.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `managedRules.managedRuleSets.exclusions`
+
+Describes the exclusions that are applied to all rules in the set.
+
+- Required: No
+- Type: array
+
+### Parameter: `managedRules.managedRuleSets.ruleGroupOverrides`
+
+Defines the rule group overrides to apply to the rule set.
+
+- Required: No
+- Type: array
+
+### Parameter: `managedRules.managedRuleSets.ruleSetAction`
+
+Defines the rule set action.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Block'
+    'Log'
+    'Redirect'
+  ]
+  ```
+
 ### Parameter: `policySettings`
 
 The PolicySettings for policy.
@@ -673,6 +1083,12 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -689,6 +1105,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -739,6 +1156,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -778,7 +1202,6 @@ Resource tags.
 - Required: No
 - Type: object
 
-
 ## Outputs
 
 | Output | Type | Description |
@@ -790,8 +1213,13 @@ Resource tags.
 
 ## Cross-referenced modules
 
-_None_
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.5.1` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.0` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

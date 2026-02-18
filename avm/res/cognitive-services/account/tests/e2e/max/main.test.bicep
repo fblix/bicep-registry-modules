@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -37,13 +37,12 @@ module nestedDependencies 'dependencies.bicep' = {
   params: {
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
-    location: resourceLocation
   }
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -51,7 +50,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -65,9 +63,10 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      kind: 'Face'
+      kind: 'AIServices'
       customSubDomainName: '${namePrefix}x${serviceShort}'
       location: resourceLocation
+      allowProjectManagement: false
       diagnosticSettings: [
         {
           name: 'customSetting'
@@ -108,14 +107,15 @@ module testDeployment '../../../main.bicep' = [
           }
         ]
       }
+      networkInjections: {
+        scenario: 'agent'
+        subnetResourceId: nestedDependencies.outputs.agentSubnetResourceId
+        useMicrosoftManagedNetwork: false
+      }
       publicNetworkAccess: 'Disabled'
       roleAssignments: [
         {
-          roleDefinitionIdOrName: 'Owner'
-          principalId: nestedDependencies.outputs.managedIdentityPrincipalId
-          principalType: 'ServicePrincipal'
-        }
-        {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
@@ -138,9 +138,13 @@ module testDeployment '../../../main.bicep' = [
       }
       privateEndpoints: [
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
           tags: {
             'hidden-title': 'This is visible in the resource name'
@@ -149,11 +153,27 @@ module testDeployment '../../../main.bicep' = [
           }
           ipConfigurations: [
             {
-              name: 'myIPconfig'
+              name: 'myIPconfigDefault'
               properties: {
                 groupId: 'account'
                 memberName: 'default'
                 privateIPAddress: '10.0.0.10'
+              }
+            }
+            {
+              name: 'myIPconfigSecondary'
+              properties: {
+                groupId: 'account'
+                memberName: 'secondary'
+                privateIPAddress: '10.0.0.11'
+              }
+            }
+            {
+              name: 'myIPconfigThird'
+              properties: {
+                groupId: 'account'
+                memberName: 'third'
+                privateIPAddress: '10.0.0.12'
               }
             }
           ]
@@ -167,9 +187,13 @@ module testDeployment '../../../main.bicep' = [
           ]
         }
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
         }
       ]
@@ -179,9 +203,5 @@ module testDeployment '../../../main.bicep' = [
         Role: 'DeploymentValidation'
       }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

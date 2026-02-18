@@ -1,15 +1,14 @@
 metadata name = 'Event Hub Namespace Event Hubs'
 metadata description = 'This module deploys an Event Hub Namespace Event Hub.'
-metadata owner = 'Azure/module-maintainers'
 
-@description('Conditional. The name of the parent event hub namespace. Required if the template is used in a standalone deployment.')
+@description('Conditional. The name of the parent Event Hub namespace. Required if the template is used in a standalone deployment.')
 param namespaceName string
 
-@description('Required. The name of the event hub.')
+@description('Required. The name of the Event Hub.')
 param name string
 
-@description('Optional. Authorization Rules for the event hub.')
-param authorizationRules array = [
+@description('Optional. Authorization Rules for the Event Hub.')
+param authorizationRules eventHubAuthorizationRuleType[] = [
   {
     name: 'RootManageSharedAccessKey'
     rights: [
@@ -22,7 +21,7 @@ param authorizationRules array = [
 
 @description('Optional. Number of days to retain the events for this Event Hub, value should be 1 to 7 days. Will be automatically set to infinite retention if cleanup policy is set to "Compact".')
 @minValue(1)
-@maxValue(7)
+@maxValue(90)
 param messageRetentionInDays int = 1
 
 @description('Optional. Number of partitions created for the Event Hub, allowed values are from 1 to 32 partitions.')
@@ -31,66 +30,28 @@ param messageRetentionInDays int = 1
 param partitionCount int = 2
 
 @description('Optional. Enumerates the possible values for the status of the Event Hub.')
-@allowed([
-  'Active'
-  'Creating'
-  'Deleting'
-  'Disabled'
-  'ReceiveDisabled'
-  'Renaming'
-  'Restoring'
-  'SendDisabled'
-  'Unknown'
-])
-param status string = 'Active'
+param status resourceInput<'Microsoft.EventHub/namespaces/eventhubs@2024-01-01'>.properties.status?
 
-@description('Optional. The consumer groups to create in this event hub instance.')
-param consumergroups array = [
+@description('Optional. The consumer groups to create in this Event Hub instance.')
+param consumergroups consumerGroupType[] = [
   {
     name: '$Default'
   }
 ]
 
+import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.6.1'
 @description('Optional. The lock settings of the service.')
-param lock lockType
+param lock lockType?
 
+import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.6.1'
 @description('Optional. Array of role assignments to create.')
-param roleAssignments roleAssignmentType
+param roleAssignments roleAssignmentType[]?
 
-@description('Optional. Name for capture destination.')
-param captureDescriptionDestinationName string = 'EventHubArchive.AzureBlockBlob'
+@description('Optional. Properties of capture description. Note: The chose identity needs the required permissions on the target before the assignment can be executed. For example \'Storage Data Blob Contributor\' for a container. Also, the identity must be configured on the namespace level.')
+param captureDescription captureDescriptionType?
 
-@description('Optional. Blob naming convention for archive, e.g. {Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}. Here all the parameters (Namespace,EventHub .. etc) are mandatory irrespective of order.')
-param captureDescriptionDestinationArchiveNameFormat string = '{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}'
-
-@description('Optional. Blob container Name.')
-param captureDescriptionDestinationBlobContainer string = ''
-
-@description('Optional. Resource ID of the storage account to be used to create the blobs.')
-param captureDescriptionDestinationStorageAccountResourceId string = ''
-
-@description('Optional. A value that indicates whether capture description is enabled.')
-param captureDescriptionEnabled bool = false
-
-@description('Optional. Enumerates the possible values for the encoding format of capture description. Note: "AvroDeflate" will be deprecated in New API Version.')
-@allowed([
-  'Avro'
-  'AvroDeflate'
-])
-param captureDescriptionEncoding string = 'Avro'
-
-@description('Optional. The time window allows you to set the frequency with which the capture to Azure Blobs will happen.')
-@minValue(60)
-@maxValue(900)
-param captureDescriptionIntervalInSeconds int = 300
-
-@description('Optional. The size window defines the amount of data built up in your Event Hub before an capture operation.')
-@minValue(10485760)
-@maxValue(524288000)
-param captureDescriptionSizeLimitInBytes int = 314572800
-
-@description('Optional. A value that indicates whether to Skip Empty Archives.')
-param captureDescriptionSkipEmptyArchives bool = false
+@description('Optional. A value that indicates whether to enable retention description properties. If it is set to true the messageRetentionInDays property is ignored.')
+param retentionDescriptionEnabled bool = false
 
 @allowed([
   'Compact'
@@ -100,47 +61,17 @@ param captureDescriptionSkipEmptyArchives bool = false
 param retentionDescriptionCleanupPolicy string = 'Delete'
 
 @minValue(1)
-@maxValue(168)
-@description('Optional. Retention time in hours. Number of hours to retain the events for this Event Hub. This value is only used when cleanupPolicy is Delete. If cleanupPolicy is Compact the returned value of this property is Long.MaxValue.')
+@maxValue(2160)
+@description('Optional. Retention time in hours. Number of hours to retain the events for this Event Hub. This value is only used when cleanupPolicy is Delete and it overrides the messageRetentionInDays. If cleanupPolicy is Compact the returned value of this property is Long.MaxValue.')
 param retentionDescriptionRetentionTimeInHours int = 1
 
 @minValue(1)
-@maxValue(168)
+@maxValue(2160)
 @description('Optional. Retention cleanup policy. Number of hours to retain the tombstone markers of a compacted Event Hub. This value is only used when cleanupPolicy is Compact. Consumer must complete reading the tombstone marker within this specified amount of time if consumer begins from starting offset to ensure they get a valid snapshot for the specific key described by the tombstone marker within the compacted Event Hub.')
 param retentionDescriptionTombstoneRetentionTimeInHours int = 1
 
-var eventHubProperties = {
-  messageRetentionInDays: messageRetentionInDays
-  partitionCount: partitionCount
-  status: status
-  retentionDescription: {
-    cleanupPolicy: retentionDescriptionCleanupPolicy
-    retentionTimeInHours: retentionDescriptionCleanupPolicy == 'Delete'
-      ? retentionDescriptionRetentionTimeInHours
-      : null
-    tombstoneRetentionTimeInHours: retentionDescriptionCleanupPolicy == 'Compact'
-      ? retentionDescriptionTombstoneRetentionTimeInHours
-      : null
-  }
-}
-
-var eventHubPropertiesCapture = {
-  captureDescription: {
-    destination: {
-      name: captureDescriptionDestinationName
-      properties: {
-        archiveNameFormat: captureDescriptionDestinationArchiveNameFormat
-        blobContainer: captureDescriptionDestinationBlobContainer
-        storageAccountResourceId: captureDescriptionDestinationStorageAccountResourceId
-      }
-    }
-    enabled: captureDescriptionEnabled
-    encoding: captureDescriptionEncoding
-    intervalInSeconds: captureDescriptionIntervalInSeconds
-    sizeLimitInBytes: captureDescriptionSizeLimitInBytes
-    skipEmptyArchives: captureDescriptionSkipEmptyArchives
-  }
-}
+@description('Optional. Enable/Disable usage telemetry for module.')
+param enableTelemetry bool = true
 
 var builtInRoleNames = {
   'Azure Event Hubs Data Owner': subscriptionResourceId(
@@ -158,7 +89,7 @@ var builtInRoleNames = {
   Contributor: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
   Owner: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')
   Reader: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')
-  'Role Based Access Control Administrator (Preview)': subscriptionResourceId(
+  'Role Based Access Control Administrator': subscriptionResourceId(
     'Microsoft.Authorization/roleDefinitions',
     'f58310d9-a9f6-439a-9e8d-f62e7b41a168'
   )
@@ -168,27 +99,102 @@ var builtInRoleNames = {
   )
 }
 
-resource namespace 'Microsoft.EventHub/namespaces@2022-10-01-preview' existing = {
+var formattedRoleAssignments = [
+  for (roleAssignment, index) in (roleAssignments ?? []): union(roleAssignment, {
+    roleDefinitionId: builtInRoleNames[?roleAssignment.roleDefinitionIdOrName] ?? (contains(
+        roleAssignment.roleDefinitionIdOrName,
+        '/providers/Microsoft.Authorization/roleDefinitions/'
+      )
+      ? roleAssignment.roleDefinitionIdOrName
+      : subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleAssignment.roleDefinitionIdOrName))
+  })
+]
+
+var captureIdentity = !empty(captureDescription.?destination.?identity)
+  ? {
+      type: (captureDescription!.destination!.identity!.?systemAssigned ?? false)
+        ? 'SystemAssigned'
+        : (!empty(captureDescription!.destination!.identity!.?userAssignedResourceId) ? 'UserAssigned' : null)
+      userAssignedIdentity: !empty(captureDescription!.destination!.identity!.?userAssignedResourceId)
+        ? captureDescription!.destination!.identity!.userAssignedResourceId!
+        : null
+    }
+  : null
+
+// ============== //
+// Resources      //
+// ============== //
+
+#disable-next-line no-deployments-resources
+resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
+  name: '46d3xbcp.res.eventhub-nseventhub.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name), 0, 4)}'
+  properties: {
+    mode: 'Incremental'
+    template: {
+      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
+      contentVersion: '1.0.0.0'
+      resources: []
+      outputs: {
+        telemetry: {
+          type: 'String'
+          value: 'For more information, see https://aka.ms/avm/TelemetryInfo'
+        }
+      }
+    }
+  }
+}
+
+resource namespace 'Microsoft.EventHub/namespaces@2024-01-01' existing = {
   name: namespaceName
 }
 
-resource eventHub 'Microsoft.EventHub/namespaces/eventhubs@2022-10-01-preview' = {
+resource eventHub 'Microsoft.EventHub/namespaces/eventhubs@2024-01-01' = {
   name: name
   parent: namespace
-  properties: captureDescriptionEnabled ? union(eventHubProperties, eventHubPropertiesCapture) : eventHubProperties
+  properties: {
+    messageRetentionInDays: retentionDescriptionEnabled ? null : messageRetentionInDays
+    partitionCount: partitionCount
+    status: status
+    retentionDescription: retentionDescriptionEnabled
+      ? {
+          cleanupPolicy: retentionDescriptionCleanupPolicy
+          retentionTimeInHours: retentionDescriptionCleanupPolicy == 'Delete'
+            ? retentionDescriptionRetentionTimeInHours
+            : null
+          tombstoneRetentionTimeInHours: retentionDescriptionCleanupPolicy == 'Compact'
+            ? retentionDescriptionTombstoneRetentionTimeInHours
+            : null
+        }
+      : null
+    ...(!empty(captureDescription) && (captureDescription!.?enabled != false)
+      ? {
+          captureDescription: {
+            destination: {
+              name: captureDescription!.destination!.?name
+              identity: captureIdentity
+              properties: captureDescription!.destination!.?properties
+            }
+            enabled: captureDescription!.?enabled ?? true // Assuming that if captureDescription is provided, it's intended to be used
+            encoding: captureDescription!.?encoding
+            intervalInSeconds: captureDescription!.?intervalInSeconds
+            sizeLimitInBytes: captureDescription!.?sizeLimitInBytes
+            skipEmptyArchives: captureDescription!.?skipEmptyArchives
+          }
+        }
+      : {})
+  }
 }
 
-resource eventHub_lock 'Microsoft.Authorization/locks@2020-05-01' =
-  if (!empty(lock ?? {}) && lock.?kind != 'None') {
-    name: lock.?name ?? 'lock-${name}'
-    properties: {
-      level: lock.?kind ?? ''
-      notes: lock.?kind == 'CanNotDelete'
-        ? 'Cannot delete resource or child resources.'
-        : 'Cannot delete or modify the resource or child resources.'
-    }
-    scope: eventHub
+resource eventHub_lock 'Microsoft.Authorization/locks@2020-05-01' = if (!empty(lock ?? {}) && lock.?kind != 'None') {
+  name: lock.?name ?? 'lock-${name}'
+  properties: {
+    level: lock.?kind ?? ''
+    notes: lock.?notes ?? (lock.?kind == 'CanNotDelete'
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot delete or modify the resource or child resources.')
   }
+  scope: eventHub
+}
 
 module eventHub_consumergroups 'consumergroup/main.bicep' = [
   for (consumerGroup, index) in consumergroups: {
@@ -197,7 +203,7 @@ module eventHub_consumergroups 'consumergroup/main.bicep' = [
       namespaceName: namespaceName
       eventHubName: eventHub.name
       name: consumerGroup.name
-      userMetadata: contains(consumerGroup, 'userMetadata') ? consumerGroup.userMetadata : ''
+      userMetadata: consumerGroup.?userMetadata
     }
   }
 ]
@@ -209,20 +215,16 @@ module eventHub_authorizationRules 'authorization-rule/main.bicep' = [
       namespaceName: namespaceName
       eventHubName: eventHub.name
       name: authorizationRule.name
-      rights: contains(authorizationRule, 'rights') ? authorizationRule.rights : []
+      rights: authorizationRule.?rights
     }
   }
 ]
 
 resource eventHub_roleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
-  for (roleAssignment, index) in (roleAssignments ?? []): {
-    name: guid(eventHub.id, roleAssignment.principalId, roleAssignment.roleDefinitionIdOrName)
+  for (roleAssignment, index) in (formattedRoleAssignments ?? []): {
+    name: roleAssignment.?name ?? guid(eventHub.id, roleAssignment.principalId, roleAssignment.roleDefinitionId)
     properties: {
-      roleDefinitionId: contains(builtInRoleNames, roleAssignment.roleDefinitionIdOrName)
-        ? builtInRoleNames[roleAssignment.roleDefinitionIdOrName]
-        : contains(roleAssignment.roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/')
-            ? roleAssignment.roleDefinitionIdOrName
-            : subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleAssignment.roleDefinitionIdOrName)
+      roleDefinitionId: roleAssignment.roleDefinitionId
       principalId: roleAssignment.principalId
       description: roleAssignment.?description
       principalType: roleAssignment.?principalType
@@ -234,46 +236,84 @@ resource eventHub_roleAssignments 'Microsoft.Authorization/roleAssignments@2022-
   }
 ]
 
-@description('The name of the event hub.')
+// ============ //
+// Outputs      //
+// ============ //
+
+@description('The name of the Event Hub.')
 output name string = eventHub.name
 
-@description('The resource ID of the event hub.')
+@description('The resource ID of the Event Hub.')
 output resourceId string = eventHub.id
 
-@description('The resource group the event hub was deployed into.')
+@description('The resource group the Event Hub was deployed into.')
 output resourceGroupName string = resourceGroup().name
 
-// =============== //
-//   Definitions   //
-// =============== //
+// ================ //
+// Definitions      //
+// ================ //
 
-type lockType = {
-  @description('Optional. Specify the name of lock.')
-  name: string?
+@export()
+@description('Type definition for an Event Hub authorization rule.')
+type eventHubAuthorizationRuleType = {
+  @description('Required. The name of the Event Hub authorization rule.')
+  name: string
 
-  @description('Optional. Specify the type of lock.')
-  kind: ('CanNotDelete' | 'ReadOnly' | 'None')?
-}?
+  @description('Required. The allowed rights for an Event Hub authorization rule.')
+  rights: ('Listen' | 'Send' | 'Manage')[]
+}
 
-type roleAssignmentType = {
-  @description('Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: \'/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11\'.')
-  roleDefinitionIdOrName: string
+@export()
+@description('Type definition for an Event Hub consumer group.')
+type consumerGroupType = {
+  @description('Required. The name of the consumer group.')
+  name: string
 
-  @description('Required. The principal ID of the principal (user/group/identity) to assign the role to.')
-  principalId: string
+  @description('Optional. User Metadata is a placeholder to store user-defined string data with maximum length 1024. e.g. it can be used to store descriptive data, such as list of teams and their contact information also user-defined configuration settings can be stored.')
+  userMetadata: string?
+}
 
-  @description('Optional. The principal type of the assigned principal ID.')
-  principalType: ('ServicePrincipal' | 'Group' | 'User' | 'ForeignGroup' | 'Device')?
+@export()
+@description('The type of a capture description.')
+type captureDescriptionType = {
+  @description('Optional. Properties of Destination where capture will be stored. (Storage Account, Blob Names).')
+  destination: {
+    @description('Optional. The identity used for the capture destination.')
+    identity: managedIdentityType?
 
-  @description('Optional. The description of the role assignment.')
-  description: string?
+    @description('Optional. Name for capture destination.')
+    name: string?
 
-  @description('Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase "foo_storage_container".')
-  condition: string?
+    @description('Optional. Properties describing the storage account, blob container and archive name format for capture destination.')
+    properties: resourceInput<'Microsoft.EventHub/namespaces/eventhubs@2024-01-01'>.properties.captureDescription.destination.properties?
+  }?
 
-  @description('Optional. Version of the condition.')
-  conditionVersion: '2.0'?
+  @description('Optional. A value that indicates whether capture description is enabled. Defaults to true if `captureDescription` is provided.')
+  enabled: bool?
 
-  @description('Optional. The Resource Id of the delegated managed identity resource.')
-  delegatedManagedIdentityResourceId: string?
-}[]?
+  @description('Optional. Enumerates the possible values for the encoding format of capture description. Note: "AvroDeflate" will be deprecated in New API Version.')
+  encoding: ('Avro' | 'AvroDeflate')?
+
+  @description('Optional. The time window allows you to set the frequency with which the capture to Azure Blobs will happen.')
+  @minValue(60)
+  @maxValue(900)
+  intervalInSeconds: int?
+
+  @description('Optional. The size window defines the amount of data built up in your Event Hub before an capture operation.')
+  @minValue(10485760)
+  @maxValue(524288000)
+  sizeLimitInBytes: int?
+
+  @description('Optional. A value that indicates whether to Skip Empty Archives.')
+  skipEmptyArchives: bool?
+}
+
+@export()
+@description('An AVM-aligned type for a managed identity configuration. Supports a muturally exclusive system- & user-assigned identity.')
+type managedIdentityType = {
+  @description('Optional. Enables system assigned managed identity on the resource. Mutually exclusive with `userAssignedResourceId`.')
+  systemAssigned: bool?
+
+  @description('Optional. The resource ID to assign to the resource. Mutually exclusive with `systemAssigned`.')
+  userAssignedResourceId: string?
+}

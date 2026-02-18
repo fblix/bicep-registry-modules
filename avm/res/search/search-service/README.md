@@ -2,6 +2,14 @@
 
 This module deploys a Search Service.
 
+You can reference the module as follows:
+```bicep
+module searchService 'br/public:avm/res/search/search-service:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
@@ -13,15 +21,16 @@ This module deploys a Search Service.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
-| `Microsoft.Network/privateEndpoints` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints) |
-| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints/privateDnsZoneGroups) |
-| `Microsoft.Search/searchServices` | [2023-11-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Search/2023-11-01/searchServices) |
-| `Microsoft.Search/searchServices/sharedPrivateLinkResources` | [2023-11-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Search/2023-11-01/searchServices/sharedPrivateLinkResources) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Insights/diagnosticSettings` | 2021-05-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.insights_diagnosticsettings.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings)</li></ul> |
+| `Microsoft.KeyVault/vaults/secrets` | 2024-11-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.keyvault_vaults_secrets.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2024-11-01/vaults/secrets)</li></ul> |
+| `Microsoft.Network/privateEndpoints` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/privateEndpoints)</li></ul> |
+| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints_privatednszonegroups.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/privateEndpoints/privateDnsZoneGroups)</li></ul> |
+| `Microsoft.Search/searchServices` | 2025-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.search_searchservices.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Search/2025-05-01/searchServices)</li></ul> |
+| `Microsoft.Search/searchServices/sharedPrivateLinkResources` | 2025-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.search_searchservices_sharedprivatelinkresources.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Search/2025-05-01/searchServices/sharedPrivateLinkResources)</li></ul> |
 
 ## Usage examples
 
@@ -32,13 +41,16 @@ The following section provides usage examples for the module, which were used to
 >**Note**: To reference the module, please use the following syntax `br/public:avm/res/search/search-service:<version>`.
 
 - [Using only defaults](#example-1-using-only-defaults)
-- [Using large parameter set](#example-2-using-large-parameter-set)
-- [Private endpoint-enabled deployment](#example-3-private-endpoint-enabled-deployment)
-- [WAF-aligned](#example-4-waf-aligned)
+- [Deploying with a key vault reference to save secrets](#example-2-deploying-with-a-key-vault-reference-to-save-secrets)
+- [Using large parameter set](#example-3-using-large-parameter-set)
+- [Private endpoint-enabled deployment](#example-4-private-endpoint-enabled-deployment)
+- [WAF-aligned](#example-5-waf-aligned)
 
 ### Example 1: _Using only defaults_
 
 This instance deploys the module with the minimum set of required parameters.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
 
 
 <details>
@@ -47,12 +59,8 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module searchService 'br/public:avm/res/search/search-service:<version>' = {
-  name: 'searchServiceDeployment'
   params: {
-    // Required parameters
-    name: 'sssmin001'
-    // Non-required parameters
-    location: '<location>'
+    name: 'sssmin002'
   }
 }
 ```
@@ -62,20 +70,15 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    // Required parameters
     "name": {
-      "value": "sssmin001"
-    },
-    // Non-required parameters
-    "location": {
-      "value": "<location>"
+      "value": "sssmin002"
     }
   }
 }
@@ -84,9 +87,24 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
 </details>
 <p>
 
-### Example 2: _Using large parameter set_
+<details>
 
-This instance deploys the module with most of its features enabled.
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/search/search-service:<version>'
+
+param name = 'sssmin002'
+```
+
+</details>
+<p>
+
+### Example 2: _Deploying with a key vault reference to save secrets_
+
+This instance deploys the module saving admin key secrets in a key vault.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/kvSecrets]
 
 
 <details>
@@ -95,7 +113,105 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module searchService 'br/public:avm/res/search/search-service:<version>' = {
-  name: 'searchServiceDeployment'
+  params: {
+    // Required parameters
+    name: 'kv-ref'
+    // Non-required parameters
+    authOptions: {
+      aadOrApiKey: {
+        aadAuthFailureMode: 'http401WithBearerChallenge'
+      }
+    }
+    disableLocalAuth: false
+    secretsExportConfiguration: {
+      keyVaultResourceId: '<keyVaultResourceId>'
+      primaryAdminKeyName: 'Primary-Admin-Key'
+      secondaryAdminKeyName: 'Secondary-Admin-Key'
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via JSON parameters file</summary>
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Required parameters
+    "name": {
+      "value": "kv-ref"
+    },
+    // Non-required parameters
+    "authOptions": {
+      "value": {
+        "aadOrApiKey": {
+          "aadAuthFailureMode": "http401WithBearerChallenge"
+        }
+      }
+    },
+    "disableLocalAuth": {
+      "value": false
+    },
+    "secretsExportConfiguration": {
+      "value": {
+        "keyVaultResourceId": "<keyVaultResourceId>",
+        "primaryAdminKeyName": "Primary-Admin-Key",
+        "secondaryAdminKeyName": "Secondary-Admin-Key"
+      }
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/search/search-service:<version>'
+
+// Required parameters
+param name = 'kv-ref'
+// Non-required parameters
+param authOptions = {
+  aadOrApiKey: {
+    aadAuthFailureMode: 'http401WithBearerChallenge'
+  }
+}
+param disableLocalAuth = false
+param secretsExportConfiguration = {
+  keyVaultResourceId: '<keyVaultResourceId>'
+  primaryAdminKeyName: 'Primary-Admin-Key'
+  secondaryAdminKeyName: 'Secondary-Admin-Key'
+}
+```
+
+</details>
+<p>
+
+### Example 3: _Using large parameter set_
+
+This instance deploys the module with most of its features enabled.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
+
+
+<details>
+
+<summary>via Bicep module</summary>
+
+```bicep
+module searchService 'br/public:avm/res/search/search-service:<version>' = {
   params: {
     // Required parameters
     name: 'sssmax001'
@@ -106,6 +222,10 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
       }
     }
     cmkEnforcement: 'Enabled'
+    computeType: 'Default'
+    dataExfiltrationProtections: [
+      'All'
+    ]
     diagnosticSettings: [
       {
         eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
@@ -121,7 +241,7 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
       }
     ]
     disableLocalAuth: false
-    hostingMode: 'highDensity'
+    hostingMode: 'HighDensity'
     location: '<location>'
     lock: {
       kind: 'CanNotDelete'
@@ -129,8 +249,12 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
     }
     managedIdentities: {
       systemAssigned: true
+      userAssignedResourceIds: [
+        '<managedIdentityResourceId>'
+      ]
     }
     networkRuleSet: {
+      bypass: 'AzureServices'
       ipRules: [
         {
           value: '40.74.28.0/23'
@@ -144,11 +268,13 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
     replicaCount: 3
     roleAssignments: [
       {
+        name: '73ec30e0-2e25-475f-beec-d90cab332eb7'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -175,7 +301,7 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -197,6 +323,14 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
     "cmkEnforcement": {
       "value": "Enabled"
     },
+    "computeType": {
+      "value": "Default"
+    },
+    "dataExfiltrationProtections": {
+      "value": [
+        "All"
+      ]
+    },
     "diagnosticSettings": {
       "value": [
         {
@@ -217,7 +351,7 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
       "value": false
     },
     "hostingMode": {
-      "value": "highDensity"
+      "value": "HighDensity"
     },
     "location": {
       "value": "<location>"
@@ -230,11 +364,15 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
     },
     "managedIdentities": {
       "value": {
-        "systemAssigned": true
+        "systemAssigned": true,
+        "userAssignedResourceIds": [
+          "<managedIdentityResourceId>"
+        ]
       }
     },
     "networkRuleSet": {
       "value": {
+        "bypass": "AzureServices",
         "ipRules": [
           {
             "value": "40.74.28.0/23"
@@ -254,11 +392,13 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
     "roleAssignments": {
       "value": [
         {
+          "name": "73ec30e0-2e25-475f-beec-d90cab332eb7",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -290,9 +430,102 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
 </details>
 <p>
 
-### Example 3: _Private endpoint-enabled deployment_
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/search/search-service:<version>'
+
+// Required parameters
+param name = 'sssmax001'
+// Non-required parameters
+param authOptions = {
+  aadOrApiKey: {
+    aadAuthFailureMode: 'http401WithBearerChallenge'
+  }
+}
+param cmkEnforcement = 'Enabled'
+param computeType = 'Default'
+param dataExfiltrationProtections = [
+  'All'
+]
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    metricCategories: [
+      {
+        category: 'AllMetrics'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param disableLocalAuth = false
+param hostingMode = 'HighDensity'
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param managedIdentities = {
+  systemAssigned: true
+  userAssignedResourceIds: [
+    '<managedIdentityResourceId>'
+  ]
+}
+param networkRuleSet = {
+  bypass: 'AzureServices'
+  ipRules: [
+    {
+      value: '40.74.28.0/23'
+    }
+    {
+      value: '87.147.204.13'
+    }
+  ]
+}
+param partitionCount = 2
+param replicaCount = 3
+param roleAssignments = [
+  {
+    name: '73ec30e0-2e25-475f-beec-d90cab332eb7'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param semanticSearch = 'standard'
+param sku = 'standard3'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
+
+### Example 4: _Private endpoint-enabled deployment_
 
 This instance deploys the module with private endpoints.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/pe]
 
 
 <details>
@@ -301,20 +534,22 @@ This instance deploys the module with private endpoints.
 
 ```bicep
 module searchService 'br/public:avm/res/search/search-service:<version>' = {
-  name: 'searchServiceDeployment'
   params: {
     // Required parameters
-    name: 'ssspe001'
+    name: 'ssspr001'
     // Non-required parameters
-    location: '<location>'
     privateEndpoints: [
       {
         applicationSecurityGroupResourceIds: [
           '<applicationSecurityGroupResourceId>'
         ]
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         subnetResourceId: '<subnetResourceId>'
         tags: {
           Environment: 'Non-Prod'
@@ -322,13 +557,17 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
         }
       }
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         subnetResourceId: '<subnetResourceId>'
       }
     ]
-    publicNetworkAccess: 'disabled'
+    publicNetworkAccess: 'Disabled'
     sharedPrivateLinkResources: [
       {
         groupId: 'blob'
@@ -356,7 +595,7 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -365,21 +604,22 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
   "parameters": {
     // Required parameters
     "name": {
-      "value": "ssspe001"
+      "value": "ssspr001"
     },
     // Non-required parameters
-    "location": {
-      "value": "<location>"
-    },
     "privateEndpoints": {
       "value": [
         {
           "applicationSecurityGroupResourceIds": [
             "<applicationSecurityGroupResourceId>"
           ],
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "subnetResourceId": "<subnetResourceId>",
           "tags": {
             "Environment": "Non-Prod",
@@ -387,15 +627,19 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
           }
         },
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "subnetResourceId": "<subnetResourceId>"
         }
       ]
     },
     "publicNetworkAccess": {
-      "value": "disabled"
+      "value": "Disabled"
     },
     "sharedPrivateLinkResources": {
       "value": [
@@ -426,9 +670,74 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
 </details>
 <p>
 
-### Example 4: _WAF-aligned_
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/search/search-service:<version>'
+
+// Required parameters
+param name = 'ssspr001'
+// Non-required parameters
+param privateEndpoints = [
+  {
+    applicationSecurityGroupResourceIds: [
+      '<applicationSecurityGroupResourceId>'
+    ]
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    subnetResourceId: '<subnetResourceId>'
+    tags: {
+      Environment: 'Non-Prod'
+      Role: 'DeploymentValidation'
+    }
+  }
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    subnetResourceId: '<subnetResourceId>'
+  }
+]
+param publicNetworkAccess = 'Disabled'
+param sharedPrivateLinkResources = [
+  {
+    groupId: 'blob'
+    privateLinkResourceId: '<privateLinkResourceId>'
+    requestMessage: 'Please approve this request'
+    resourceRegion: '<resourceRegion>'
+  }
+  {
+    groupId: 'vault'
+    privateLinkResourceId: '<privateLinkResourceId>'
+    requestMessage: 'Please approve this request'
+  }
+]
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
+
+### Example 5: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -437,7 +746,6 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module searchService 'br/public:avm/res/search/search-service:<version>' = {
-  name: 'searchServiceDeployment'
   params: {
     // Required parameters
     name: 'ssswaf001'
@@ -463,16 +771,12 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
       }
     ]
     disableLocalAuth: false
-    hostingMode: 'highDensity'
-    location: '<location>'
-    lock: {
-      kind: 'CanNotDelete'
-      name: 'myCustomLockName'
-    }
+    hostingMode: 'HighDensity'
     managedIdentities: {
       systemAssigned: true
     }
     networkRuleSet: {
+      bypass: 'AzureServices'
       ipRules: [
         {
           value: '40.74.28.0/23'
@@ -499,7 +803,7 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -541,16 +845,7 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
       "value": false
     },
     "hostingMode": {
-      "value": "highDensity"
-    },
-    "location": {
-      "value": "<location>"
-    },
-    "lock": {
-      "value": {
-        "kind": "CanNotDelete",
-        "name": "myCustomLockName"
-      }
+      "value": "HighDensity"
     },
     "managedIdentities": {
       "value": {
@@ -559,6 +854,7 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
     },
     "networkRuleSet": {
       "value": {
+        "bypass": "AzureServices",
         "ipRules": [
           {
             "value": "40.74.28.0/23"
@@ -592,6 +888,64 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/search/search-service:<version>'
+
+// Required parameters
+param name = 'ssswaf001'
+// Non-required parameters
+param authOptions = {
+  aadOrApiKey: {
+    aadAuthFailureMode: 'http401WithBearerChallenge'
+  }
+}
+param cmkEnforcement = 'Enabled'
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    metricCategories: [
+      {
+        category: 'AllMetrics'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param disableLocalAuth = false
+param hostingMode = 'HighDensity'
+param managedIdentities = {
+  systemAssigned: true
+}
+param networkRuleSet = {
+  bypass: 'AzureServices'
+  ipRules: [
+    {
+      value: '40.74.28.0/23'
+    }
+    {
+      value: '87.147.204.13'
+    }
+  ]
+}
+param partitionCount = 2
+param replicaCount = 3
+param sku = 'standard3'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -607,19 +961,22 @@ module searchService 'br/public:avm/res/search/search-service:<version>' = {
 | :-- | :-- | :-- |
 | [`authOptions`](#parameter-authoptions) | object | Defines the options for how the data plane API of a Search service authenticates requests. Must remain an empty object {} if 'disableLocalAuth' is set to true. |
 | [`cmkEnforcement`](#parameter-cmkenforcement) | string | Describes a policy that determines how resources within the search service are to be encrypted with Customer Managed Keys. |
+| [`computeType`](#parameter-computetype) | string | The compute type of the search service. |
+| [`dataExfiltrationProtections`](#parameter-dataexfiltrationprotections) | array | A list of data exfiltration scenarios that are explicitly disallowed for the search service. Currently, the only supported value is 'All' to disable all possible data export scenarios with more fine grained controls planned for the future. |
 | [`diagnosticSettings`](#parameter-diagnosticsettings) | array | The diagnostic settings of the service. |
 | [`disableLocalAuth`](#parameter-disablelocalauth) | bool | When set to true, calls to the search service will not be permitted to utilize API keys for authentication. This cannot be set to true if 'authOptions' are defined. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`hostingMode`](#parameter-hostingmode) | string | Applicable only for the standard3 SKU. You can set this property to enable up to 3 high density partitions that allow up to 1000 indexes, which is much higher than the maximum indexes allowed for any other SKU. For the standard3 SKU, the value is either 'default' or 'highDensity'. For all other SKUs, this value must be 'default'. |
 | [`location`](#parameter-location) | string | Location for all Resources. |
-| [`lock`](#parameter-lock) | object | The lock settings of the service. |
+| [`lock`](#parameter-lock) | object | The lock settings for all Resources in the solution. |
 | [`managedIdentities`](#parameter-managedidentities) | object | The managed identity definition for this resource. |
 | [`networkRuleSet`](#parameter-networkruleset) | object | Network specific rules that determine how the Azure Cognitive Search service may be reached. |
 | [`partitionCount`](#parameter-partitioncount) | int | The number of partitions in the search service; if specified, it can be 1, 2, 3, 4, 6, or 12. Values greater than 1 are only valid for standard SKUs. For 'standard3' services with hostingMode set to 'highDensity', the allowed values are between 1 and 3. |
 | [`privateEndpoints`](#parameter-privateendpoints) | array | Configuration details for private endpoints. For security reasons, it is recommended to use private endpoints whenever possible. |
-| [`publicNetworkAccess`](#parameter-publicnetworkaccess) | string | This value can be set to 'enabled' to avoid breaking changes on existing customer resources and templates. If set to 'disabled', traffic over public interface is not allowed, and private endpoint connections would be the exclusive access method. |
+| [`publicNetworkAccess`](#parameter-publicnetworkaccess) | string | This value can be set to 'Enabled' to avoid breaking changes on existing customer resources and templates. If set to 'Disabled', traffic over public interface is not allowed, and private endpoint connections would be the exclusive access method. |
 | [`replicaCount`](#parameter-replicacount) | int | The number of replicas in the search service. If specified, it must be a value between 1 and 12 inclusive for standard SKUs or between 1 and 3 inclusive for basic SKU. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
+| [`secretsExportConfiguration`](#parameter-secretsexportconfiguration) | object | Key vault reference and secret settings for the module's secrets export. |
 | [`semanticSearch`](#parameter-semanticsearch) | string | Sets options that control the availability of semantic search. This configuration is only possible for certain search SKUs in certain locations. |
 | [`sharedPrivateLinkResources`](#parameter-sharedprivatelinkresources) | array | The sharedPrivateLinkResources to create as part of the search Service. |
 | [`sku`](#parameter-sku) | string | Defines the SKU of an Azure Cognitive Search Service, which determines price tier and capacity limits. |
@@ -638,7 +995,6 @@ Defines the options for how the data plane API of a Search service authenticates
 
 - Required: No
 - Type: object
-- Default: `{}`
 
 ### Parameter: `cmkEnforcement`
 
@@ -653,6 +1009,34 @@ Describes a policy that determines how resources within the search service are t
     'Disabled'
     'Enabled'
     'Unspecified'
+  ]
+  ```
+
+### Parameter: `computeType`
+
+The compute type of the search service.
+
+- Required: No
+- Type: string
+- Default: `'Default'`
+- Allowed:
+  ```Bicep
+  [
+    'Confidential'
+    'Default'
+  ]
+  ```
+
+### Parameter: `dataExfiltrationProtections`
+
+A list of data exfiltration scenarios that are explicitly disallowed for the search service. Currently, the only supported value is 'All' to disable all possible data export scenarios with more fine grained controls planned for the future.
+
+- Required: No
+- Type: array
+- Allowed:
+  ```Bicep
+  [
+    'All'
   ]
   ```
 
@@ -673,7 +1057,7 @@ The diagnostic settings of the service.
 | [`logCategoriesAndGroups`](#parameter-diagnosticsettingslogcategoriesandgroups) | array | The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to `[]` to disable log collection. |
 | [`marketplacePartnerResourceId`](#parameter-diagnosticsettingsmarketplacepartnerresourceid) | string | The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs. |
 | [`metricCategories`](#parameter-diagnosticsettingsmetriccategories) | array | The name of metrics that will be streamed. "allMetrics" includes all possible metrics for the resource. Set to `[]` to disable metric collection. |
-| [`name`](#parameter-diagnosticsettingsname) | string | The name of diagnostic setting. |
+| [`name`](#parameter-diagnosticsettingsname) | string | The name of the diagnostic setting. |
 | [`storageAccountResourceId`](#parameter-diagnosticsettingsstorageaccountresourceid) | string | Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 | [`workspaceResourceId`](#parameter-diagnosticsettingsworkspaceresourceid) | string | Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 
@@ -783,7 +1167,7 @@ Enable or disable the category explicitly. Default is `true`.
 
 ### Parameter: `diagnosticSettings.name`
 
-The name of diagnostic setting.
+The name of the diagnostic setting.
 
 - Required: No
 - Type: string
@@ -824,12 +1208,12 @@ Applicable only for the standard3 SKU. You can set this property to enable up to
 
 - Required: No
 - Type: string
-- Default: `'default'`
+- Default: `'Default'`
 - Allowed:
   ```Bicep
   [
-    'default'
-    'highDensity'
+    'Default'
+    'HighDensity'
   ]
   ```
 
@@ -843,7 +1227,7 @@ Location for all Resources.
 
 ### Parameter: `lock`
 
-The lock settings of the service.
+The lock settings for all Resources in the solution.
 
 - Required: No
 - Type: object
@@ -854,6 +1238,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -877,6 +1262,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `managedIdentities`
 
 The managed identity definition for this resource.
@@ -889,6 +1281,7 @@ The managed identity definition for this resource.
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`systemAssigned`](#parameter-managedidentitiessystemassigned) | bool | Enables system assigned managed identity on the resource. |
+| [`userAssignedResourceIds`](#parameter-managedidentitiesuserassignedresourceids) | array | The resource ID(s) to assign to the resource. Required if a user assigned identity is used for encryption. |
 
 ### Parameter: `managedIdentities.systemAssigned`
 
@@ -897,13 +1290,19 @@ Enables system assigned managed identity on the resource.
 - Required: No
 - Type: bool
 
+### Parameter: `managedIdentities.userAssignedResourceIds`
+
+The resource ID(s) to assign to the resource. Required if a user assigned identity is used for encryption.
+
+- Required: No
+- Type: array
+
 ### Parameter: `networkRuleSet`
 
 Network specific rules that determine how the Azure Cognitive Search service may be reached.
 
 - Required: No
 - Type: object
-- Default: `{}`
 
 ### Parameter: `partitionCount`
 
@@ -912,6 +1311,8 @@ The number of partitions in the search service; if specified, it can be 1, 2, 3,
 - Required: No
 - Type: int
 - Default: `1`
+- MinValue: 1
+- MaxValue: 12
 
 ### Parameter: `privateEndpoints`
 
@@ -930,23 +1331,22 @@ Configuration details for private endpoints. For security reasons, it is recomme
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`applicationSecurityGroupResourceIds`](#parameter-privateendpointsapplicationsecuritygroupresourceids) | array | Application security groups in which the private endpoint IP configuration is included. |
+| [`applicationSecurityGroupResourceIds`](#parameter-privateendpointsapplicationsecuritygroupresourceids) | array | Application security groups in which the Private Endpoint IP configuration is included. |
 | [`customDnsConfigs`](#parameter-privateendpointscustomdnsconfigs) | array | Custom DNS configurations. |
-| [`customNetworkInterfaceName`](#parameter-privateendpointscustomnetworkinterfacename) | string | The custom name of the network interface attached to the private endpoint. |
+| [`customNetworkInterfaceName`](#parameter-privateendpointscustomnetworkinterfacename) | string | The custom name of the network interface attached to the Private Endpoint. |
 | [`enableTelemetry`](#parameter-privateendpointsenabletelemetry) | bool | Enable/Disable usage telemetry for module. |
-| [`ipConfigurations`](#parameter-privateendpointsipconfigurations) | array | A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints. |
+| [`ipConfigurations`](#parameter-privateendpointsipconfigurations) | array | A list of IP configurations of the Private Endpoint. This will be used to map to the first-party Service endpoints. |
 | [`isManualConnection`](#parameter-privateendpointsismanualconnection) | bool | If Manual Private Link Connection is required. |
-| [`location`](#parameter-privateendpointslocation) | string | The location to deploy the private endpoint to. |
+| [`location`](#parameter-privateendpointslocation) | string | The location to deploy the Private Endpoint to. |
 | [`lock`](#parameter-privateendpointslock) | object | Specify the type of lock. |
 | [`manualConnectionRequestMessage`](#parameter-privateendpointsmanualconnectionrequestmessage) | string | A message passed to the owner of the remote resource with the manual connection request. |
-| [`name`](#parameter-privateendpointsname) | string | The name of the private endpoint. |
-| [`privateDnsZoneGroupName`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided. |
-| [`privateDnsZoneResourceIds`](#parameter-privateendpointsprivatednszoneresourceids) | array | The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones. |
+| [`name`](#parameter-privateendpointsname) | string | The name of the Private Endpoint. |
+| [`privateDnsZoneGroup`](#parameter-privateendpointsprivatednszonegroup) | object | The private DNS Zone Group to configure for the Private Endpoint. |
 | [`privateLinkServiceConnectionName`](#parameter-privateendpointsprivatelinkserviceconnectionname) | string | The name of the private link connection to create. |
-| [`resourceGroupName`](#parameter-privateendpointsresourcegroupname) | string | Specify if you want to deploy the Private Endpoint into a different resource group than the main resource. |
+| [`resourceGroupResourceId`](#parameter-privateendpointsresourcegroupresourceid) | string | The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used. |
 | [`roleAssignments`](#parameter-privateendpointsroleassignments) | array | Array of role assignments to create. |
-| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the private endpoint for. For example "vault", "mysqlServer" or "dataFactory". |
-| [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/resource groups in this deployment. |
+| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the Private Endpoint for. For example "vault" for a Key Vault Private Endpoint. |
+| [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/Resource Groups in this deployment. |
 
 ### Parameter: `privateEndpoints.subnetResourceId`
 
@@ -957,7 +1357,7 @@ Resource ID of the subnet where the endpoint needs to be created.
 
 ### Parameter: `privateEndpoints.applicationSecurityGroupResourceIds`
 
-Application security groups in which the private endpoint IP configuration is included.
+Application security groups in which the Private Endpoint IP configuration is included.
 
 - Required: No
 - Type: array
@@ -973,15 +1373,13 @@ Custom DNS configurations.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | Fqdn that resolves to private endpoint IP address. |
 | [`ipAddresses`](#parameter-privateendpointscustomdnsconfigsipaddresses) | array | A list of private IP addresses of the private endpoint. |
 
-### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+**Optional parameters**
 
-Fqdn that resolves to private endpoint IP address.
-
-- Required: No
-- Type: string
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | FQDN that resolves to private endpoint IP address. |
 
 ### Parameter: `privateEndpoints.customDnsConfigs.ipAddresses`
 
@@ -990,9 +1388,16 @@ A list of private IP addresses of the private endpoint.
 - Required: Yes
 - Type: array
 
+### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+
+FQDN that resolves to private endpoint IP address.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.customNetworkInterfaceName`
 
-The custom name of the network interface attached to the private endpoint.
+The custom name of the network interface attached to the Private Endpoint.
 
 - Required: No
 - Type: string
@@ -1006,7 +1411,7 @@ Enable/Disable usage telemetry for module.
 
 ### Parameter: `privateEndpoints.ipConfigurations`
 
-A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints.
+A list of IP configurations of the Private Endpoint. This will be used to map to the first-party Service endpoints.
 
 - Required: No
 - Type: array
@@ -1070,7 +1475,7 @@ If Manual Private Link Connection is required.
 
 ### Parameter: `privateEndpoints.location`
 
-The location to deploy the private endpoint to.
+The location to deploy the Private Endpoint to.
 
 - Required: No
 - Type: string
@@ -1088,6 +1493,7 @@ Specify the type of lock.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-privateendpointslockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-privateendpointslockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-privateendpointslocknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `privateEndpoints.lock.kind`
 
@@ -1111,6 +1517,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.manualConnectionRequestMessage`
 
 A message passed to the owner of the remote resource with the manual connection request.
@@ -1120,24 +1533,69 @@ A message passed to the owner of the remote resource with the manual connection 
 
 ### Parameter: `privateEndpoints.name`
 
-The name of the private endpoint.
+The name of the Private Endpoint.
 
 - Required: No
 - Type: string
 
-### Parameter: `privateEndpoints.privateDnsZoneGroupName`
+### Parameter: `privateEndpoints.privateDnsZoneGroup`
 
-The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided.
-
-- Required: No
-- Type: string
-
-### Parameter: `privateEndpoints.privateDnsZoneResourceIds`
-
-The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones.
+The private DNS Zone Group to configure for the Private Endpoint.
 
 - Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneGroupConfigs`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigs) | array | The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the Private DNS Zone Group. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs`
+
+The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones.
+
+- Required: Yes
 - Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneResourceId`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsprivatednszoneresourceid) | string | The resource id of the private DNS zone. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsname) | string | The name of the private DNS Zone Group config. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.privateDnsZoneResourceId`
+
+The resource id of the private DNS zone.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.name`
+
+The name of the private DNS Zone Group config.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.name`
+
+The name of the Private DNS Zone Group.
+
+- Required: No
+- Type: string
 
 ### Parameter: `privateEndpoints.privateLinkServiceConnectionName`
 
@@ -1146,9 +1604,9 @@ The name of the private link connection to create.
 - Required: No
 - Type: string
 
-### Parameter: `privateEndpoints.resourceGroupName`
+### Parameter: `privateEndpoints.resourceGroupResourceId`
 
-Specify if you want to deploy the Private Endpoint into a different resource group than the main resource.
+The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used.
 
 - Required: No
 - Type: string
@@ -1159,6 +1617,17 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'DNS Resolver Contributor'`
+  - `'DNS Zone Contributor'`
+  - `'Domain Services Contributor'`
+  - `'Domain Services Reader'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Private DNS Zone Contributor'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
 
 **Required parameters**
 
@@ -1175,6 +1644,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-privateendpointsroleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-privateendpointsroleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-privateendpointsroleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-privateendpointsroleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-privateendpointsroleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `privateEndpoints.roleAssignments.principalId`
@@ -1225,6 +1695,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1244,30 +1721,30 @@ The principal type of the assigned principal ID.
 
 ### Parameter: `privateEndpoints.service`
 
-The subresource to deploy the private endpoint for. For example "vault", "mysqlServer" or "dataFactory".
+The subresource to deploy the Private Endpoint for. For example "vault" for a Key Vault Private Endpoint.
 
 - Required: No
 - Type: string
 
 ### Parameter: `privateEndpoints.tags`
 
-Tags to be applied on all resources/resource groups in this deployment.
+Tags to be applied on all resources/Resource Groups in this deployment.
 
 - Required: No
 - Type: object
 
 ### Parameter: `publicNetworkAccess`
 
-This value can be set to 'enabled' to avoid breaking changes on existing customer resources and templates. If set to 'disabled', traffic over public interface is not allowed, and private endpoint connections would be the exclusive access method.
+This value can be set to 'Enabled' to avoid breaking changes on existing customer resources and templates. If set to 'Disabled', traffic over public interface is not allowed, and private endpoint connections would be the exclusive access method.
 
 - Required: No
 - Type: string
-- Default: `'enabled'`
+- Default: `'Enabled'`
 - Allowed:
   ```Bicep
   [
-    'disabled'
-    'enabled'
+    'Disabled'
+    'Enabled'
   ]
   ```
 
@@ -1278,6 +1755,8 @@ The number of replicas in the search service. If specified, it must be a value b
 - Required: No
 - Type: int
 - Default: `3`
+- MinValue: 1
+- MaxValue: 12
 
 ### Parameter: `roleAssignments`
 
@@ -1285,6 +1764,15 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'Search Index Data Contributor'`
+  - `'Search Index Data Reader'`
+  - `'Search Service Contributor'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -1301,6 +1789,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -1351,6 +1840,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1367,6 +1863,47 @@ The principal type of the assigned principal ID.
     'User'
   ]
   ```
+
+### Parameter: `secretsExportConfiguration`
+
+Key vault reference and secret settings for the module's secrets export.
+
+- Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`keyVaultResourceId`](#parameter-secretsexportconfigurationkeyvaultresourceid) | string | The key vault name where to store the API Admin keys generated by the modules. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`primaryAdminKeyName`](#parameter-secretsexportconfigurationprimaryadminkeyname) | string | The primaryAdminKey secret name to create. |
+| [`secondaryAdminKeyName`](#parameter-secretsexportconfigurationsecondaryadminkeyname) | string | The secondaryAdminKey secret name to create. |
+
+### Parameter: `secretsExportConfiguration.keyVaultResourceId`
+
+The key vault name where to store the API Admin keys generated by the modules.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `secretsExportConfiguration.primaryAdminKeyName`
+
+The primaryAdminKey secret name to create.
+
+- Required: No
+- Type: string
+
+### Parameter: `secretsExportConfiguration.secondaryAdminKeyName`
+
+The secondaryAdminKey secret name to create.
+
+- Required: No
+- Type: string
 
 ### Parameter: `semanticSearch`
 
@@ -1418,15 +1955,19 @@ Tags to help categorize the resource in the Azure portal.
 - Required: No
 - Type: object
 
-
 ## Outputs
 
 | Output | Type | Description |
 | :-- | :-- | :-- |
+| `endpoint` | string | The endpoint of the search service. |
+| `exportedSecrets` |  | A hashtable of references to the secrets exported to the provided Key Vault. The key of each reference is each secret's name. |
 | `location` | string | The location the resource was deployed into. |
 | `name` | string | The name of the search service. |
+| `primaryKey` | securestring | The primary admin API key of the search service. |
+| `privateEndpoints` | array | The private endpoints of the search service. |
 | `resourceGroupName` | string | The name of the resource group the search service was created in. |
 | `resourceId` | string | The resource ID of the search service. |
+| `secondaryKey` | securestring | The secondaryKey admin API key of the search service. |
 | `systemAssignedMIPrincipalId` | string | The principal ID of the system assigned identity. |
 
 ## Cross-referenced modules
@@ -1435,8 +1976,9 @@ This section gives you an overview of all local-referenced module files (i.e., o
 
 | Reference | Type |
 | :-- | :-- |
-| `br/public:avm/res/network/private-endpoint:0.4.1` | Remote reference |
+| `br/public:avm/res/network/private-endpoint:0.11.1` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

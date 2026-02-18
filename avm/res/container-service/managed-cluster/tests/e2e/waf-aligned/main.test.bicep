@@ -39,7 +39,7 @@ module nestedDependencies 'dependencies.bicep' = {
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -53,7 +53,7 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -69,34 +69,38 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
-      enablePrivateCluster: true
-      primaryAgentPoolProfile: [
+      apiServerAccessProfile: {
+        enablePrivateCluster: true
+        privateDNSZone: nestedDependencies.outputs.privateDnsZoneResourceId
+      }
+      primaryAgentPoolProfiles: [
         {
           availabilityZones: [
-            '3'
+            3
           ]
-          count: 3
+          count: 1
           enableAutoScaling: true
           maxCount: 3
           maxPods: 50
           minCount: 3
           mode: 'System'
           name: 'systempool'
+          nodeTaints: [
+            'CriticalAddonsOnly=true:NoSchedule'
+          ]
           osDiskSizeGB: 0
           osType: 'Linux'
-          serviceCidr: ''
           type: 'VirtualMachineScaleSets'
-          vmSize: 'Standard_DS2_v2'
-          vnetSubnetID: '${nestedDependencies.outputs.vNetResourceId}/subnets/defaultSubnet'
+          vmSize: 'Standard_DS4_v2'
+          vnetSubnetResourceId: '${nestedDependencies.outputs.vNetResourceId}/subnets/defaultSubnet'
         }
       ]
       agentPools: [
         {
           availabilityZones: [
-            '3'
+            3
           ]
-          count: 3
+          count: 2
           enableAutoScaling: true
           maxCount: 3
           maxPods: 50
@@ -105,23 +109,20 @@ module testDeployment '../../../main.bicep' = [
           mode: 'User'
           name: 'userpool1'
           nodeLabels: {}
-          nodeTaints: [
-            'CriticalAddonsOnly=true:NoSchedule'
-          ]
           osDiskType: 'Ephemeral'
           osDiskSizeGB: 60
           osType: 'Linux'
           scaleSetEvictionPolicy: 'Delete'
           scaleSetPriority: 'Regular'
           type: 'VirtualMachineScaleSets'
-          vmSize: 'Standard_DS2_v2'
-          vnetSubnetID: '${nestedDependencies.outputs.vNetResourceId}/subnets/defaultSubnet'
+          vmSize: 'Standard_DS4_v2'
+          vnetSubnetResourceId: '${nestedDependencies.outputs.vNetResourceId}/subnets/defaultSubnet'
         }
         {
           availabilityZones: [
-            '3'
+            3
           ]
-          count: 3
+          count: 2
           enableAutoScaling: true
           maxCount: 3
           maxPods: 50
@@ -130,28 +131,67 @@ module testDeployment '../../../main.bicep' = [
           mode: 'User'
           name: 'userpool2'
           nodeLabels: {}
-          nodeTaints: [
-            'CriticalAddonsOnly=true:NoSchedule'
-          ]
           osDiskType: 'Ephemeral'
           osDiskSizeGB: 60
           osType: 'Linux'
           scaleSetEvictionPolicy: 'Delete'
           scaleSetPriority: 'Regular'
           type: 'VirtualMachineScaleSets'
-          vmSize: 'Standard_DS2_v2'
+          vmSize: 'Standard_DS4_v2'
         }
       ]
-      autoUpgradeProfileUpgradeChannel: 'stable'
+      autoUpgradeProfile: {
+        upgradeChannel: 'stable'
+        nodeOSUpgradeChannel: 'Unmanaged'
+      }
+      maintenanceConfigurations: [
+        {
+          name: 'aksManagedAutoUpgradeSchedule'
+          maintenanceWindow: {
+            schedule: {
+              weekly: {
+                intervalWeeks: 1
+                dayOfWeek: 'Sunday'
+              }
+            }
+            durationHours: 4
+            utcOffset: '+00:00'
+            startDate: '2024-07-15'
+            startTime: '00:00'
+          }
+        }
+        {
+          name: 'aksManagedNodeOSUpgradeSchedule'
+          maintenanceWindow: {
+            schedule: {
+              weekly: {
+                intervalWeeks: 1
+                dayOfWeek: 'Sunday'
+              }
+            }
+            durationHours: 4
+            utcOffset: '+00:00'
+            startDate: '2024-07-15'
+            startTime: '00:00'
+          }
+        }
+      ]
       networkPlugin: 'azure'
       networkPolicy: 'azure'
       skuTier: 'Standard'
       dnsServiceIP: '10.10.200.10'
       serviceCidr: '10.10.200.0/24'
       omsAgentEnabled: true
-      monitoringWorkspaceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
+      monitoringWorkspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
       disableLocalAccounts: true
-      enableAzureDefender: true
+      securityProfile: {
+        defender: {
+          securityMonitoring: {
+            enabled: true
+          }
+          logAnalyticsWorkspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
+        }
+      }
       diagnosticSettings: [
         {
           name: 'customSetting'
@@ -180,9 +220,8 @@ module testDeployment '../../../main.bicep' = [
           workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
         }
       ]
-      privateDNSZone: nestedDependencies.outputs.privateDnsZoneResourceId
       managedIdentities: {
-        userAssignedResourcesIds: [
+        userAssignedResourceIds: [
           nestedDependencies.outputs.managedIdentityResourceId
         ]
       }
@@ -191,10 +230,10 @@ module testDeployment '../../../main.bicep' = [
         Environment: 'Non-Prod'
         Role: 'DeploymentValidation'
       }
+      aadProfile: {
+        enableAzureRBAC: true
+        managed: true
+      }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

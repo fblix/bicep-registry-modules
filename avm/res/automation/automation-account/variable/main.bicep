@@ -1,6 +1,5 @@
 metadata name = 'Automation Account Variables'
 metadata description = 'This module deploys an Azure Automation Account Variable.'
-metadata owner = 'Azure/module-maintainers'
 
 @sys.description('Conditional. The name of the parent Automation Account. Required if the template is used in a standalone deployment.')
 param automationAccountName string
@@ -18,11 +17,11 @@ param description string = ''
 @sys.description('Optional. If the variable should be encrypted. For security reasons encryption of variables should be enabled.')
 param isEncrypted bool = true
 
-resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' existing = {
+resource automationAccount 'Microsoft.Automation/automationAccounts@2024-10-23' existing = {
   name: automationAccountName
 }
 
-resource variable 'Microsoft.Automation/automationAccounts/variables@2022-08-08' = {
+resource variable 'Microsoft.Automation/automationAccounts/variables@2024-10-23' = {
   name: name
   parent: automationAccount
   properties: {

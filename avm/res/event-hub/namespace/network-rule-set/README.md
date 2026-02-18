@@ -7,14 +7,12 @@ This module deploys an Event Hub Namespace Network Rule Set.
 - [Resource Types](#Resource-Types)
 - [Parameters](#Parameters)
 - [Outputs](#Outputs)
-- [Cross-referenced modules](#Cross-referenced-modules)
-- [Data Collection](#Data-Collection)
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.EventHub/namespaces/networkRuleSets` | [2022-10-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2022-10-01-preview/namespaces/networkRuleSets) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.EventHub/namespaces/networkRuleSets` | 2024-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.eventhub_namespaces_networkrulesets.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.EventHub/2024-01-01/namespaces/networkRuleSets)</li></ul> |
 
 ## Parameters
 
@@ -104,6 +102,26 @@ An array of subnet resource ID objects that this Event Hub Namespace is exposed 
 - Type: array
 - Default: `[]`
 
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`ignoreMissingVnetServiceEndpoint`](#parameter-virtualnetworkrulesignoremissingvnetserviceendpoint) | bool | Value that indicates whether to ignore missing Vnet Service Endpoint. |
+| [`subnetResourceId`](#parameter-virtualnetworkrulessubnetresourceid) | string | The resource Id of a Virtual Network Subnet. |
+
+### Parameter: `virtualNetworkRules.ignoreMissingVnetServiceEndpoint`
+
+Value that indicates whether to ignore missing Vnet Service Endpoint.
+
+- Required: No
+- Type: bool
+
+### Parameter: `virtualNetworkRules.subnetResourceId`
+
+The resource Id of a Virtual Network Subnet.
+
+- Required: No
+- Type: string
 
 ## Outputs
 
@@ -112,11 +130,3 @@ An array of subnet resource ID objects that this Event Hub Namespace is exposed 
 | `name` | string | The name of the network rule set. |
 | `resourceGroupName` | string | The name of the resource group the network rule set was created in. |
 | `resourceId` | string | The resource ID of the network rule set. |
-
-## Cross-referenced modules
-
-_None_
-
-## Data Collection
-
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

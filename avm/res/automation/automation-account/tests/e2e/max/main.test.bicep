@@ -11,8 +11,9 @@ metadata description = 'This instance deploys the module with most of its featur
 @maxLength(90)
 param resourceGroupName string = 'dep-${namePrefix}-automation.account-${serviceShort}-rg'
 
-@description('Optional. The location to deploy resources to.')
-param resourceLocation string = deployment().location
+// Enforce uksouth to avoid restrictions around zone redundancy in certain regions
+#disable-next-line no-hardcoded-location
+var enforcedLocation = 'westeurope'
 
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 param serviceShort string = 'aamax'
@@ -20,34 +21,41 @@ param serviceShort string = 'aamax'
 @description('Optional. A token to inject into the name of each resource.')
 param namePrefix string = '#_namePrefix_#'
 
+@description('Optional. The password to leverage for the login.')
+@secure()
+param password string = newGuid()
+
+@description('Optional. The current time in UTC.')
+param timeNow string = utcNow()
+
 // General resources
 // =================
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: resourceGroupName
-  location: resourceLocation
+  location: enforcedLocation
 }
 
 module nestedDependencies 'dependencies.bicep' = {
   scope: resourceGroup
-  name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
+  name: '${uniqueString(deployment().name, enforcedLocation)}-nestedDependencies'
   params: {
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
-    location: resourceLocation
+    location: enforcedLocation
   }
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
-  name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
+  name: '${uniqueString(deployment().name, enforcedLocation)}-diagnosticDependencies'
   params: {
     storageAccountName: 'dep${namePrefix}diasa${serviceShort}01'
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
-    location: resourceLocation
+    location: enforcedLocation
   }
 }
 
@@ -59,7 +67,7 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
 module testDeployment '../../../main.bicep' = [
   for iteration in ['init', 'idem']: {
     scope: resourceGroup
-    name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
+    name: '${uniqueString(deployment().name, enforcedLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
       diagnosticSettings: [
@@ -72,9 +80,11 @@ module testDeployment '../../../main.bicep' = [
       ]
       gallerySolutions: [
         {
-          name: 'Updates'
-          product: 'OMSGallery'
-          publisher: 'Microsoft'
+          name: 'Updates(${last(split(diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId, '/'))})'
+          plan: {
+            product: 'OMSGallery/Updates'
+            publisher: 'Microsoft'
+          }
         }
       ]
       jobSchedules: [
@@ -83,9 +93,22 @@ module testDeployment '../../../main.bicep' = [
           scheduleName: 'TestSchedule'
         }
       ]
+      credentials: [
+        {
+          name: 'Credential01'
+          description: 'Description of Credential01'
+          userName: 'userName01'
+          password: password
+        }
+        {
+          name: 'Credential02'
+          userName: 'username02'
+          password: password
+        }
+      ]
       disableLocalAuth: true
       linkedWorkspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
-      location: resourceLocation
+      location: enforcedLocation
       lock: {
         kind: 'CanNotDelete'
         name: 'myCustomLockName'
@@ -97,11 +120,36 @@ module testDeployment '../../../main.bicep' = [
           version: 'latest'
         }
       ]
+      powershell72Modules: [
+        {
+          name: 'powershell-yaml'
+          uri: 'https://www.powershellgallery.com/api/v2/package'
+          version: 'latest'
+        }
+      ]
+      python3Packages: [
+        {
+          name: 'geniz-0.0.1-py3-none-any.whl'
+          uri: 'https://files.pythonhosted.org/packages/8f/4b/c61bb7b176b34dd0c9ab0f3d821234c1e9f81f3ba5a609a1cf9032c852e7'
+          version: 'latest'
+        }
+      ]
+      python2Packages: [
+        {
+          name: 'pycx2-1.0.3-py2-none-any.whl'
+          uri: 'https://files.pythonhosted.org/packages/59/8c/40f66c4ac7564a68edd629a7836536af53d10b2d89f78c63e77cfcd9d460'
+          version: 'latest'
+        }
+      ]
       privateEndpoints: [
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           service: 'Webhook'
           subnetResourceId: nestedDependencies.outputs.customSubnet1ResourceId
           tags: {
@@ -111,9 +159,13 @@ module testDeployment '../../../main.bicep' = [
           }
         }
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           service: 'Webhook'
           subnetResourceId: nestedDependencies.outputs.customSubnet2ResourceId
           tags: {
@@ -123,9 +175,13 @@ module testDeployment '../../../main.bicep' = [
           }
         }
         {
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           service: 'DSCAndHybridWorker'
           subnetResourceId: nestedDependencies.outputs.customSubnet1ResourceId
           tags: {
@@ -137,11 +193,13 @@ module testDeployment '../../../main.bicep' = [
       ]
       roleAssignments: [
         {
+          name: guid('${resourceGroupName}${namePrefix}/Owner')
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
         {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
@@ -175,63 +233,7 @@ module testDeployment '../../../main.bicep' = [
           timeZone: 'Europe/Berlin'
         }
       ]
-      softwareUpdateConfigurations: [
-        {
-          excludeUpdates: [
-            '123456'
-          ]
-          frequency: 'Month'
-          includeUpdates: [
-            '654321'
-          ]
-          interval: 1
-          maintenanceWindow: 'PT4H'
-          monthlyOccurrences: [
-            {
-              day: 'Friday'
-              occurrence: 3
-            }
-          ]
-          name: 'Windows_ZeroDay'
-          operatingSystem: 'Windows'
-          rebootSetting: 'IfRequired'
-          scopeByTags: {
-            Update: [
-              'Automatic-Wave1'
-            ]
-          }
-          startTime: '22:00'
-          updateClassifications: [
-            'Critical'
-            'Definition'
-            'FeaturePack'
-            'Security'
-            'ServicePack'
-            'Tools'
-            'UpdateRollup'
-            'Updates'
-          ]
-        }
-        {
-          excludeUpdates: [
-            'icacls'
-          ]
-          frequency: 'OneTime'
-          includeUpdates: [
-            'kernel'
-          ]
-          maintenanceWindow: 'PT4H'
-          name: 'Linux_ZeroDay'
-          operatingSystem: 'Linux'
-          rebootSetting: 'IfRequired'
-          startTime: '22:00'
-          updateClassifications: [
-            'Critical'
-            'Other'
-            'Security'
-          ]
-        }
-      ]
+
       managedIdentities: {
         systemAssigned: true
         userAssignedResourceIds: [
@@ -266,15 +268,22 @@ module testDeployment '../../../main.bicep' = [
           value: '\'TestEncryptedValue\''
         }
       ]
+      webhooks: [
+        {
+          name: 'TestWebhook'
+          runbookName: 'TestRunbook'
+          expiryTime: dateTimeAdd(timeNow, 'P1M')
+          parameters: {
+            param1: 'value1'
+            param2: 'value2'
+          }
+        }
+      ]
       tags: {
         'hidden-title': 'This is visible in the resource name'
         Environment: 'Non-Prod'
         Role: 'DeploymentValidation'
       }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

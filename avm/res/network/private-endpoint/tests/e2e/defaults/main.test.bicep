@@ -17,9 +17,6 @@ param resourceLocation string = deployment().location
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
 param serviceShort string = 'npemin'
 
-@description('Generated. Used as a basis for unique resource names.')
-param baseTime string = utcNow('u')
-
 @description('Optional. A token to inject into the name of each resource. This value can be automatically injected by the CI.')
 param namePrefix string = '#_namePrefix_#'
 
@@ -29,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -39,8 +36,7 @@ module nestedDependencies 'dependencies.bicep' = {
   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
   params: {
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
-    keyVaultName: 'dep-${namePrefix}-kv-${serviceShort}-${substring(uniqueString(baseTime), 0, 3)}'
-    location: resourceLocation
+    keyVaultName: 'dep-${namePrefix}-kv-${serviceShort}'
   }
 }
 
@@ -55,18 +51,7 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
       subnetResourceId: nestedDependencies.outputs.subnetResourceId
-      // Workaround for PSRule
-      lock: {}
-      roleAssignments: []
-      applicationSecurityGroupResourceIds: []
-      customNetworkInterfaceName: ''
-      privateDnsZoneGroupName: ''
-      ipConfigurations: []
-      customDnsConfigs: []
-      privateDnsZoneResourceIds: []
-      manualPrivateLinkServiceConnections: []
       privateLinkServiceConnections: [
         {
           name: '${namePrefix}${serviceShort}001'
@@ -78,7 +63,6 @@ module testDeployment '../../../main.bicep' = [
           }
         }
       ]
-      tags: {}
     }
   }
 ]

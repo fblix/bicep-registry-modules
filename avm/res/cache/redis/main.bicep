@@ -1,6 +1,5 @@
 metadata name = 'Redis Cache'
 metadata description = 'This module deploys a Redis Cache.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Optional. The location to deploy the Redis cache service.')
 param location string = resourceGroup().location
@@ -8,17 +7,23 @@ param location string = resourceGroup().location
 @description('Required. The name of the Redis cache resource.')
 param name string
 
+import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.6.1'
 @description('Optional. The lock settings of the service.')
-param lock lockType
+param lock lockType?
 
+import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.6.1'
 @description('Optional. Array of role assignments to create.')
-param roleAssignments roleAssignmentType
+param roleAssignments roleAssignmentType[]?
 
 @description('Optional. Tags of the resource.')
-param tags object?
+param tags resourceInput<'Microsoft.Cache/redis@2024-11-01'>.tags?
 
+import { managedIdentityAllType } from 'br/public:avm/utl/types/avm-common-types:0.6.1'
 @description('Optional. The managed identity definition for this resource.')
-param managedIdentities managedIdentitiesType
+param managedIdentities managedIdentityAllType?
+
+@description('Optional. Disable authentication via access keys.')
+param disableAccessKeyAuthentication bool = false
 
 @description('Optional. Specifies whether the non-ssl Redis server port (6379) is enabled.')
 param enableNonSslPort bool = false
@@ -33,14 +38,13 @@ param minimumTlsVersion string = '1.2'
 
 @description('Optional. Whether or not public network access is allowed for this resource. For security reasons it should be disabled. If not specified, it will be disabled by default if private endpoints are set.')
 @allowed([
-  ''
   'Enabled'
   'Disabled'
 ])
-param publicNetworkAccess string = ''
+param publicNetworkAccess string?
 
 @description('Optional. All Redis Settings. Few possible keys: rdb-backup-enabled,rdb-storage-connection-string,rdb-backup-frequency,maxmemory-delta,maxmemory-policy,notify-keyspace-events,maxmemory-samples,slowlog-log-slower-than,slowlog-max-len,list-max-ziplist-entries,list-max-ziplist-value,hash-max-ziplist-entries,hash-max-ziplist-value,set-max-intset-entries,zset-max-ziplist-entries,zset-max-ziplist-value etc.')
-param redisConfiguration object = {}
+param redisConfiguration resourceInput<'Microsoft.Cache/redis@2024-11-01'>.properties.redisConfiguration?
 
 @allowed([
   '4'
@@ -59,7 +63,7 @@ param replicasPerPrimary int = 3
 
 @minValue(1)
 @description('Optional. The number of shards to be created on a Premium Cluster Cache.')
-param shardCount int = 1
+param shardCount int?
 
 @allowed([
   0
@@ -82,31 +86,61 @@ param capacity int = 1
 param skuName string = 'Premium'
 
 @description('Optional. Static IP address. Optionally, may be specified when deploying a Redis cache inside an existing Azure Virtual Network; auto assigned by default.')
-param staticIP string = ''
+param staticIP string?
 
 @description('Optional. The full resource ID of a subnet in a virtual network to deploy the Redis cache in.')
-param subnetResourceId string = ''
+param subnetResourceId string?
 
 @description('Optional. A dictionary of tenant settings.')
-param tenantSettings object = {}
+param tenantSettings resourceInput<'Microsoft.Cache/redis@2024-11-01'>.properties.tenantSettings = {}
 
 @description('Optional. When true, replicas will be provisioned in availability zones specified in the zones parameter.')
 param zoneRedundant bool = true
 
 @description('Optional. If the zoneRedundant parameter is true, replicas will be provisioned in the availability zones specified here. Otherwise, the service will choose where replicas are deployed.')
-param zones int[] = [1, 2, 3]
+@allowed([1, 2, 3])
+param availabilityZones int[] = [1, 2, 3]
 
+@description('Optional. Specifies how availability zones are allocated to the Redis cache. "Automatic" enables zone redundancy and Azure will automatically select zones. "UserDefined" will select availability zones passed in by you using the "availabilityZones" parameter. "NoZones" will produce a non-zonal cache. Only applicable when zoneRedundant is true.')
+@allowed([
+  'Automatic'
+  'NoZones'
+  'UserDefined'
+])
+param zonalAllocationPolicy string?
+
+import { privateEndpointSingleServiceType } from 'br/public:avm/utl/types/avm-common-types:0.6.1'
 @description('Optional. Configuration details for private endpoints. For security reasons, it is recommended to use private endpoints whenever possible.')
-param privateEndpoints privateEndpointType
+param privateEndpoints privateEndpointSingleServiceType[]?
 
+@description('Optional. The geo-replication settings of the service. Requires a Premium SKU. Geo-replication is not supported on a cache with multiple replicas per primary. Secondary cache VM Size must be same or higher as compared to the primary cache VM Size. Geo-replication between a vnet and non vnet cache (and vice-a-versa) not supported.')
+param geoReplicationObject geoReplicationType?
+
+import { diagnosticSettingFullType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. The diagnostic settings of the service.')
-param diagnosticSettings diagnosticSettingType
+param diagnosticSettings diagnosticSettingFullType[]?
 
 @description('Optional. Enable/Disable usage telemetry for module.')
 param enableTelemetry bool = true
 
-var availabilityZones = skuName == 'Premium'
-  ? zoneRedundant ? !empty(zones) ? zones : pickZones('Microsoft.Cache', 'redis', location, 3) : []
+@description('Optional. Array of access policies to create.')
+param accessPolicies accessPolicyType[]?
+
+@description('Optional. Array of access policy assignments.')
+param accessPolicyAssignments accessPolicyAssignmentType[]?
+
+@description('Optional. The firewall rules of the Redis Cache.')
+param firewallRules firewallRuleType[]?
+
+@description('Optional. Key vault reference and secret settings for the module\'s secrets export.')
+param secretsExportConfiguration secretsExportConfigurationType?
+
+var enableReferencedModulesTelemetry = false
+
+var zones = skuName == 'Premium'
+  ? zoneRedundant
+      ? !empty(availabilityZones) ? availabilityZones : pickZones('Microsoft.Cache', 'redis', location, 3)
+      : []
   : []
 
 var formattedUserAssignedIdentities = reduce(
@@ -132,7 +166,7 @@ var builtInRoleNames = {
     'Microsoft.Authorization/roleDefinitions',
     'e0f68234-74aa-48ed-b826-c38b57376e17'
   )
-  'Role Based Access Control Administrator (Preview)': subscriptionResourceId(
+  'Role Based Access Control Administrator': subscriptionResourceId(
     'Microsoft.Authorization/roleDefinitions',
     'f58310d9-a9f6-439a-9e8d-f62e7b41a168'
   )
@@ -142,37 +176,49 @@ var builtInRoleNames = {
   )
 }
 
-resource avmTelemetry 'Microsoft.Resources/deployments@2023-07-01' =
-  if (enableTelemetry) {
-    name: '46d3xbcp.res.cache-redis.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
-    properties: {
-      mode: 'Incremental'
-      template: {
-        '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
-        contentVersion: '1.0.0.0'
-        resources: []
-        outputs: {
-          telemetry: {
-            type: 'String'
-            value: 'For more information, see https://aka.ms/avm/TelemetryInfo'
-          }
+var formattedRoleAssignments = [
+  for (roleAssignment, index) in (roleAssignments ?? []): union(roleAssignment, {
+    roleDefinitionId: builtInRoleNames[?roleAssignment.roleDefinitionIdOrName] ?? (contains(
+        roleAssignment.roleDefinitionIdOrName,
+        '/providers/Microsoft.Authorization/roleDefinitions/'
+      )
+      ? roleAssignment.roleDefinitionIdOrName
+      : subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleAssignment.roleDefinitionIdOrName))
+  })
+]
+
+#disable-next-line no-deployments-resources
+resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
+  name: '46d3xbcp.res.cache-redis.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
+  properties: {
+    mode: 'Incremental'
+    template: {
+      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
+      contentVersion: '1.0.0.0'
+      resources: []
+      outputs: {
+        telemetry: {
+          type: 'String'
+          value: 'For more information, see https://aka.ms/avm/TelemetryInfo'
         }
       }
     }
   }
+}
 
-resource redis 'Microsoft.Cache/redis@2022-06-01' = {
+resource redis 'Microsoft.Cache/redis@2024-11-01' = {
   name: name
   location: location
   tags: tags
   identity: identity
   properties: {
+    disableAccessKeyAuthentication: disableAccessKeyAuthentication
     enableNonSslPort: enableNonSslPort
     minimumTlsVersion: minimumTlsVersion
     publicNetworkAccess: !empty(publicNetworkAccess)
       ? any(publicNetworkAccess)
       : (!empty(privateEndpoints) ? 'Disabled' : null)
-    redisConfiguration: !empty(redisConfiguration) ? redisConfiguration : null
+    redisConfiguration: redisConfiguration
     redisVersion: redisVersion
     replicasPerMaster: skuName == 'Premium' ? replicasPerMaster : null
     replicasPerPrimary: skuName == 'Premium' ? replicasPerPrimary : null
@@ -182,24 +228,53 @@ resource redis 'Microsoft.Cache/redis@2022-06-01' = {
       family: skuName == 'Premium' ? 'P' : 'C'
       name: skuName
     }
-    staticIP: !empty(staticIP) ? staticIP : null
-    subnetId: !empty(subnetResourceId) ? subnetResourceId : null
+    staticIP: staticIP
+    subnetId: subnetResourceId
     tenantSettings: tenantSettings
+    zonalAllocationPolicy: skuName == 'Premium' && zoneRedundant ? zonalAllocationPolicy : null
   }
-  zones: availabilityZones
+  zones: zones
 }
 
-resource redis_lock 'Microsoft.Authorization/locks@2020-05-01' =
-  if (!empty(lock ?? {}) && lock.?kind != 'None') {
-    name: lock.?name ?? 'lock-${name}'
-    properties: {
-      level: lock.?kind ?? ''
-      notes: lock.?kind == 'CanNotDelete'
-        ? 'Cannot delete resource or child resources.'
-        : 'Cannot delete or modify the resource or child resources.'
+// Deploy access policies
+module redis_accessPolicies 'access-policy/main.bicep' = [
+  for (policy, index) in (accessPolicies ?? []): {
+    name: '${uniqueString(deployment().name, location)}-redis-AccessPolicy-${index}'
+    params: {
+      redisCacheName: redis.name
+      name: policy.name
+      permissions: policy.permissions
     }
-    scope: redis
   }
+]
+
+// Deploy access policy assignments
+module redis_policyAssignments 'access-policy-assignment/main.bicep' = [
+  for (assignment, index) in (accessPolicyAssignments ?? []): {
+    name: '${uniqueString(deployment().name, location)}-redis-PolicyAssignment-${index}'
+    params: {
+      redisCacheName: redis.name
+      name: assignment.?name
+      objectId: assignment.objectId
+      objectIdAlias: assignment.objectIdAlias
+      accessPolicyName: assignment.accessPolicyName
+    }
+    dependsOn: [
+      redis_accessPolicies // Ensure policies exist before assigning them
+    ]
+  }
+]
+
+resource redis_lock 'Microsoft.Authorization/locks@2020-05-01' = if (!empty(lock ?? {}) && lock.?kind != 'None') {
+  name: lock.?name ?? 'lock-${name}'
+  properties: {
+    level: lock.?kind ?? ''
+    notes: lock.?notes ?? (lock.?kind == 'CanNotDelete'
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot delete or modify the resource or child resources.')
+  }
+  scope: redis
+}
 
 resource redis_diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = [
   for (diagnosticSetting, index) in (diagnosticSettings ?? []): {
@@ -231,14 +306,10 @@ resource redis_diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05
 ]
 
 resource redis_roleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
-  for (roleAssignment, index) in (roleAssignments ?? []): {
-    name: guid(redis.id, roleAssignment.principalId, roleAssignment.roleDefinitionIdOrName)
+  for (roleAssignment, index) in (formattedRoleAssignments ?? []): {
+    name: roleAssignment.?name ?? guid(redis.id, roleAssignment.principalId, roleAssignment.roleDefinitionId)
     properties: {
-      roleDefinitionId: contains(builtInRoleNames, roleAssignment.roleDefinitionIdOrName)
-        ? builtInRoleNames[roleAssignment.roleDefinitionIdOrName]
-        : contains(roleAssignment.roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/')
-            ? roleAssignment.roleDefinitionIdOrName
-            : subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleAssignment.roleDefinitionIdOrName)
+      roleDefinitionId: roleAssignment.roleDefinitionId
       principalId: roleAssignment.principalId
       description: roleAssignment.?description
       principalType: roleAssignment.?principalType
@@ -250,10 +321,13 @@ resource redis_roleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-
   }
 ]
 
-module redis_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.4.1' = [
+module redis_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.11.0' = [
   for (privateEndpoint, index) in (privateEndpoints ?? []): {
     name: '${uniqueString(deployment().name, location)}-redis-PrivateEndpoint-${index}'
-    scope: resourceGroup(privateEndpoint.?resourceGroupName ?? '')
+    scope: resourceGroup(
+      split(privateEndpoint.?resourceGroupResourceId ?? resourceGroup().id, '/')[2],
+      split(privateEndpoint.?resourceGroupResourceId ?? resourceGroup().id, '/')[4]
+    )
     params: {
       name: privateEndpoint.?name ?? 'pep-${last(split(redis.id, '/'))}-${privateEndpoint.?service ?? 'redisCache'}-${index}'
       privateLinkServiceConnections: privateEndpoint.?isManualConnection != true
@@ -284,15 +358,14 @@ module redis_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.4.1'
           ]
         : null
       subnetResourceId: privateEndpoint.subnetResourceId
-      enableTelemetry: privateEndpoint.?enableTelemetry ?? enableTelemetry
+      enableTelemetry: enableReferencedModulesTelemetry
       location: privateEndpoint.?location ?? reference(
         split(privateEndpoint.subnetResourceId, '/subnets/')[0],
         '2020-06-01',
         'Full'
       ).location
       lock: privateEndpoint.?lock ?? lock
-      privateDnsZoneGroupName: privateEndpoint.?privateDnsZoneGroupName
-      privateDnsZoneResourceIds: privateEndpoint.?privateDnsZoneResourceIds
+      privateDnsZoneGroup: privateEndpoint.?privateDnsZoneGroup
       roleAssignments: privateEndpoint.?roleAssignments
       tags: privateEndpoint.?tags ?? tags
       customDnsConfigs: privateEndpoint.?customDnsConfigs
@@ -302,6 +375,91 @@ module redis_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.4.1'
     }
   }
 ]
+
+module redis_firewallRules 'firewall-rule/main.bicep' = [
+  for (firewallRule, index) in (firewallRules ?? []): {
+    name: '${uniqueString(deployment().name, location)}-redis-FirewallRules-${index}'
+    params: {
+      name: firewallRule.name
+      redisCacheName: redis.name
+      startIP: firewallRule.startIP
+      endIP: firewallRule.endIP
+    }
+  }
+]
+
+module redis_geoReplication 'linked-servers/main.bicep' = if (!empty(geoReplicationObject)) {
+  name: '${uniqueString(deployment().name, location)}-redis-LinkedServer'
+  params: {
+    redisCacheName: redis.name
+    name: geoReplicationObject!.?name
+    linkedRedisCacheResourceId: geoReplicationObject!.linkedRedisCacheResourceId
+    linkedRedisCacheLocation: geoReplicationObject!.?linkedRedisCacheLocation
+  }
+  dependsOn: redis_privateEndpoints
+}
+
+module secretsExport 'modules/keyVaultExport.bicep' = if (secretsExportConfiguration != null) {
+  name: '${uniqueString(deployment().name, location)}-secrets-kv'
+  scope: resourceGroup(
+    split(secretsExportConfiguration.?keyVaultResourceId!, '/')[2],
+    split(secretsExportConfiguration.?keyVaultResourceId!, '/')[4]
+  )
+  params: {
+    keyVaultName: last(split(secretsExportConfiguration.?keyVaultResourceId!, '/'))
+    secretsToSet: union(
+      [],
+      contains(secretsExportConfiguration!, 'primaryAccessKeyName')
+        ? [
+            {
+              name: secretsExportConfiguration!.?primaryAccessKeyName
+              value: redis.listKeys().primaryKey
+            }
+          ]
+        : [],
+      contains(secretsExportConfiguration!, 'primaryConnectionStringName')
+        ? [
+            {
+              name: secretsExportConfiguration!.?primaryConnectionStringName
+              value: 'rediss://:${redis.listKeys().primaryKey}@${redis.properties.hostName}:6380'
+            }
+          ]
+        : [],
+      contains(secretsExportConfiguration!, 'primaryStackExchangeRedisConnectionStringName')
+        ? [
+            {
+              name: secretsExportConfiguration!.?primaryStackExchangeRedisConnectionStringName
+              value: '${redis.properties.hostName}:6380,password=${redis.listKeys().primaryKey},ssl=True,abortConnect=False'
+            }
+          ]
+        : [],
+      contains(secretsExportConfiguration!, 'secondaryAccessKeyName')
+        ? [
+            {
+              name: secretsExportConfiguration!.?secondaryAccessKeyName
+              value: redis.listKeys().secondaryKey
+            }
+          ]
+        : [],
+      contains(secretsExportConfiguration!, 'secondaryConnectionStringName')
+        ? [
+            {
+              name: secretsExportConfiguration!.?secondaryConnectionStringName
+              value: 'rediss://:${redis.listKeys().secondaryKey}@${redis.properties.hostName}:6380'
+            }
+          ]
+        : [],
+      contains(secretsExportConfiguration!, 'secondaryStackExchangeRedisConnectionStringName')
+        ? [
+            {
+              name: secretsExportConfiguration!.?secondaryStackExchangeRedisConnectionStringName
+              value: '${redis.properties.hostName}:6380,password=${redis.listKeys().secondaryKey},ssl=True,abortConnect=False'
+            }
+          ]
+        : []
+    )
+  }
+}
 
 @description('The name of the Redis Cache.')
 output name string = redis.name
@@ -322,172 +480,120 @@ output sslPort int = redis.properties.sslPort
 output subnetResourceId string = !empty(subnetResourceId) ? redis.properties.subnetId : ''
 
 @description('The principal ID of the system assigned identity.')
-output systemAssignedMIPrincipalId string = redis.?identity.?principalId ?? ''
+output systemAssignedMIPrincipalId string? = redis.?identity.?principalId
 
 @description('The location the resource was deployed into.')
 output location string = redis.location
+
+@description('The private endpoints of the Redis Cache.')
+output privateEndpoints privateEndpointOutputType[] = [
+  for (item, index) in (privateEndpoints ?? []): {
+    name: redis_privateEndpoints[index].outputs.name
+    resourceId: redis_privateEndpoints[index].outputs.resourceId
+    groupId: redis_privateEndpoints[index].outputs.?groupId!
+    customDnsConfigs: redis_privateEndpoints[index].outputs.customDnsConfigs
+    networkInterfaceResourceIds: redis_privateEndpoints[index].outputs.networkInterfaceResourceIds
+  }
+]
+
+import { secretsOutputType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
+@description('A hashtable of references to the secrets exported to the provided Key Vault. The key of each reference is each secret\'s name.')
+output exportedSecrets secretsOutputType = (secretsExportConfiguration != null)
+  ? toObject(secretsExport!.outputs.secretsSet, secret => last(split(secret.secretResourceId, '/')), secret => secret)
+  : {}
 
 // =============== //
 //   Definitions   //
 // =============== //
 
-type managedIdentitiesType = {
-  @description('Optional. Enables system assigned managed identity on the resource.')
-  systemAssigned: bool?
+@export()
+type privateEndpointOutputType = {
+  @description('The name of the private endpoint.')
+  name: string
 
-  @description('Optional. The resource ID(s) to assign to the resource.')
-  userAssignedResourceIds: string[]?
-}?
+  @description('The resource ID of the private endpoint.')
+  resourceId: string
 
-type lockType = {
-  @description('Optional. Specify the name of lock.')
-  name: string?
+  @description('The group Id for the private endpoint Group.')
+  groupId: string?
 
-  @description('Optional. Specify the type of lock.')
-  kind: ('CanNotDelete' | 'ReadOnly' | 'None')?
-}?
-
-type privateEndpointType = {
-  @description('Optional. The name of the private endpoint.')
-  name: string?
-
-  @description('Optional. The location to deploy the private endpoint to.')
-  location: string?
-
-  @description('Optional. The name of the private link connection to create.')
-  privateLinkServiceConnectionName: string?
-
-  @description('Optional. The subresource to deploy the private endpoint for. For example "vault", "mysqlServer" or "dataFactory".')
-  service: string?
-
-  @description('Required. Resource ID of the subnet where the endpoint needs to be created.')
-  subnetResourceId: string
-
-  @description('Optional. The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided.')
-  privateDnsZoneGroupName: string?
-
-  @description('Optional. The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones.')
-  privateDnsZoneResourceIds: string[]?
-
-  @description('Optional. If Manual Private Link Connection is required.')
-  isManualConnection: bool?
-
-  @description('Optional. A message passed to the owner of the remote resource with the manual connection request.')
-  @maxLength(140)
-  manualConnectionRequestMessage: string?
-
-  @description('Optional. Custom DNS configurations.')
+  @description('The custom DNS configurations of the private endpoint.')
   customDnsConfigs: {
-    @description('Required. Fqdn that resolves to private endpoint IP address.')
+    @description('FQDN that resolves to private endpoint IP address.')
     fqdn: string?
 
-    @description('Required. A list of private IP addresses of the private endpoint.')
+    @description('A list of private IP addresses of the private endpoint.')
     ipAddresses: string[]
-  }[]?
+  }[]
 
-  @description('Optional. A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints.')
-  ipConfigurations: {
-    @description('Required. The name of the resource that is unique within a resource group.')
-    name: string
+  @description('The IDs of the network interfaces associated with the private endpoint.')
+  networkInterfaceResourceIds: string[]
+}
 
-    @description('Required. Properties of private endpoint IP configurations.')
-    properties: {
-      @description('Required. The ID of a group obtained from the remote resource that this private endpoint should connect to.')
-      groupId: string
+type accessPolicyType = {
+  @description('Required. Name of the access policy.')
+  name: string
+  @description('Required. Permissions associated with the access policy.')
+  permissions: string
+}
 
-      @description('Required. The member name of a group obtained from the remote resource that this private endpoint should connect to.')
-      memberName: string
+type accessPolicyAssignmentType = {
+  @description('Optional. The name of the Access Policy Assignment.')
+  name: string?
+  @description('Required. Object id to which the access policy will be assigned.')
+  objectId: string
+  @description('Required. Alias for the target object id.')
+  objectIdAlias: string
+  @description('Required. Name of the access policy to be assigned.')
+  accessPolicyName: string
+}
 
-      @description('Required. A private IP address obtained from the private endpoint\'s subnet.')
-      privateIPAddress: string
-    }
-  }[]?
+@export()
+type secretsExportConfigurationType = {
+  @description('Required. The resource ID of the key vault where to store the secrets of this module.')
+  keyVaultResourceId: string
 
-  @description('Optional. Application security groups in which the private endpoint IP configuration is included.')
-  applicationSecurityGroupResourceIds: string[]?
+  @description('Optional. The primaryAccessKey secret name to create.')
+  primaryAccessKeyName: string?
 
-  @description('Optional. The custom name of the network interface attached to the private endpoint.')
-  customNetworkInterfaceName: string?
+  @description('Optional. The primaryConnectionString secret name to create.')
+  primaryConnectionStringName: string?
 
-  @description('Optional. Specify the type of lock.')
-  lock: lockType
+  @description('Optional. The primaryStackExchangeRedisConnectionString secret name to create.')
+  primaryStackExchangeRedisConnectionStringName: string?
 
-  @description('Optional. Array of role assignments to create.')
-  roleAssignments: roleAssignmentType
+  @description('Optional. The secondaryAccessKey secret name to create.')
+  secondaryAccessKeyName: string?
 
-  @description('Optional. Tags to be applied on all resources/resource groups in this deployment.')
-  tags: object?
+  @description('Optional. The secondaryConnectionString secret name to create.')
+  secondaryConnectionStringName: string?
 
-  @description('Optional. Enable/Disable usage telemetry for module.')
-  enableTelemetry: bool?
+  @description('Optional. The secondaryStackExchangeRedisConnectionString secret name to create.')
+  secondaryStackExchangeRedisConnectionStringName: string?
+}
 
-  @description('Optional. Specify if you want to deploy the Private Endpoint into a different resource group than the main resource.')
-  resourceGroupName: string?
-}[]?
+@export()
+@description('The type of a firewall rule.')
+type firewallRuleType = {
+  @description('Required. The name of the Redis Cache Firewall Rule.')
+  name: string
 
-type roleAssignmentType = {
-  @description('Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: \'/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11\'.')
-  roleDefinitionIdOrName: string
+  @description('Required. The start IP address of the firewall rule. Must be IPv4 format. Use value \'0.0.0.0\' for all Azure-internal IP addresses.')
+  startIP: string
 
-  @description('Required. The principal ID of the principal (user/group/identity) to assign the role to.')
-  principalId: string
+  @description('Required. The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value \'0.0.0.0\' for all Azure-internal IP addresses.')
+  endIP: string
+}
 
-  @description('Optional. The principal type of the assigned principal ID.')
-  principalType: ('ServicePrincipal' | 'Group' | 'User' | 'ForeignGroup' | 'Device')?
-
-  @description('Optional. The description of the role assignment.')
-  description: string?
-
-  @description('Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase "foo_storage_container".')
-  condition: string?
-
-  @description('Optional. Version of the condition.')
-  conditionVersion: '2.0'?
-
-  @description('Optional. The Resource Id of the delegated managed identity resource.')
-  delegatedManagedIdentityResourceId: string?
-}[]?
-
-type diagnosticSettingType = {
-  @description('Optional. The name of diagnostic setting.')
+@export()
+@description('The type of a linked server for geo-replication.')
+type geoReplicationType = {
+  @description('Optional. The name of the secondary Redis cache. If not provided, the primary Redis cache name is used.')
   name: string?
 
-  @description('Optional. The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to `[]` to disable log collection.')
-  logCategoriesAndGroups: {
-    @description('Optional. Name of a Diagnostic Log category for a resource type this setting is applied to. Set the specific logs to collect here.')
-    category: string?
+  @description('Required. The resource ID of the linked server.')
+  linkedRedisCacheResourceId: string
 
-    @description('Optional. Name of a Diagnostic Log category group for a resource type this setting is applied to. Set to `allLogs` to collect all logs.')
-    categoryGroup: string?
-
-    @description('Optional. Enable or disable the category explicitly. Default is `true`.')
-    enabled: bool?
-  }[]?
-
-  @description('Optional. The name of metrics that will be streamed. "allMetrics" includes all possible metrics for the resource. Set to `[]` to disable metric collection.')
-  metricCategories: {
-    @description('Required. Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to `AllMetrics` to collect all metrics.')
-    category: string
-
-    @description('Optional. Enable or disable the category explicitly. Default is `true`.')
-    enabled: bool?
-  }[]?
-
-  @description('Optional. A string indicating whether the export to Log Analytics should use the default destination type, i.e. AzureDiagnostics, or use a destination type.')
-  logAnalyticsDestinationType: ('Dedicated' | 'AzureDiagnostics')?
-
-  @description('Optional. Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.')
-  workspaceResourceId: string?
-
-  @description('Optional. Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.')
-  storageAccountResourceId: string?
-
-  @description('Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to.')
-  eventHubAuthorizationRuleResourceId: string?
-
-  @description('Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.')
-  eventHubName: string?
-
-  @description('Optional. The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs.')
-  marketplacePartnerResourceId: string?
-}[]?
+  @description('Optional. The location of the linked server. If not provided, the location of the primary Redis cache is used.')
+  linkedRedisCacheLocation: string?
+}

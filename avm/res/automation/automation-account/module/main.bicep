@@ -1,6 +1,5 @@
 metadata name = 'Automation Account Modules'
 metadata description = 'This module deploys an Azure Automation Account Module.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. Name of the Automation Account module.')
 param name string
@@ -20,11 +19,11 @@ param location string = resourceGroup().location
 @description('Optional. Tags of the Automation Account resource.')
 param tags object?
 
-resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' existing = {
+resource automationAccount 'Microsoft.Automation/automationAccounts@2024-10-23' existing = {
   name: automationAccountName
 }
 
-resource module 'Microsoft.Automation/automationAccounts/modules@2022-08-08' = {
+resource module 'Microsoft.Automation/automationAccounts/modules@2024-10-23' = {
   name: name
   parent: automationAccount
   location: location

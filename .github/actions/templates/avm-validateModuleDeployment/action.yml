@@ -14,13 +14,13 @@
 ##   |======================================================================================================================================================================================|
 ##   | Parameter                  | Required | Default | Description                                           | Example                                                                    |
 ##   |----------------------------|----------|---------|-------------------------------------------------------|----------------------------------------------------------------------------|
-##   | modulePath                 | true     | ''      | The path to the module file directory                 | 'modules/api-management/service/main.bicep'
-##   | templateFilePath           | true     | ''      | The path to the template file to use for deployment   | 'modules/api-management/service/tests/e2e/maix/main.test.bicep'                                |
+##   | modulePath                 | true     | ''      | The path to the module file directory                 | 'modules/api-management/service/main.bicep'                                |
+##   | templateFilePath           | true     | ''      | The path to the template file to use for deployment   | 'modules/api-management/service/tests/e2e/maix/main.test.bicep'            |
 ##   | deploymentMetadataLocation | true     | ''      | The location to store the deployment metadata         | 'WestEurope'                                                               |
-##   | subscriptionId             | false    | ''      | The subscriptionId to deploy to                       | '1a97b80a-4dda-4f50-ab53-349e29344654'                                     |
 ##   | managementGroupId          | false    | ''      | The managementGroupId to deploy to                    | '1a97b80a-4dda-4f50-ab53-349e29344654'                                     |
 ##   | customTokens               | false    | ''      | Additional token pairs in json format.                | '{"tokenName":"tokenValue"}'                                               |
 ##   | removeDeployment           | false    | 'true'  | Set "true" to set module up for removal               | 'true'                                                                     |
+##   | customLocation             | false    |         | Custom location overwrite, if needed                  | 'WestEurope'                                                               |
 ##   |======================================================================================================================================================================================|
 ##
 #########################################################
@@ -38,9 +38,6 @@ inputs:
   deploymentMetadataLocation:
     description: "The location to store the deployment metadata"
     required: true
-  subscriptionId:
-    description: "The subscription ID to deploy to"
-    required: false
   managementGroupId:
     description: "The management group ID to deploy to"
     required: false
@@ -51,11 +48,95 @@ inputs:
     description: 'Set "true" to set module up for removal'
     default: "true"
     required: false
+  customLocation:
+    description: "Custom location overwrite, if needed"
+    required: false
+  e2eIgnore:
+    description: "If set to true, the test case deployment tasks will not be processed"
+    default: "false"
+    required: false
 
 runs:
   using: "composite"
   steps:
-    - name: Azure Login
+    # [Deployment validation] task(s)
+    # -------------------------------
+    - name: "Validate Test Execution"
+      uses: azure/powershell@v2
+      with:
+        azPSVersion: "latest"
+        errorActionPreference: "SilentlyContinue"
+        inlineScript: |
+          # Resolve template file path
+          $moduleTestFilePath = Join-Path $env:GITHUB_WORKSPACE '${{ inputs.templateFilePath }}'
+
+          # Check if the deployment test should be bypassed
+          if ('${{ inputs.e2eIgnore }}' -eq 'true') {
+            Write-Warning -Message "File '.e2eignore' exists in the folder: $moduleTestFilePath"
+            Write-Output 'skip_deployment_ci=true' >> $env:GITHUB_ENV
+
+            # Get the reason for skipping the deployment
+            $excludeReason = Get-Content Join-Path $moduleTestFilePath '.e2eignore'
+            excludeMessage = "Skipping deployment for ${{ inputs.templateFilePath }}: $excludeReason"
+
+            Write-Output "Skipping deployment for ${{ inputs.templateFilePath }}: $excludeMessage"
+            Write-Warning "Skipping deployment for ${{ inputs.templateFilePath }}: $excludeMessage"
+          } else {
+            Write-Output "File '.e2eignore' does not exist in the folder: $moduleTestFilePath" -Verbose
+            Write-Output "skip_deployment_ci=false" >> $env:GITHUB_ENV
+          }
+
+    # [Azure login] task(s)
+    # ------------------------------
+    - name: "Set OIDC temporary exception"
+      id: set-oidc-exception
+      if: env.skip_deployment_ci == 'false'
+      uses: azure/powershell@v2
+      with:
+        azPSVersion: "latest"
+        inlineScript: |
+          # Grouping task logs
+          Write-Output '::group::Set OIDC exception'
+
+          # List of modules requiring service principal + secret authentication
+          $modulePath = "${{ inputs.modulePath }}"
+          $exceptionModulePaths = @(
+            'avm/res/azure-stack-hci/cluster'                    # Failing on resource deletion when trying to delete RBAC at subscription level
+            'avm/res/azure-stack-hci/logical-network'            # Failing on resource deletion when trying to delete RBAC at subscription level
+            'avm/res/azure-stack-hci/network-interface'          # Failing on resource deletion when trying to delete RBAC at subscription level
+            'avm/res/azure-stack-hci/virtual-hard-disk'          # Failing on resource deletion when trying to delete RBAC at subscription level
+            'avm/res/azure-stack-hci/virtual-machine-instance'   # Failing on resource deletion when trying to delete RBAC at subscription level
+            'avm/res/compute/image'                              # Failing on resource deletion when trying to delete RBAC at subscription level
+            'avm/res/compute/disk'                               # Failing on resource deletion when trying to delete RBAC at subscription level
+            'avm/res/hybrid-container-service/provisioned-cluster-instance' # Failing on resource deletion when trying to delete RBAC at subscription level
+            'avm/ptn/virtual-machine-images/azure-image-builder' # Failing on resource deletion when trying to delete RBAC at subscription level
+          )
+          if ($exceptionModulePaths.Contains($modulePath)) {
+            $oidcException = 'true'
+            Write-Verbose ('The module [{0}] is in the list of modules temporarily requiring an exception to OIDC.' -f $modulePath) -Verbose
+          } else {
+            $oidcException = 'false'
+            Write-Verbose ('The module [{0}] supports OIDC.' -f $modulePath) -Verbose
+          }
+
+          Write-Output ('{0}={1}' -f 'oidcException', $oidcException) >> $env:GITHUB_OUTPUT
+          Write-Output '::endgroup::'
+
+    # Default: support both OIDC and service principal with secret
+    # 'creds' will be ignored if 'client-id', 'subscription-id' or 'tenant-id' is set
+    - name: "Azure Login - Default"
+      if: ${{ steps.set-oidc-exception.outputs.oidcException == 'false' && env.skip_deployment_ci == 'false' }}
+      uses: azure/login@v2
+      with:
+        client-id: ${{ env.VALIDATE_CLIENT_ID }}
+        tenant-id: ${{ env.VALIDATE_TENANT_ID }}
+        subscription-id: ${{ env.VALIDATE_SUBSCRIPTION_ID }}
+        enable-AzPSSession: true
+
+    # Exception: module requires login by using service principal with secret
+    # Should only be leveraged by modules listed in $exceptionModulePaths above
+    - name: "Azure Login - Exception"
+      if: ${{ steps.set-oidc-exception.outputs.oidcException == 'true'  && env.skip_deployment_ci == 'false'}}
       uses: azure/login@v2
       with:
         creds: ${{ env.AZURE_CREDENTIALS }}
@@ -65,6 +146,7 @@ runs:
     # ---------------------------
     - name: "Get Resource Location"
       id: get-resource-location
+      if: env.skip_deployment_ci == 'false'
       uses: azure/powershell@v2
       with:
         azPSVersion: "latest"
@@ -73,7 +155,7 @@ runs:
           Write-Output '::group::Get Recommended Regions'
 
           # Load used functions
-          . (Join-Path $env:GITHUB_WORKSPACE 'avm' 'utilities' 'pipelines' 'e2eValidation' 'regionSelector' 'Get-AzAvailableResourceLocation.ps1')
+          . (Join-Path $env:GITHUB_WORKSPACE 'utilities' 'pipelines' 'e2eValidation' 'regionSelector' 'Get-AvailableResourceLocation.ps1')
 
           # Set function input parameters
           $functionInput = @{
@@ -84,7 +166,12 @@ runs:
           Write-Verbose "Invoke function with" -Verbose
           Write-Verbose ($functionInput | ConvertTo-Json | Out-String) -Verbose
 
-          $resourceLocation = Get-AzAvailableResourceLocation @functionInput -Verbose
+          if([String]::IsNullOrEmpty('${{ inputs.customLocation }}')) {
+            $resourceLocation = Get-AvailableResourceLocation @functionInput -Verbose
+          } else {
+            $resourceLocation = '${{ inputs.customLocation }}'
+            Write-Verbose 'Using specified location [${{ inputs.customLocation }}]' -Verbose
+          }
 
           Write-Verbose ('{0}-{1}' -f 'resourceLocation', $resourceLocation) -Verbose
           Write-Output ('{0}={1}' -f 'resourceLocation', $resourceLocation) >> $env:GITHUB_OUTPUT
@@ -94,6 +181,7 @@ runs:
     # [Token replacement] task(s)
     # ---------------------------
     - name: "Replace tokens in template file"
+      if: env.skip_deployment_ci == 'false'
       uses: azure/powershell@v2
       with:
         azPSVersion: "latest"
@@ -102,8 +190,8 @@ runs:
           Write-Output '::group::Replace tokens in template file'
 
           # Load used functions
-          . (Join-Path $env:GITHUB_WORKSPACE 'avm' 'utilities' 'pipelines' 'sharedScripts' 'tokenReplacement' 'Convert-TokensInFileList.ps1')
-          . (Join-Path $env:GITHUB_WORKSPACE 'avm' 'utilities' 'pipelines' 'sharedScripts' 'Get-LocallyReferencedFileList.ps1')
+          . (Join-Path $env:GITHUB_WORKSPACE 'utilities' 'pipelines' 'sharedScripts' 'tokenReplacement' 'Convert-TokensInFileList.ps1')
+          . (Join-Path $env:GITHUB_WORKSPACE 'utilities' 'pipelines' 'sharedScripts' 'Get-LocallyReferencedFileList.ps1')
 
           $templateFilePath = Join-Path $env:GITHUB_WORKSPACE '${{ inputs.templateFilePath }}'
 
@@ -124,9 +212,9 @@ runs:
 
           # Add enforced tokens
           $ConvertTokensInputs.Tokens += @{
-            subscriptionId    = '${{ inputs.subscriptionId }}'
+            subscriptionId    = '${{ env.VALIDATE_SUBSCRIPTION_ID }}'
             managementGroupId = '${{ inputs.managementGroupId }}'
-            tenantId          = '${{ env.ARM_TENANT_ID }}'
+            tenantId          = '${{ env.VALIDATE_TENANT_ID }}'
           }
 
           # Add local (source control) tokens
@@ -157,9 +245,8 @@ runs:
 
           Write-Output '::endgroup::'
 
-    # [Deployment validation] task(s)
-    # -------------------------------
     - name: "Validate template file"
+      if: env.skip_deployment_ci == 'false'
       uses: azure/powershell@v2
       with:
         azPSVersion: "latest"
@@ -168,12 +255,12 @@ runs:
           Write-Output '::group::Validate template file'
 
           # Load used functions
-          . (Join-Path $env:GITHUB_WORKSPACE 'avm' 'utilities' 'pipelines' 'e2eValidation' 'resourceDeployment' 'Test-TemplateDeployment.ps1')
+          . (Join-Path $env:GITHUB_WORKSPACE 'utilities' 'pipelines' 'e2eValidation' 'resourceDeployment' 'Test-TemplateDeployment.ps1')
 
           # Prepare general parameters
           # --------------------------
           # Fetching parameters
-          $subscriptionId = '${{ inputs.subscriptionId }}'
+          $subscriptionId = '${{ env.VALIDATE_SUBSCRIPTION_ID }}'
           $managementGroupId = '${{ inputs.managementGroupId }}'
 
           # Resolve template file path
@@ -196,8 +283,36 @@ runs:
             SubscriptionId             = $subscriptionId
             ManagementGroupId          = $managementGroupId
             RepoRoot                   = $env:GITHUB_WORKSPACE
-            AdditionalParameters       = @{
+            AdditionalParameters       = @{}
+          }
+
+          # Add custom parameters as needed
+          if($moduleTemplatePossibleParameters -contains 'resourceLocation') {
+            $functionInput.AdditionalParameters += @{
               resourceLocation = '${{ steps.get-resource-location.outputs.resourceLocation }}'
+            }
+          }
+          if($moduleTemplatePossibleParameters -contains 'baseTime') {
+            $functionInput.AdditionalParameters += @{
+              baseTime = (Get-Date).ToString('u') # Setting base time explicitly so that any potential retry will reuse the same timestamp
+            }
+          }
+
+          # Fetch & add custom secrets, if any
+          # -----------------------------------
+          $keyVaultName = "${{ env.CI_KEY_VAULT_NAME }}"
+          if(-not [String]::IsNullOrEmpty($keyVaultName)) {
+            # Note: This action requires at least 'Key Vault Secrets User' permissions
+            $customKeyVaultSecrets = Get-AzKeyVaultSecret -VaultName $keyVaultName | Where-Object { $_.Name -match '^CI-.+' }
+
+            foreach($customSecret in $customKeyVaultSecrets) {
+              $formattedName = $customSecret.Name -replace '^CI-' # e.g. 'CI-mySecret' -> 'mySecret'
+              if($moduleTemplatePossibleParameters -contains $formattedName) {
+                Write-Verbose ('Setting value for parameter [{0}]' -f $formattedName) -Verbose
+                $functionInput.AdditionalParameters += @{
+                  $formattedName = (Get-AzKeyVaultSecret -VaultName $keyVaultName -Name $customSecret.Name).SecretValue
+                }
+              }
             }
           }
 
@@ -211,6 +326,7 @@ runs:
     # [Deployment execution] task(s)
     # ------------------------------
     - name: "Deploy template file"
+      if: env.skip_deployment_ci == 'false'
       id: deploy_step
       uses: azure/powershell@v2
       with:
@@ -220,11 +336,11 @@ runs:
           Write-Output '::group::Deploy template file'
 
           # Load used functions
-          . (Join-Path $env:GITHUB_WORKSPACE 'avm' 'utilities' 'pipelines' 'e2eValidation' 'resourceDeployment' 'New-TemplateDeployment.ps1')
+          . (Join-Path $env:GITHUB_WORKSPACE 'utilities' 'pipelines' 'e2eValidation' 'resourceDeployment' 'New-TemplateDeployment.ps1')
 
           # Prepare general parameters
           # --------------------------
-          $subscriptionId = '${{ inputs.subscriptionId }}'
+          $subscriptionId = '${{ env.VALIDATE_SUBSCRIPTION_ID }}'
           $managementGroupId = '${{ inputs.managementGroupId }}'
 
           # Resolve template file path
@@ -248,8 +364,35 @@ runs:
             ManagementGroupId          = $managementGroupId
             DoNotThrow                 = $true
             RepoRoot                   = $env:GITHUB_WORKSPACE
-            AdditionalParameters       = @{
+            AdditionalParameters       = @{}
+          }
+
+          if($moduleTemplatePossibleParameters -contains 'resourceLocation') {
+            $functionInput.AdditionalParameters += @{
               resourceLocation = '${{ steps.get-resource-location.outputs.resourceLocation }}'
+            }
+          }
+          if($moduleTemplatePossibleParameters -contains 'baseTime') {
+            $functionInput.AdditionalParameters += @{
+              baseTime = (Get-Date).ToString('u') # Setting base time explicitly so that any potential retry will reuse the same timestamp
+            }
+          }
+
+          # Fetch & add custom secrets, if any
+          # -----------------------------------
+          $keyVaultName = "${{ env.CI_KEY_VAULT_NAME }}"
+          if(-not [String]::IsNullOrEmpty($keyVaultName)) {
+            # Note: This action requires at least 'Key Vault Secrets User' permissions
+            $customKeyVaultSecrets = Get-AzKeyVaultSecret -VaultName $keyVaultName | Where-Object { $_.Name -match '^CI-.+' }
+
+            foreach($customSecret in $customKeyVaultSecrets) {
+              $formattedName = $customSecret.Name -replace '^CI-' # e.g. 'CI-mySecret' -> 'mySecret'
+              if($moduleTemplatePossibleParameters -contains $formattedName) {
+                Write-Verbose ('Setting value for parameter [{0}]' -f $formattedName) -Verbose
+                $functionInput.AdditionalParameters += @{
+                  $formattedName = (Get-AzKeyVaultSecret -VaultName $keyVaultName -Name $customSecret.Name).SecretValue
+                }
+              }
             }
           }
 
@@ -263,7 +406,7 @@ runs:
           Write-Output ('{0}={1}' -f 'deploymentNames', ($res.deploymentNames | ConvertTo-Json -Compress)) >> $env:GITHUB_OUTPUT
 
           # Populate further outputs
-          $deploymentOutput = $res.deploymentOutput | ConvertTo-Json -Depth 99 -Compress
+          $deploymentOutput = ($res.deploymentOutput | ConvertTo-Json -Depth 99 -Compress) -replace "'", "''" # Escaping single quotes for resilient access in subsequent steps
           Write-Output ('{0}={1}' -f 'deploymentOutput', $deploymentOutput) >> $env:GITHUB_OUTPUT
 
           Write-Verbose "Deployment output: $deploymentOutput" -Verbose
@@ -275,9 +418,32 @@ runs:
 
           Write-Output '::endgroup::'
 
+    # [Azure login] task(s)
+    # ------------------------------
+    # Default: support both OIDC and service principal with secret
+    # 'creds' will be ignored if 'client-id', 'subscription-id' or 'tenant-id' is set
+    - name: "Azure Login - Default"
+      if: ${{ steps.set-oidc-exception.outputs.oidcException == 'false' && env.skip_deployment_ci == 'false' }}
+      uses: azure/login@v2
+      with:
+        client-id: ${{ env.VALIDATE_CLIENT_ID }}
+        tenant-id: ${{ env.VALIDATE_TENANT_ID }}
+        subscription-id: ${{ env.VALIDATE_SUBSCRIPTION_ID }}
+        enable-AzPSSession: true
+
+    # Exception: module requires login by using service principal with secret
+    # Should only be leveraged by modules listed in $exceptionModulePaths above
+    - name: "Azure Login - Exception"
+      if: ${{ steps.set-oidc-exception.outputs.oidcException == 'true'  && env.skip_deployment_ci == 'false'}}
+      uses: azure/login@v2
+      with:
+        creds: ${{ env.AZURE_CREDENTIALS }}
+        enable-AzPSSession: true
+
     # [Post-Deployment test] task(s)
     # ------------------------------
     - name: "Run post-deployment Pester tests"
+      if: env.skip_deployment_ci == 'false'
       id: pester_run_step
       shell: pwsh
       run: |
@@ -285,7 +451,7 @@ runs:
         Write-Output '::group::Run Pester tests'
 
         # Load used functions
-        . (Join-Path $env:GITHUB_WORKSPACE 'avm' 'utilities' 'pipelines' 'staticValidation' 'compliance' 'Set-PesterGitHubOutput.ps1')
+        . (Join-Path $env:GITHUB_WORKSPACE 'utilities' 'pipelines' 'staticValidation' 'compliance' 'Set-PesterGitHubOutput.ps1')
 
         # Set repo root path
         $repoRootPath = $env:GITHUB_WORKSPACE
@@ -346,8 +512,9 @@ runs:
           Write-Verbose 'Found no Pester test files (*.test.ps1) in test folder' -Verbose
           Write-Output ('{0}={1}' -f 'formattedPesterResultsPath', '') >> $env:GITHUB_OUTPUT
         }
+
     - name: "Output to GitHub job summaries"
-      if: steps.pester_run_step.outputs.formattedPesterResultsPath != ''
+      if: env.skip_deployment_ci == 'false' && steps.pester_run_step.outputs.formattedPesterResultsPath != ''
       shell: pwsh
       run: |
         # Grouping task logs
@@ -367,7 +534,7 @@ runs:
     # [Deployment removal] task(s)
     # ----------------------------
     - name: "Remove deployed resources"
-      if: ${{ (success() || failure()) && inputs.removeDeployment == 'true' && steps.deploy_step.outputs.deploymentNames != '' }}
+      if: ${{ (success() || failure()) && inputs.removeDeployment == 'true' && steps.deploy_step.outputs.deploymentNames != '' && env.skip_deployment_ci == 'false' }}
       uses: azure/powershell@v2
       with:
         azPSVersion: "latest"
@@ -376,7 +543,7 @@ runs:
           Write-Output '::group::Remove deployed resources'
 
           # Load used function
-          . (Join-Path $env:GITHUB_WORKSPACE 'avm' 'utilities' 'pipelines' 'e2eValidation' 'resourceRemoval' 'Initialize-DeploymentRemoval.ps1')
+          . (Join-Path $env:GITHUB_WORKSPACE 'utilities' 'pipelines' 'e2eValidation' 'resourceRemoval' 'Initialize-DeploymentRemoval.ps1')
 
           $functionInput = @{
             TemplateFilePath  = Join-Path $env:GITHUB_WORKSPACE '${{ inputs.templateFilePath }}'
@@ -384,8 +551,8 @@ runs:
             ManagementGroupId = '${{ inputs.managementGroupId }}'
           }
 
-          if (-not [String]::IsNullOrEmpty('${{ inputs.subscriptionId }}')) {
-              $functionInput['SubscriptionId'] = '${{ inputs.subscriptionId }}'
+          if (-not [String]::IsNullOrEmpty('${{ env.VALIDATE_SUBSCRIPTION_ID }}')) {
+              $functionInput['SubscriptionId'] = '${{ env.VALIDATE_SUBSCRIPTION_ID }}'
           }
 
           Write-Verbose 'Invoke task with' -Verbose

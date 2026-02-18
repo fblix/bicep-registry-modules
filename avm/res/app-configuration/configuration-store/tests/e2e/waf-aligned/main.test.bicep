@@ -20,20 +20,23 @@ param serviceShort string = 'accwaf'
 @description('Optional. A token to inject into the name of each resource.')
 param namePrefix string = '#_namePrefix_#'
 
+@description('Optional. Disables all authentication methods other than AAD authentication.')
+param disableLocalAuth bool = false
+
 // ============ //
 // Dependencies //
 // ============ //
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -41,7 +44,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -56,8 +58,13 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
+      disableLocalAuth: disableLocalAuth
       createMode: 'Default'
+      replicaLocations: [
+        { replicaLocation: 'centralus' }
+        { replicaLocation: 'westus' }
+      ]
+      enablePurgeProtection: false //Only for Testing purposes. Waf Aligned is true
       diagnosticSettings: [
         {
           eventHubName: diagnosticDependencies.outputs.eventHubNamespaceEventHubName
@@ -66,8 +73,6 @@ module testDeployment '../../../main.bicep' = [
           workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
         }
       ]
-      disableLocalAuth: false
-      enablePurgeProtection: false
       keyValues: [
         {
           contentType: 'contentType'

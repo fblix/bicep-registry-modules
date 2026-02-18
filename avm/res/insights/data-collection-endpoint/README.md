@@ -2,6 +2,14 @@
 
 This module deploys a Data Collection Endpoint.
 
+You can reference the module as follows:
+```bicep
+module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoint:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
@@ -13,11 +21,11 @@ This module deploys a Data Collection Endpoint.
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Insights/dataCollectionEndpoints` | [2021-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-04-01/dataCollectionEndpoints) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.Insights/dataCollectionEndpoints` | 2023-03-11 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.insights_datacollectionendpoints.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2023-03-11/dataCollectionEndpoints)</li></ul> |
 
 ## Usage examples
 
@@ -35,6 +43,8 @@ The following section provides usage examples for the module, which were used to
 
 This instance deploys the module with the minimum set of required parameters.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
 
 <details>
 
@@ -42,7 +52,6 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoint:<version>' = {
-  name: 'dataCollectionEndpointDeployment'
   params: {
     // Required parameters
     name: 'idcemin001'
@@ -57,7 +66,7 @@ module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoi
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -79,9 +88,27 @@ module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoi
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/data-collection-endpoint:<version>'
+
+// Required parameters
+param name = 'idcemin001'
+// Non-required parameters
+param location = '<location>'
+```
+
+</details>
+<p>
+
 ### Example 2: _Using large parameter set_
 
 This instance deploys the module with most of its features enabled.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
 
 
 <details>
@@ -90,11 +117,11 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoint:<version>' = {
-  name: 'dataCollectionEndpointDeployment'
   params: {
     // Required parameters
     name: 'idcemax001'
     // Non-required parameters
+    description: 'This is a test data collection endpoint.'
     kind: 'Windows'
     location: '<location>'
     lock: {
@@ -104,11 +131,13 @@ module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoi
     publicNetworkAccess: 'Enabled'
     roleAssignments: [
       {
+        name: 'db496446-89ac-4d91-a189-71544de0150a'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -133,7 +162,7 @@ module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoi
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -145,6 +174,9 @@ module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoi
       "value": "idcemax001"
     },
     // Non-required parameters
+    "description": {
+      "value": "This is a test data collection endpoint."
+    },
     "kind": {
       "value": "Windows"
     },
@@ -163,11 +195,13 @@ module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoi
     "roleAssignments": {
       "value": [
         {
+          "name": "db496446-89ac-4d91-a189-71544de0150a",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -193,9 +227,58 @@ module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoi
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/data-collection-endpoint:<version>'
+
+// Required parameters
+param name = 'idcemax001'
+// Non-required parameters
+param description = 'This is a test data collection endpoint.'
+param kind = 'Windows'
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param publicNetworkAccess = 'Enabled'
+param roleAssignments = [
+  {
+    name: 'db496446-89ac-4d91-a189-71544de0150a'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param tags = {
+  'hidden-title': 'This is visible in the resource name'
+  kind: 'Windows'
+  resourceType: 'Data Collection Rules'
+}
+```
+
+</details>
+<p>
+
 ### Example 3: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -204,7 +287,6 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoint:<version>' = {
-  name: 'dataCollectionEndpointDeployment'
   params: {
     // Required parameters
     name: 'idcewaf001'
@@ -226,7 +308,7 @@ module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoi
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -261,6 +343,28 @@ module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoi
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/data-collection-endpoint:<version>'
+
+// Required parameters
+param name = 'idcewaf001'
+// Non-required parameters
+param kind = 'Windows'
+param location = '<location>'
+param publicNetworkAccess = 'Disabled'
+param tags = {
+  'hidden-title': 'This is visible in the resource name'
+  kind: 'Windows'
+  resourceType: 'Data Collection Rules'
+}
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -274,6 +378,7 @@ module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoi
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
+| [`description`](#parameter-description) | string | Description of the data collection endpoint. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`kind`](#parameter-kind) | string | The kind of the resource. |
 | [`location`](#parameter-location) | string | Location for all Resources. |
@@ -287,6 +392,13 @@ module dataCollectionEndpoint 'br/public:avm/res/insights/data-collection-endpoi
 The name of the data collection endpoint. The name is case insensitive.
 
 - Required: Yes
+- Type: string
+
+### Parameter: `description`
+
+Description of the data collection endpoint.
+
+- Required: No
 - Type: string
 
 ### Parameter: `enableTelemetry`
@@ -333,6 +445,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -356,6 +469,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `publicNetworkAccess`
 
 The configuration to set whether network access from public internet to the endpoints are allowed.
@@ -368,6 +488,7 @@ The configuration to set whether network access from public internet to the endp
   [
     'Disabled'
     'Enabled'
+    'SecuredByPerimeter'
   ]
   ```
 
@@ -377,6 +498,12 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -393,6 +520,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -443,6 +571,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -467,7 +602,6 @@ Resource tags.
 - Required: No
 - Type: object
 
-
 ## Outputs
 
 | Output | Type | Description |
@@ -479,8 +613,13 @@ Resource tags.
 
 ## Cross-referenced modules
 
-_None_
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.3.0` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.0` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

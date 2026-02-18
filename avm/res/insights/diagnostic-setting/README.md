@@ -2,20 +2,27 @@
 
 This module deploys a Subscription wide export of the Activity Log.
 
+You can reference the module as follows:
+```bicep
+module diagnosticSetting 'br/public:avm/res/insights/diagnostic-setting:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
 - [Usage examples](#Usage-examples)
 - [Parameters](#Parameters)
 - [Outputs](#Outputs)
-- [Cross-referenced modules](#Cross-referenced-modules)
 - [Data Collection](#Data-Collection)
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Insights/diagnosticSettings` | 2021-05-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.insights_diagnosticsettings.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings)</li></ul> |
 
 ## Usage examples
 
@@ -33,6 +40,8 @@ The following section provides usage examples for the module, which were used to
 
 This instance deploys the module with the minimum set of required parameters.
 
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
+
 
 <details>
 
@@ -40,7 +49,6 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module diagnosticSetting 'br/public:avm/res/insights/diagnostic-setting:<version>' = {
-  name: 'diagnosticSettingDeployment'
   params: {
     location: '<location>'
     name: 'idsmin001'
@@ -54,7 +62,7 @@ module diagnosticSetting 'br/public:avm/res/insights/diagnostic-setting:<version
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -77,9 +85,26 @@ module diagnosticSetting 'br/public:avm/res/insights/diagnostic-setting:<version
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/diagnostic-setting:<version>'
+
+param location = '<location>'
+param name = 'idsmin001'
+param workspaceResourceId = '<workspaceResourceId>'
+```
+
+</details>
+<p>
+
 ### Example 2: _Using large parameter set_
 
 This instance deploys the module with most of its features enabled.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
 
 
 <details>
@@ -88,7 +113,6 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module diagnosticSetting 'br/public:avm/res/insights/diagnostic-setting:<version>' = {
-  name: 'diagnosticSettingDeployment'
   params: {
     eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
     eventHubName: '<eventHubName>'
@@ -110,7 +134,7 @@ module diagnosticSetting 'br/public:avm/res/insights/diagnostic-setting:<version
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -149,9 +173,34 @@ module diagnosticSetting 'br/public:avm/res/insights/diagnostic-setting:<version
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/diagnostic-setting:<version>'
+
+param eventHubAuthorizationRuleResourceId = '<eventHubAuthorizationRuleResourceId>'
+param eventHubName = '<eventHubName>'
+param location = '<location>'
+param metricCategories = [
+  {
+    category: 'AllMetrics'
+  }
+]
+param name = 'idsmax001'
+param storageAccountResourceId = '<storageAccountResourceId>'
+param workspaceResourceId = '<workspaceResourceId>'
+```
+
+</details>
+<p>
+
 ### Example 3: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
 
 
 <details>
@@ -160,7 +209,6 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module diagnosticSetting 'br/public:avm/res/insights/diagnostic-setting:<version>' = {
-  name: 'diagnosticSettingDeployment'
   params: {
     eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
     eventHubName: '<eventHubName>'
@@ -182,7 +230,7 @@ module diagnosticSetting 'br/public:avm/res/insights/diagnostic-setting:<version
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -221,6 +269,28 @@ module diagnosticSetting 'br/public:avm/res/insights/diagnostic-setting:<version
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/insights/diagnostic-setting:<version>'
+
+param eventHubAuthorizationRuleResourceId = '<eventHubAuthorizationRuleResourceId>'
+param eventHubName = '<eventHubName>'
+param location = '<location>'
+param metricCategories = [
+  {
+    category: 'AllMetrics'
+  }
+]
+param name = 'idswaf001'
+param storageAccountResourceId = '<storageAccountResourceId>'
+param workspaceResourceId = '<workspaceResourceId>'
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -384,7 +454,6 @@ Resource ID of the diagnostic log analytics workspace.
 - Required: No
 - Type: string
 
-
 ## Outputs
 
 | Output | Type | Description |
@@ -393,10 +462,6 @@ Resource ID of the diagnostic log analytics workspace.
 | `resourceId` | string | The resource ID of the diagnostic settings. |
 | `subscriptionName` | string | The name of the subscription to deploy into. |
 
-## Cross-referenced modules
-
-_None_
-
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

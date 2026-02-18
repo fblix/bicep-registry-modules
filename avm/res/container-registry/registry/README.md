@@ -2,6 +2,14 @@
 
 This module deploys an Azure Container Registry (ACR).
 
+You can reference the module as follows:
+```bicep
+module registry 'br/public:avm/res/container-registry/registry:<version>' = {
+  params: { (...) }
+}
+```
+For examples, please refer to the [Usage Examples](#usage-examples) section.
+
 ## Navigation
 
 - [Resource Types](#Resource-Types)
@@ -13,17 +21,19 @@ This module deploys an Azure Container Registry (ACR).
 
 ## Resource Types
 
-| Resource Type | API Version |
-| :-- | :-- |
-| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
-| `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.ContainerRegistry/registries` | [2023-06-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/registries) |
-| `Microsoft.ContainerRegistry/registries/cacheRules` | [2023-06-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/registries/cacheRules) |
-| `Microsoft.ContainerRegistry/registries/replications` | [2023-06-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/registries/replications) |
-| `Microsoft.ContainerRegistry/registries/webhooks` | [2023-06-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/registries/webhooks) |
-| `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
-| `Microsoft.Network/privateEndpoints` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints) |
-| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/privateEndpoints/privateDnsZoneGroups) |
+| Resource Type | API Version | References |
+| :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
+| `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
+| `Microsoft.ContainerRegistry/registries` | 2025-03-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.containerregistry_registries.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/2025-03-01-preview/registries)</li></ul> |
+| `Microsoft.ContainerRegistry/registries/cacheRules` | 2023-06-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.containerregistry_registries_cacherules.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/2023-06-01-preview/registries/cacheRules)</li></ul> |
+| `Microsoft.ContainerRegistry/registries/credentialSets` | 2023-11-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.containerregistry_registries_credentialsets.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/2023-11-01-preview/registries/credentialSets)</li></ul> |
+| `Microsoft.ContainerRegistry/registries/replications` | 2023-06-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.containerregistry_registries_replications.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/2023-06-01-preview/registries/replications)</li></ul> |
+| `Microsoft.ContainerRegistry/registries/scopeMaps` | 2023-06-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.containerregistry_registries_scopemaps.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/2023-06-01-preview/registries/scopeMaps)</li></ul> |
+| `Microsoft.ContainerRegistry/registries/webhooks` | 2023-06-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.containerregistry_registries_webhooks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/2023-06-01-preview/registries/webhooks)</li></ul> |
+| `Microsoft.Insights/diagnosticSettings` | 2021-05-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.insights_diagnosticsettings.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings)</li></ul> |
+| `Microsoft.Network/privateEndpoints` | 2024-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/privateEndpoints)</li></ul> |
+| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | 2024-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints_privatednszonegroups.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/privateEndpoints/privateDnsZoneGroups)</li></ul> |
 
 ## Usage examples
 
@@ -36,11 +46,14 @@ The following section provides usage examples for the module, which were used to
 - [Using only defaults](#example-1-using-only-defaults)
 - [Using encryption with Customer-Managed-Key](#example-2-using-encryption-with-customer-managed-key)
 - [Using large parameter set](#example-3-using-large-parameter-set)
-- [WAF-aligned](#example-4-waf-aligned)
+- [Using `scopeMaps` in parameter set](#example-4-using-scopemaps-in-parameter-set)
+- [WAF-aligned](#example-5-waf-aligned)
 
 ### Example 1: _Using only defaults_
 
 This instance deploys the module with the minimum set of required parameters.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
 
 
 <details>
@@ -49,7 +62,6 @@ This instance deploys the module with the minimum set of required parameters.
 
 ```bicep
 module registry 'br/public:avm/res/container-registry/registry:<version>' = {
-  name: 'registryDeployment'
   params: {
     // Required parameters
     name: 'crrmin001'
@@ -65,7 +77,7 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -90,9 +102,28 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/container-registry/registry:<version>'
+
+// Required parameters
+param name = 'crrmin001'
+// Non-required parameters
+param acrSku = 'Standard'
+param location = '<location>'
+```
+
+</details>
+<p>
+
 ### Example 2: _Using encryption with Customer-Managed-Key_
 
 This instance deploys the module using Customer-Managed-Keys using a User-Assigned Identity to access the Customer-Managed-Key secret.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/encr]
 
 
 <details>
@@ -101,7 +132,6 @@ This instance deploys the module using Customer-Managed-Keys using a User-Assign
 
 ```bicep
 module registry 'br/public:avm/res/container-registry/registry:<version>' = {
-  name: 'registryDeployment'
   params: {
     // Required parameters
     name: 'crrencr001'
@@ -128,7 +158,7 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -170,9 +200,39 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/container-registry/registry:<version>'
+
+// Required parameters
+param name = 'crrencr001'
+// Non-required parameters
+param acrSku = 'Premium'
+param customerManagedKey = {
+  keyName: '<keyName>'
+  keyVaultResourceId: '<keyVaultResourceId>'
+  userAssignedIdentityResourceId: '<userAssignedIdentityResourceId>'
+}
+param location = '<location>'
+param managedIdentities = {
+  userAssignedResourceIds: [
+    '<managedIdentityResourceId>'
+  ]
+}
+param publicNetworkAccess = 'Disabled'
+```
+
+</details>
+<p>
+
 ### Example 3: _Using large parameter set_
 
 This instance deploys the module with most of its features enabled.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/max]
 
 
 <details>
@@ -181,24 +241,14 @@ This instance deploys the module with most of its features enabled.
 
 ```bicep
 module registry 'br/public:avm/res/container-registry/registry:<version>' = {
-  name: 'registryDeployment'
   params: {
     // Required parameters
     name: 'crrmax001'
     // Non-required parameters
     acrAdminUserEnabled: false
     acrSku: 'Premium'
+    autoGeneratedDomainNameLabelScope: 'SubscriptionReuse'
     azureADAuthenticationAsArmPolicyStatus: 'enabled'
-    cacheRules: [
-      {
-        name: 'customRule'
-        sourceRepository: 'docker.io/library/hello-world'
-        targetRepository: 'cached-docker-hub/hello-world'
-      }
-      {
-        sourceRepository: 'docker.io/library/hello-world'
-      }
-    ]
     diagnosticSettings: [
       {
         eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
@@ -233,9 +283,13 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
     ]
     privateEndpoints: [
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         subnetResourceId: '<subnetResourceId>'
         tags: {
           Environment: 'Non-Prod'
@@ -244,9 +298,13 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
         }
       }
       {
-        privateDnsZoneResourceIds: [
-          '<privateDNSZoneResourceId>'
-        ]
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
         subnetResourceId: '<subnetResourceId>'
       }
     ]
@@ -257,13 +315,16 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
         name: '<name>'
       }
     ]
+    roleAssignmentMode: 'AbacRepositoryPermissions'
     roleAssignments: [
       {
+        name: '8f8b1c39-827f-43e6-a457-98bb15b5dbdf'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Owner'
       }
       {
+        name: '<name>'
         principalId: '<principalId>'
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -297,7 +358,7 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -315,20 +376,11 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
     "acrSku": {
       "value": "Premium"
     },
+    "autoGeneratedDomainNameLabelScope": {
+      "value": "SubscriptionReuse"
+    },
     "azureADAuthenticationAsArmPolicyStatus": {
       "value": "enabled"
-    },
-    "cacheRules": {
-      "value": [
-        {
-          "name": "customRule",
-          "sourceRepository": "docker.io/library/hello-world",
-          "targetRepository": "cached-docker-hub/hello-world"
-        },
-        {
-          "sourceRepository": "docker.io/library/hello-world"
-        }
-      ]
     },
     "diagnosticSettings": {
       "value": [
@@ -377,9 +429,13 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
     "privateEndpoints": {
       "value": [
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "subnetResourceId": "<subnetResourceId>",
           "tags": {
             "Environment": "Non-Prod",
@@ -388,9 +444,13 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
           }
         },
         {
-          "privateDnsZoneResourceIds": [
-            "<privateDNSZoneResourceId>"
-          ],
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
           "subnetResourceId": "<subnetResourceId>"
         }
       ]
@@ -406,14 +466,19 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
         }
       ]
     },
+    "roleAssignmentMode": {
+      "value": "AbacRepositoryPermissions"
+    },
     "roleAssignments": {
       "value": [
         {
+          "name": "8f8b1c39-827f-43e6-a457-98bb15b5dbdf",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "Owner"
         },
         {
+          "name": "<name>",
           "principalId": "<principalId>",
           "principalType": "ServicePrincipal",
           "roleDefinitionIdOrName": "b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -456,9 +521,130 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
 </details>
 <p>
 
-### Example 4: _WAF-aligned_
+<details>
 
-This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/container-registry/registry:<version>'
+
+// Required parameters
+param name = 'crrmax001'
+// Non-required parameters
+param acrAdminUserEnabled = false
+param acrSku = 'Premium'
+param autoGeneratedDomainNameLabelScope = 'SubscriptionReuse'
+param azureADAuthenticationAsArmPolicyStatus = 'enabled'
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    metricCategories: [
+      {
+        category: 'AllMetrics'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param exportPolicyStatus = 'enabled'
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param managedIdentities = {
+  systemAssigned: true
+  userAssignedResourceIds: [
+    '<managedIdentityResourceId>'
+  ]
+}
+param networkRuleSetIpRules = [
+  {
+    action: 'Allow'
+    value: '40.74.28.0/23'
+  }
+]
+param privateEndpoints = [
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    subnetResourceId: '<subnetResourceId>'
+    tags: {
+      Environment: 'Non-Prod'
+      'hidden-title': 'This is visible in the resource name'
+      Role: 'DeploymentValidation'
+    }
+  }
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    subnetResourceId: '<subnetResourceId>'
+  }
+]
+param quarantinePolicyStatus = 'enabled'
+param replications = [
+  {
+    location: '<location>'
+    name: '<name>'
+  }
+]
+param roleAssignmentMode = 'AbacRepositoryPermissions'
+param roleAssignments = [
+  {
+    name: '8f8b1c39-827f-43e6-a457-98bb15b5dbdf'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param softDeletePolicyDays = 7
+param softDeletePolicyStatus = 'disabled'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+param trustPolicyStatus = 'enabled'
+param webhooks = [
+  {
+    name: 'acrx001webhook'
+    serviceUri: 'https://www.contoso.com/webhook'
+  }
+]
+```
+
+</details>
+<p>
+
+### Example 4: _Using `scopeMaps` in parameter set_
+
+This instance deploys the module with the scopeMaps feature.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/scope]
 
 
 <details>
@@ -467,13 +653,112 @@ This instance deploys the module in alignment with the best-practices of the Azu
 
 ```bicep
 module registry 'br/public:avm/res/container-registry/registry:<version>' = {
-  name: 'registryDeployment'
+  params: {
+    // Required parameters
+    name: 'crrs001'
+    // Non-required parameters
+    acrSku: 'Standard'
+    location: '<location>'
+    scopeMaps: [
+      {
+        actions: [
+          'repositories/*/content/read'
+        ]
+        description: 'This is a test for scopeMaps feature.'
+        name: 'testscopemap'
+      }
+    ]
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via JSON parameters file</summary>
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Required parameters
+    "name": {
+      "value": "crrs001"
+    },
+    // Non-required parameters
+    "acrSku": {
+      "value": "Standard"
+    },
+    "location": {
+      "value": "<location>"
+    },
+    "scopeMaps": {
+      "value": [
+        {
+          "actions": [
+            "repositories/*/content/read"
+          ],
+          "description": "This is a test for scopeMaps feature.",
+          "name": "testscopemap"
+        }
+      ]
+    }
+  }
+}
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/container-registry/registry:<version>'
+
+// Required parameters
+param name = 'crrs001'
+// Non-required parameters
+param acrSku = 'Standard'
+param location = '<location>'
+param scopeMaps = [
+  {
+    actions: [
+      'repositories/*/content/read'
+    ]
+    description: 'This is a test for scopeMaps feature.'
+    name: 'testscopemap'
+  }
+]
+```
+
+</details>
+<p>
+
+### Example 5: _WAF-aligned_
+
+This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
+You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/waf-aligned]
+
+
+<details>
+
+<summary>via Bicep module</summary>
+
+```bicep
+module registry 'br/public:avm/res/container-registry/registry:<version>' = {
   params: {
     // Required parameters
     name: 'crrwaf001'
     // Non-required parameters
     acrAdminUserEnabled: false
     acrSku: 'Premium'
+    autoGeneratedDomainNameLabelScope: 'NoReuse'
     azureADAuthenticationAsArmPolicyStatus: 'enabled'
     diagnosticSettings: [
       {
@@ -485,6 +770,18 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
     ]
     exportPolicyStatus: 'enabled'
     location: '<location>'
+    privateEndpoints: [
+      {
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: [
+            {
+              privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+            }
+          ]
+        }
+        subnetResourceId: '<subnetResourceId>'
+      }
+    ]
     quarantinePolicyStatus: 'enabled'
     replications: [
       {
@@ -492,6 +789,7 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
         name: '<name>'
       }
     ]
+    roleAssignmentMode: 'AbacRepositoryPermissions'
     softDeletePolicyDays: 7
     softDeletePolicyStatus: 'disabled'
     tags: {
@@ -509,7 +807,7 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -526,6 +824,9 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
     },
     "acrSku": {
       "value": "Premium"
+    },
+    "autoGeneratedDomainNameLabelScope": {
+      "value": "NoReuse"
     },
     "azureADAuthenticationAsArmPolicyStatus": {
       "value": "enabled"
@@ -546,6 +847,20 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
     "location": {
       "value": "<location>"
     },
+    "privateEndpoints": {
+      "value": [
+        {
+          "privateDnsZoneGroup": {
+            "privateDnsZoneGroupConfigs": [
+              {
+                "privateDnsZoneResourceId": "<privateDnsZoneResourceId>"
+              }
+            ]
+          },
+          "subnetResourceId": "<subnetResourceId>"
+        }
+      ]
+    },
     "quarantinePolicyStatus": {
       "value": "enabled"
     },
@@ -556,6 +871,9 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
           "name": "<name>"
         }
       ]
+    },
+    "roleAssignmentMode": {
+      "value": "AbacRepositoryPermissions"
     },
     "softDeletePolicyDays": {
       "value": 7
@@ -580,6 +898,62 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/container-registry/registry:<version>'
+
+// Required parameters
+param name = 'crrwaf001'
+// Non-required parameters
+param acrAdminUserEnabled = false
+param acrSku = 'Premium'
+param autoGeneratedDomainNameLabelScope = 'NoReuse'
+param azureADAuthenticationAsArmPolicyStatus = 'enabled'
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param exportPolicyStatus = 'enabled'
+param location = '<location>'
+param privateEndpoints = [
+  {
+    privateDnsZoneGroup: {
+      privateDnsZoneGroupConfigs: [
+        {
+          privateDnsZoneResourceId: '<privateDnsZoneResourceId>'
+        }
+      ]
+    }
+    subnetResourceId: '<subnetResourceId>'
+  }
+]
+param quarantinePolicyStatus = 'enabled'
+param replications = [
+  {
+    location: '<location>'
+    name: '<name>'
+  }
+]
+param roleAssignmentMode = 'AbacRepositoryPermissions'
+param softDeletePolicyDays = 7
+param softDeletePolicyStatus = 'disabled'
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+param trustPolicyStatus = 'enabled'
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -596,8 +970,10 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
 | [`acrAdminUserEnabled`](#parameter-acradminuserenabled) | bool | Enable admin user that have push / pull permission to the registry. |
 | [`acrSku`](#parameter-acrsku) | string | Tier of your Azure container registry. |
 | [`anonymousPullEnabled`](#parameter-anonymouspullenabled) | bool | Enables registry-wide pull from unauthenticated clients. It's in preview and available in the Standard and Premium service tiers. |
-| [`azureADAuthenticationAsArmPolicyStatus`](#parameter-azureadauthenticationasarmpolicystatus) | string | The value that indicates whether the policy for using ARM audience token for a container registr is enabled or not. Default is enabled. |
-| [`cacheRules`](#parameter-cacherules) | array | Array of Cache Rules. Note: This is a preview feature ([ref](https://learn.microsoft.com/en-us/azure/container-registry/tutorial-registry-cache#cache-for-acr-preview)). |
+| [`autoGeneratedDomainNameLabelScope`](#parameter-autogenerateddomainnamelabelscope) | string | The domain name label reuse scope. |
+| [`azureADAuthenticationAsArmPolicyStatus`](#parameter-azureadauthenticationasarmpolicystatus) | string | The value that indicates whether the policy for using ARM audience token for a container registry is enabled or not. Default is enabled. |
+| [`cacheRules`](#parameter-cacherules) | array | Array of Cache Rules. |
+| [`credentialSets`](#parameter-credentialsets) | array | Array of Credential Sets. |
 | [`customerManagedKey`](#parameter-customermanagedkey) | object | The customer managed key definition. |
 | [`dataEndpointEnabled`](#parameter-dataendpointenabled) | bool | Enable a single data endpoint per region for serving data. Not relevant in case of disabled public access. Note, requires the 'acrSku' to be 'Premium'. |
 | [`diagnosticSettings`](#parameter-diagnosticsettings) | array | The diagnostic settings of the service. |
@@ -611,15 +987,17 @@ module registry 'br/public:avm/res/container-registry/registry:<version>' = {
 | [`networkRuleSetIpRules`](#parameter-networkrulesetiprules) | array | The IP ACL rules. Note, requires the 'acrSku' to be 'Premium'. |
 | [`privateEndpoints`](#parameter-privateendpoints) | array | Configuration details for private endpoints. For security reasons, it is recommended to use private endpoints whenever possible. Note, requires the 'acrSku' to be 'Premium'. |
 | [`publicNetworkAccess`](#parameter-publicnetworkaccess) | string | Whether or not public network access is allowed for this resource. For security reasons it should be disabled. If not specified, it will be disabled by default if private endpoints are set and networkRuleSetIpRules are not set.  Note, requires the 'acrSku' to be 'Premium'. |
-| [`quarantinePolicyStatus`](#parameter-quarantinepolicystatus) | string | The value that indicates whether the quarantine policy is enabled or not. |
+| [`quarantinePolicyStatus`](#parameter-quarantinepolicystatus) | string | The value that indicates whether the quarantine policy is enabled or not. Note, requires the 'acrSku' to be 'Premium'. |
 | [`replications`](#parameter-replications) | array | All replications to create. |
 | [`retentionPolicyDays`](#parameter-retentionpolicydays) | int | The number of days to retain an untagged manifest after which it gets purged. |
 | [`retentionPolicyStatus`](#parameter-retentionpolicystatus) | string | The value that indicates whether the retention policy is enabled or not. |
+| [`roleAssignmentMode`](#parameter-roleassignmentmode) | string | The registry permissions role assignment mode. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
+| [`scopeMaps`](#parameter-scopemaps) | array | Scope maps setting. |
 | [`softDeletePolicyDays`](#parameter-softdeletepolicydays) | int | The number of days after which a soft-deleted item is permanently deleted. |
 | [`softDeletePolicyStatus`](#parameter-softdeletepolicystatus) | string | Soft Delete policy status. Default is disabled. |
 | [`tags`](#parameter-tags) | object | Tags of the resource. |
-| [`trustPolicyStatus`](#parameter-trustpolicystatus) | string | The value that indicates whether the trust policy is enabled or not. |
+| [`trustPolicyStatus`](#parameter-trustpolicystatus) | string | The value that indicates whether the trust policy is enabled or not. Note, requires the 'acrSku' to be 'Premium'. |
 | [`webhooks`](#parameter-webhooks) | array | All webhooks to create. |
 | [`zoneRedundancy`](#parameter-zoneredundancy) | string | Whether or not zone redundancy is enabled for this container registry. |
 
@@ -644,7 +1022,7 @@ Tier of your Azure container registry.
 
 - Required: No
 - Type: string
-- Default: `'Basic'`
+- Default: `'Premium'`
 - Allowed:
   ```Bicep
   [
@@ -662,9 +1040,26 @@ Enables registry-wide pull from unauthenticated clients. It's in preview and ava
 - Type: bool
 - Default: `False`
 
+### Parameter: `autoGeneratedDomainNameLabelScope`
+
+The domain name label reuse scope.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'NoReuse'
+    'ResourceGroupReuse'
+    'SubscriptionReuse'
+    'TenantReuse'
+    'Unsecure'
+  ]
+  ```
+
 ### Parameter: `azureADAuthenticationAsArmPolicyStatus`
 
-The value that indicates whether the policy for using ARM audience token for a container registr is enabled or not. Default is enabled.
+The value that indicates whether the policy for using ARM audience token for a container registry is enabled or not. Default is enabled.
 
 - Required: No
 - Type: string
@@ -679,10 +1074,143 @@ The value that indicates whether the policy for using ARM audience token for a c
 
 ### Parameter: `cacheRules`
 
-Array of Cache Rules. Note: This is a preview feature ([ref](https://learn.microsoft.com/en-us/azure/container-registry/tutorial-registry-cache#cache-for-acr-preview)).
+Array of Cache Rules.
 
 - Required: No
 - Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`sourceRepository`](#parameter-cacherulessourcerepository) | string | Source repository pulled from upstream. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`credentialSetResourceId`](#parameter-cacherulescredentialsetresourceid) | string | The resource ID of the credential store which is associated with the cache rule. |
+| [`name`](#parameter-cacherulesname) | string | The name of the cache rule. Will be derived from the source repository name if not defined. |
+| [`targetRepository`](#parameter-cacherulestargetrepository) | string | Target repository specified in docker pull command. E.g.: docker pull myregistry.azurecr.io/{targetRepository}:{tag}. |
+
+### Parameter: `cacheRules.sourceRepository`
+
+Source repository pulled from upstream.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `cacheRules.credentialSetResourceId`
+
+The resource ID of the credential store which is associated with the cache rule.
+
+- Required: No
+- Type: string
+
+### Parameter: `cacheRules.name`
+
+The name of the cache rule. Will be derived from the source repository name if not defined.
+
+- Required: No
+- Type: string
+
+### Parameter: `cacheRules.targetRepository`
+
+Target repository specified in docker pull command. E.g.: docker pull myregistry.azurecr.io/{targetRepository}:{tag}.
+
+- Required: No
+- Type: string
+
+### Parameter: `credentialSets`
+
+Array of Credential Sets.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`authCredentials`](#parameter-credentialsetsauthcredentials) | array | List of authentication credentials stored for an upstream. Usually consists of a primary and an optional secondary credential. |
+| [`loginServer`](#parameter-credentialsetsloginserver) | string | The credentials are stored for this upstream or login server. |
+| [`name`](#parameter-credentialsetsname) | string | The name of the credential set. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`managedIdentities`](#parameter-credentialsetsmanagedidentities) | object | The managed identity definition for this resource. |
+
+### Parameter: `credentialSets.authCredentials`
+
+List of authentication credentials stored for an upstream. Usually consists of a primary and an optional secondary credential.
+
+- Required: Yes
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-credentialsetsauthcredentialsname) | string | The name of the credential. |
+| [`passwordSecretIdentifier`](#parameter-credentialsetsauthcredentialspasswordsecretidentifier) | string | KeyVault Secret URI for accessing the password. |
+| [`usernameSecretIdentifier`](#parameter-credentialsetsauthcredentialsusernamesecretidentifier) | string | KeyVault Secret URI for accessing the username. |
+
+### Parameter: `credentialSets.authCredentials.name`
+
+The name of the credential.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `credentialSets.authCredentials.passwordSecretIdentifier`
+
+KeyVault Secret URI for accessing the password.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `credentialSets.authCredentials.usernameSecretIdentifier`
+
+KeyVault Secret URI for accessing the username.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `credentialSets.loginServer`
+
+The credentials are stored for this upstream or login server.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `credentialSets.name`
+
+The name of the credential set.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `credentialSets.managedIdentities`
+
+The managed identity definition for this resource.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`systemAssigned`](#parameter-credentialsetsmanagedidentitiessystemassigned) | bool | Enables system assigned managed identity on the resource. |
+
+### Parameter: `credentialSets.managedIdentities.systemAssigned`
+
+Enables system assigned managed identity on the resource.
+
+- Required: No
+- Type: bool
 
 ### Parameter: `customerManagedKey`
 
@@ -702,7 +1230,8 @@ The customer managed key definition.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`keyVersion`](#parameter-customermanagedkeykeyversion) | string | The version of the customer managed key to reference for encryption. If not provided, using 'latest'. |
+| [`autoRotationEnabled`](#parameter-customermanagedkeyautorotationenabled) | bool | Enable or disable auto-rotating to the latest key version. Default is `true`. If set to `false`, the latest key version at the time of the deployment is used. |
+| [`keyVersion`](#parameter-customermanagedkeykeyversion) | string | The version of the customer managed key to reference for encryption. If not provided, using version as per 'autoRotationEnabled' setting. |
 | [`userAssignedIdentityResourceId`](#parameter-customermanagedkeyuserassignedidentityresourceid) | string | User assigned identity to use when fetching the customer managed key. Required if no system assigned identity is available for use. |
 
 ### Parameter: `customerManagedKey.keyName`
@@ -719,9 +1248,16 @@ The resource ID of a key vault to reference a customer managed key for encryptio
 - Required: Yes
 - Type: string
 
+### Parameter: `customerManagedKey.autoRotationEnabled`
+
+Enable or disable auto-rotating to the latest key version. Default is `true`. If set to `false`, the latest key version at the time of the deployment is used.
+
+- Required: No
+- Type: bool
+
 ### Parameter: `customerManagedKey.keyVersion`
 
-The version of the customer managed key to reference for encryption. If not provided, using 'latest'.
+The version of the customer managed key to reference for encryption. If not provided, using version as per 'autoRotationEnabled' setting.
 
 - Required: No
 - Type: string
@@ -758,7 +1294,7 @@ The diagnostic settings of the service.
 | [`logCategoriesAndGroups`](#parameter-diagnosticsettingslogcategoriesandgroups) | array | The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to `[]` to disable log collection. |
 | [`marketplacePartnerResourceId`](#parameter-diagnosticsettingsmarketplacepartnerresourceid) | string | The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs. |
 | [`metricCategories`](#parameter-diagnosticsettingsmetriccategories) | array | The name of metrics that will be streamed. "allMetrics" includes all possible metrics for the resource. Set to `[]` to disable metric collection. |
-| [`name`](#parameter-diagnosticsettingsname) | string | The name of diagnostic setting. |
+| [`name`](#parameter-diagnosticsettingsname) | string | The name of the diagnostic setting. |
 | [`storageAccountResourceId`](#parameter-diagnosticsettingsstorageaccountresourceid) | string | Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 | [`workspaceResourceId`](#parameter-diagnosticsettingsworkspaceresourceid) | string | Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 
@@ -868,7 +1404,7 @@ Enable or disable the category explicitly. Default is `true`.
 
 ### Parameter: `diagnosticSettings.name`
 
-The name of diagnostic setting.
+The name of the diagnostic setting.
 
 - Required: No
 - Type: string
@@ -931,6 +1467,7 @@ The lock settings of the service.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-lockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-locknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `lock.kind`
 
@@ -954,6 +1491,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `managedIdentities`
 
 The managed identity definition for this resource.
@@ -966,7 +1510,7 @@ The managed identity definition for this resource.
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`systemAssigned`](#parameter-managedidentitiessystemassigned) | bool | Enables system assigned managed identity on the resource. |
-| [`userAssignedResourceIds`](#parameter-managedidentitiesuserassignedresourceids) | array | The resource ID(s) to assign to the resource. |
+| [`userAssignedResourceIds`](#parameter-managedidentitiesuserassignedresourceids) | array | The resource ID(s) to assign to the resource. Required if a user assigned identity is used for encryption. |
 
 ### Parameter: `managedIdentities.systemAssigned`
 
@@ -977,7 +1521,7 @@ Enables system assigned managed identity on the resource.
 
 ### Parameter: `managedIdentities.userAssignedResourceIds`
 
-The resource ID(s) to assign to the resource.
+The resource ID(s) to assign to the resource. Required if a user assigned identity is used for encryption.
 
 - Required: No
 - Type: array
@@ -1036,21 +1580,22 @@ Configuration details for private endpoints. For security reasons, it is recomme
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`applicationSecurityGroupResourceIds`](#parameter-privateendpointsapplicationsecuritygroupresourceids) | array | Application security groups in which the private endpoint IP configuration is included. |
+| [`applicationSecurityGroupResourceIds`](#parameter-privateendpointsapplicationsecuritygroupresourceids) | array | Application security groups in which the Private Endpoint IP configuration is included. |
 | [`customDnsConfigs`](#parameter-privateendpointscustomdnsconfigs) | array | Custom DNS configurations. |
-| [`customNetworkInterfaceName`](#parameter-privateendpointscustomnetworkinterfacename) | string | The custom name of the network interface attached to the private endpoint. |
+| [`customNetworkInterfaceName`](#parameter-privateendpointscustomnetworkinterfacename) | string | The custom name of the network interface attached to the Private Endpoint. |
 | [`enableTelemetry`](#parameter-privateendpointsenabletelemetry) | bool | Enable/Disable usage telemetry for module. |
-| [`ipConfigurations`](#parameter-privateendpointsipconfigurations) | array | A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints. |
+| [`ipConfigurations`](#parameter-privateendpointsipconfigurations) | array | A list of IP configurations of the Private Endpoint. This will be used to map to the first-party Service endpoints. |
 | [`isManualConnection`](#parameter-privateendpointsismanualconnection) | bool | If Manual Private Link Connection is required. |
-| [`location`](#parameter-privateendpointslocation) | string | The location to deploy the private endpoint to. |
+| [`location`](#parameter-privateendpointslocation) | string | The location to deploy the Private Endpoint to. |
 | [`lock`](#parameter-privateendpointslock) | object | Specify the type of lock. |
 | [`manualConnectionRequestMessage`](#parameter-privateendpointsmanualconnectionrequestmessage) | string | A message passed to the owner of the remote resource with the manual connection request. |
-| [`name`](#parameter-privateendpointsname) | string | The name of the private endpoint. |
-| [`privateDnsZoneGroupName`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided. |
-| [`privateDnsZoneResourceIds`](#parameter-privateendpointsprivatednszoneresourceids) | array | The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones. |
+| [`name`](#parameter-privateendpointsname) | string | The name of the Private Endpoint. |
+| [`privateDnsZoneGroup`](#parameter-privateendpointsprivatednszonegroup) | object | The private DNS Zone Group to configure for the Private Endpoint. |
+| [`privateLinkServiceConnectionName`](#parameter-privateendpointsprivatelinkserviceconnectionname) | string | The name of the private link connection to create. |
+| [`resourceGroupResourceId`](#parameter-privateendpointsresourcegroupresourceid) | string | The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used. |
 | [`roleAssignments`](#parameter-privateendpointsroleassignments) | array | Array of role assignments to create. |
-| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the private endpoint for. For example "vault", "mysqlServer" or "dataFactory". |
-| [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/resource groups in this deployment. |
+| [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the Private Endpoint for. For example "vault" for a Key Vault Private Endpoint. |
+| [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/Resource Groups in this deployment. |
 
 ### Parameter: `privateEndpoints.subnetResourceId`
 
@@ -1061,7 +1606,7 @@ Resource ID of the subnet where the endpoint needs to be created.
 
 ### Parameter: `privateEndpoints.applicationSecurityGroupResourceIds`
 
-Application security groups in which the private endpoint IP configuration is included.
+Application security groups in which the Private Endpoint IP configuration is included.
 
 - Required: No
 - Type: array
@@ -1077,15 +1622,13 @@ Custom DNS configurations.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | Fqdn that resolves to private endpoint IP address. |
 | [`ipAddresses`](#parameter-privateendpointscustomdnsconfigsipaddresses) | array | A list of private IP addresses of the private endpoint. |
 
-### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+**Optional parameters**
 
-Fqdn that resolves to private endpoint IP address.
-
-- Required: No
-- Type: string
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`fqdn`](#parameter-privateendpointscustomdnsconfigsfqdn) | string | FQDN that resolves to private endpoint IP address. |
 
 ### Parameter: `privateEndpoints.customDnsConfigs.ipAddresses`
 
@@ -1094,9 +1637,16 @@ A list of private IP addresses of the private endpoint.
 - Required: Yes
 - Type: array
 
+### Parameter: `privateEndpoints.customDnsConfigs.fqdn`
+
+FQDN that resolves to private endpoint IP address.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.customNetworkInterfaceName`
 
-The custom name of the network interface attached to the private endpoint.
+The custom name of the network interface attached to the Private Endpoint.
 
 - Required: No
 - Type: string
@@ -1110,7 +1660,7 @@ Enable/Disable usage telemetry for module.
 
 ### Parameter: `privateEndpoints.ipConfigurations`
 
-A list of IP configurations of the private endpoint. This will be used to map to the First Party Service endpoints.
+A list of IP configurations of the Private Endpoint. This will be used to map to the first-party Service endpoints.
 
 - Required: No
 - Type: array
@@ -1174,7 +1724,7 @@ If Manual Private Link Connection is required.
 
 ### Parameter: `privateEndpoints.location`
 
-The location to deploy the private endpoint to.
+The location to deploy the Private Endpoint to.
 
 - Required: No
 - Type: string
@@ -1192,6 +1742,7 @@ Specify the type of lock.
 | :-- | :-- | :-- |
 | [`kind`](#parameter-privateendpointslockkind) | string | Specify the type of lock. |
 | [`name`](#parameter-privateendpointslockname) | string | Specify the name of lock. |
+| [`notes`](#parameter-privateendpointslocknotes) | string | Specify the notes of the lock. |
 
 ### Parameter: `privateEndpoints.lock.kind`
 
@@ -1215,6 +1766,13 @@ Specify the name of lock.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.lock.notes`
+
+Specify the notes of the lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.manualConnectionRequestMessage`
 
 A message passed to the owner of the remote resource with the manual connection request.
@@ -1224,24 +1782,83 @@ A message passed to the owner of the remote resource with the manual connection 
 
 ### Parameter: `privateEndpoints.name`
 
-The name of the private endpoint.
+The name of the Private Endpoint.
 
 - Required: No
 - Type: string
 
-### Parameter: `privateEndpoints.privateDnsZoneGroupName`
+### Parameter: `privateEndpoints.privateDnsZoneGroup`
 
-The name of the private DNS zone group to create if `privateDnsZoneResourceIds` were provided.
-
-- Required: No
-- Type: string
-
-### Parameter: `privateEndpoints.privateDnsZoneResourceIds`
-
-The private DNS zone groups to associate the private endpoint with. A DNS zone group can support up to 5 DNS zones.
+The private DNS Zone Group to configure for the Private Endpoint.
 
 - Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneGroupConfigs`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigs) | array | The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupname) | string | The name of the Private DNS Zone Group. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs`
+
+The private DNS Zone Groups to associate the Private Endpoint. A DNS Zone Group can support up to 5 DNS zones.
+
+- Required: Yes
 - Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`privateDnsZoneResourceId`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsprivatednszoneresourceid) | string | The resource id of the private DNS zone. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-privateendpointsprivatednszonegroupprivatednszonegroupconfigsname) | string | The name of the private DNS Zone Group config. |
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.privateDnsZoneResourceId`
+
+The resource id of the private DNS zone.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.privateDnsZoneGroupConfigs.name`
+
+The name of the private DNS Zone Group config.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.privateDnsZoneGroup.name`
+
+The name of the Private DNS Zone Group.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.privateLinkServiceConnectionName`
+
+The name of the private link connection to create.
+
+- Required: No
+- Type: string
+
+### Parameter: `privateEndpoints.resourceGroupResourceId`
+
+The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used.
+
+- Required: No
+- Type: string
 
 ### Parameter: `privateEndpoints.roleAssignments`
 
@@ -1249,6 +1866,17 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'DNS Resolver Contributor'`
+  - `'DNS Zone Contributor'`
+  - `'Domain Services Contributor'`
+  - `'Domain Services Reader'`
+  - `'Network Contributor'`
+  - `'Owner'`
+  - `'Private DNS Zone Contributor'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
 
 **Required parameters**
 
@@ -1265,6 +1893,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-privateendpointsroleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-privateendpointsroleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-privateendpointsroleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-privateendpointsroleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-privateendpointsroleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `privateEndpoints.roleAssignments.principalId`
@@ -1315,6 +1944,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `privateEndpoints.roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `privateEndpoints.roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1334,14 +1970,14 @@ The principal type of the assigned principal ID.
 
 ### Parameter: `privateEndpoints.service`
 
-The subresource to deploy the private endpoint for. For example "vault", "mysqlServer" or "dataFactory".
+The subresource to deploy the Private Endpoint for. For example "vault" for a Key Vault Private Endpoint.
 
 - Required: No
 - Type: string
 
 ### Parameter: `privateEndpoints.tags`
 
-Tags to be applied on all resources/resource groups in this deployment.
+Tags to be applied on all resources/Resource Groups in this deployment.
 
 - Required: No
 - Type: object
@@ -1362,7 +1998,7 @@ Whether or not public network access is allowed for this resource. For security 
 
 ### Parameter: `quarantinePolicyStatus`
 
-The value that indicates whether the quarantine policy is enabled or not.
+The value that indicates whether the quarantine policy is enabled or not. Note, requires the 'acrSku' to be 'Premium'.
 
 - Required: No
 - Type: string
@@ -1381,6 +2017,63 @@ All replications to create.
 
 - Required: No
 - Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-replicationsname) | string | The name of the replication. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`location`](#parameter-replicationslocation) | string | Location for all resources. |
+| [`regionEndpointEnabled`](#parameter-replicationsregionendpointenabled) | bool | Specifies whether the replication regional endpoint is enabled. Requests will not be routed to a replication whose regional endpoint is disabled, however its data will continue to be synced with other replications. |
+| [`tags`](#parameter-replicationstags) | object | Tags of the resource. |
+| [`zoneRedundancy`](#parameter-replicationszoneredundancy) | string | Whether or not zone redundancy is enabled for this container registry. |
+
+### Parameter: `replications.name`
+
+The name of the replication.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `replications.location`
+
+Location for all resources.
+
+- Required: No
+- Type: string
+
+### Parameter: `replications.regionEndpointEnabled`
+
+Specifies whether the replication regional endpoint is enabled. Requests will not be routed to a replication whose regional endpoint is disabled, however its data will continue to be synced with other replications.
+
+- Required: No
+- Type: bool
+
+### Parameter: `replications.tags`
+
+Tags of the resource.
+
+- Required: No
+- Type: object
+
+### Parameter: `replications.zoneRedundancy`
+
+Whether or not zone redundancy is enabled for this container registry.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Disabled'
+    'Enabled'
+  ]
+  ```
 
 ### Parameter: `retentionPolicyDays`
 
@@ -1405,12 +2098,42 @@ The value that indicates whether the retention policy is enabled or not.
   ]
   ```
 
+### Parameter: `roleAssignmentMode`
+
+The registry permissions role assignment mode.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'AbacRepositoryPermissions'
+    'LegacyRegistryPermissions'
+  ]
+  ```
+
 ### Parameter: `roleAssignments`
 
 Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'AcrDelete'`
+  - `'AcrImageSigner'`
+  - `'AcrPull'`
+  - `'AcrPush'`
+  - `'AcrQuarantineReader'`
+  - `'AcrQuarantineWriter'`
+  - `'Container Registry Repository Catalog Lister'`
+  - `'Container Registry Repository Contributor'`
+  - `'Container Registry Repository Reader'`
+  - `'Container Registry Repository Writer'`
+  - `'Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
 
 **Required parameters**
 
@@ -1427,6 +2150,7 @@ Array of role assignments to create.
 | [`conditionVersion`](#parameter-roleassignmentsconditionversion) | string | Version of the condition. |
 | [`delegatedManagedIdentityResourceId`](#parameter-roleassignmentsdelegatedmanagedidentityresourceid) | string | The Resource Id of the delegated managed identity resource. |
 | [`description`](#parameter-roleassignmentsdescription) | string | The description of the role assignment. |
+| [`name`](#parameter-roleassignmentsname) | string | The name (as GUID) of the role assignment. If not provided, a GUID will be generated. |
 | [`principalType`](#parameter-roleassignmentsprincipaltype) | string | The principal type of the assigned principal ID. |
 
 ### Parameter: `roleAssignments.principalId`
@@ -1477,6 +2201,13 @@ The description of the role assignment.
 - Required: No
 - Type: string
 
+### Parameter: `roleAssignments.name`
+
+The name (as GUID) of the role assignment. If not provided, a GUID will be generated.
+
+- Required: No
+- Type: string
+
 ### Parameter: `roleAssignments.principalType`
 
 The principal type of the assigned principal ID.
@@ -1493,6 +2224,47 @@ The principal type of the assigned principal ID.
     'User'
   ]
   ```
+
+### Parameter: `scopeMaps`
+
+Scope maps setting.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`actions`](#parameter-scopemapsactions) | array | The list of scoped permissions for registry artifacts. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`description`](#parameter-scopemapsdescription) | string | The user friendly description of the scope map. |
+| [`name`](#parameter-scopemapsname) | string | The name of the scope map. |
+
+### Parameter: `scopeMaps.actions`
+
+The list of scoped permissions for registry artifacts.
+
+- Required: Yes
+- Type: array
+
+### Parameter: `scopeMaps.description`
+
+The user friendly description of the scope map.
+
+- Required: No
+- Type: string
+
+### Parameter: `scopeMaps.name`
+
+The name of the scope map.
+
+- Required: No
+- Type: string
 
 ### Parameter: `softDeletePolicyDays`
 
@@ -1526,7 +2298,7 @@ Tags of the resource.
 
 ### Parameter: `trustPolicyStatus`
 
-The value that indicates whether the trust policy is enabled or not.
+The value that indicates whether the trust policy is enabled or not. Note, requires the 'acrSku' to be 'Premium'.
 
 - Required: No
 - Type: string
@@ -1546,13 +2318,94 @@ All webhooks to create.
 - Required: No
 - Type: array
 
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`serviceUri`](#parameter-webhooksserviceuri) | string | The service URI for the webhook to post notifications. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`action`](#parameter-webhooksaction) | array | The list of actions that trigger the webhook to post notifications. |
+| [`customHeaders`](#parameter-webhookscustomheaders) | object | Custom headers that will be added to the webhook notifications. |
+| [`location`](#parameter-webhookslocation) | string | Location for all resources. |
+| [`name`](#parameter-webhooksname) | string | The name of the registry webhook. |
+| [`scope`](#parameter-webhooksscope) | string | The scope of repositories where the event can be triggered. For example, 'foo:*' means events for all tags under repository 'foo'. 'foo:bar' means events for 'foo:bar' only. 'foo' is equivalent to 'foo:latest'. Empty means all events. |
+| [`status`](#parameter-webhooksstatus) | string | The status of the webhook at the time the operation was called. |
+| [`tags`](#parameter-webhookstags) | object | Tags of the resource. |
+
+### Parameter: `webhooks.serviceUri`
+
+The service URI for the webhook to post notifications.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `webhooks.action`
+
+The list of actions that trigger the webhook to post notifications.
+
+- Required: No
+- Type: array
+
+### Parameter: `webhooks.customHeaders`
+
+Custom headers that will be added to the webhook notifications.
+
+- Required: No
+- Type: object
+
+### Parameter: `webhooks.location`
+
+Location for all resources.
+
+- Required: No
+- Type: string
+
+### Parameter: `webhooks.name`
+
+The name of the registry webhook.
+
+- Required: No
+- Type: string
+
+### Parameter: `webhooks.scope`
+
+The scope of repositories where the event can be triggered. For example, 'foo:*' means events for all tags under repository 'foo'. 'foo:bar' means events for 'foo:bar' only. 'foo' is equivalent to 'foo:latest'. Empty means all events.
+
+- Required: No
+- Type: string
+
+### Parameter: `webhooks.status`
+
+The status of the webhook at the time the operation was called.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'disabled'
+    'enabled'
+  ]
+  ```
+
+### Parameter: `webhooks.tags`
+
+Tags of the resource.
+
+- Required: No
+- Type: object
+
 ### Parameter: `zoneRedundancy`
 
 Whether or not zone redundancy is enabled for this container registry.
 
 - Required: No
 - Type: string
-- Default: `'Disabled'`
+- Default: `'Enabled'`
 - Allowed:
   ```Bicep
   [
@@ -1561,14 +2414,16 @@ Whether or not zone redundancy is enabled for this container registry.
   ]
   ```
 
-
 ## Outputs
 
 | Output | Type | Description |
 | :-- | :-- | :-- |
+| `credentialSetsResourceIds` | array | The Resource IDs of the ACR Credential Sets. |
+| `credentialSetsSystemAssignedMIPrincipalIds` | array | The Principal IDs of the ACR Credential Sets system-assigned identities. |
 | `location` | string | The location the resource was deployed into. |
 | `loginServer` | string | The reference to the Azure container registry. |
 | `name` | string | The Name of the Azure container registry. |
+| `privateEndpoints` | array | The private endpoints of the Azure container registry. |
 | `resourceGroupName` | string | The name of the Azure container registry. |
 | `resourceId` | string | The resource ID of the Azure container registry. |
 | `systemAssignedMIPrincipalId` | string | The principal ID of the system assigned identity. |
@@ -1579,8 +2434,11 @@ This section gives you an overview of all local-referenced module files (i.e., o
 
 | Reference | Type |
 | :-- | :-- |
-| `br/public:avm/res/network/private-endpoint:0.4.0` | Remote reference |
+| `br/public:avm/res/network/private-endpoint:0.11.0` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.5.1` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.0` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Data Collection
 
-The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft’s privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the [repository](https://aka.ms/avm/telemetry). There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at <https://go.microsoft.com/fwlink/?LinkID=824704>. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.

@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -37,13 +37,12 @@ module nestedDependencies 'dependencies.bicep' = {
   params: {
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
-    location: resourceLocation
   }
 }
 
 // Diagnostics
 // ===========
-module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+module diagnosticDependencies '../../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
   params: {
@@ -51,7 +50,6 @@ module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/t
     logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
     eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
     eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
-    location: resourceLocation
   }
 }
 
@@ -70,13 +68,11 @@ module testDeployment '../../../main.bicep' = [
         kind: 'CanNotDelete'
         name: 'myCustomLockName'
       }
-      location: resourceLocation
       skuObject: {
         name: 'Premium'
         capacity: 16
       }
       premiumMessagingPartitions: 1
-      zoneRedundant: true
       tags: {
         'hidden-title': 'This is visible in the resource name'
         Environment: 'Non-Prod'
@@ -84,9 +80,23 @@ module testDeployment '../../../main.bicep' = [
       }
       roleAssignments: [
         {
-          roleDefinitionIdOrName: 'Reader'
+          name: '2c42f915-20bf-4094-ba42-fee1f811d374'
+          roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
-
+          principalType: 'ServicePrincipal'
+        }
+        {
+          name: guid('Custom seed ${namePrefix}${serviceShort}')
+          roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+          principalId: nestedDependencies.outputs.managedIdentityPrincipalId
+          principalType: 'ServicePrincipal'
+        }
+        {
+          roleDefinitionIdOrName: subscriptionResourceId(
+            'Microsoft.Authorization/roleDefinitions',
+            'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+          )
+          principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
       ]
@@ -132,7 +142,20 @@ module testDeployment '../../../main.bicep' = [
           name: '${namePrefix}${serviceShort}q001'
           roleAssignments: [
             {
-              roleDefinitionIdOrName: 'Reader'
+              roleDefinitionIdOrName: 'Owner'
+              principalId: nestedDependencies.outputs.managedIdentityPrincipalId
+              principalType: 'ServicePrincipal'
+            }
+            {
+              roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+              principalId: nestedDependencies.outputs.managedIdentityPrincipalId
+              principalType: 'ServicePrincipal'
+            }
+            {
+              roleDefinitionIdOrName: subscriptionResourceId(
+                'Microsoft.Authorization/roleDefinitions',
+                'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+              )
               principalId: nestedDependencies.outputs.managedIdentityPrincipalId
               principalType: 'ServicePrincipal'
             }
@@ -163,7 +186,20 @@ module testDeployment '../../../main.bicep' = [
           name: '${namePrefix}${serviceShort}t001'
           roleAssignments: [
             {
-              roleDefinitionIdOrName: 'Reader'
+              roleDefinitionIdOrName: 'Owner'
+              principalId: nestedDependencies.outputs.managedIdentityPrincipalId
+              principalType: 'ServicePrincipal'
+            }
+            {
+              roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+              principalId: nestedDependencies.outputs.managedIdentityPrincipalId
+              principalType: 'ServicePrincipal'
+            }
+            {
+              roleDefinitionIdOrName: subscriptionResourceId(
+                'Microsoft.Authorization/roleDefinitions',
+                'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+              )
               principalId: nestedDependencies.outputs.managedIdentityPrincipalId
               principalType: 'ServicePrincipal'
             }
@@ -187,7 +223,52 @@ module testDeployment '../../../main.bicep' = [
           ]
           subscriptions: [
             {
-              name: 'subscription001'
+              name: 'subscriptionwithoutrules001' // this will still result in the creation of the default SqlFilter '1=1' rule
+            }
+            {
+              name: 'subscriptionwithsqlfilterrule001'
+              rules: [
+                {
+                  name: '${namePrefix}-test-sql-filter'
+                  filterType: 'SqlFilter'
+                  sqlFilter: {
+                    sqlExpression: 'Test=1'
+                  }
+                  action: {
+                    sqlExpression: 'SET Foo = 1;'
+                    requiresPreprocessing: true
+                    compatibilityLevel: 20
+                  }
+                }
+              ]
+            }
+            {
+              name: 'subscriptionwithcorrelationfilterrule001'
+              rules: [
+                {
+                  name: '${namePrefix}-test-correlation-filter'
+                  filterType: 'CorrelationFilter'
+                  correlationFilter: {
+                    contentType: 'application/json'
+                    label: 'Test'
+                    messageId: 'Test'
+                    to: 'Test'
+                    replyTo: 'Test'
+                    replyToSessionId: 'Test'
+                    sessionId: 'Test'
+                    correlationId: 'Test'
+                    properties: {
+                      fooHeader: 'Foo'
+                      barHeader: 'Bar'
+                    }
+                  }
+                  action: {
+                    sqlExpression: 'SET Foo = 1;'
+                    requiresPreprocessing: true
+                    compatibilityLevel: 20
+                  }
+                }
+              ]
             }
           ]
         }
@@ -216,9 +297,13 @@ module testDeployment '../../../main.bicep' = [
           name: 'myPrivateEndpoint'
           privateLinkServiceConnectionName: 'customLinkName'
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
           tags: {
             'hidden-title': 'This is visible in the resource name'
             Environment: 'Non-Prod'
@@ -245,14 +330,18 @@ module testDeployment '../../../main.bicep' = [
         }
         {
           subnetResourceId: nestedDependencies.outputs.subnetResourceId
-          privateDnsZoneResourceIds: [
-            nestedDependencies.outputs.privateDNSZoneResourceId
-          ]
+          privateDnsZoneGroup: {
+            privateDnsZoneGroupConfigs: [
+              {
+                privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+              }
+            ]
+          }
         }
       ]
       managedIdentities: {
         systemAssigned: true
-        userAssignedResourcesIds: [
+        userAssignedResourceIds: [
           nestedDependencies.outputs.managedIdentityResourceId
         ]
       }
@@ -260,9 +349,5 @@ module testDeployment '../../../main.bicep' = [
       publicNetworkAccess: 'Enabled'
       minimumTlsVersion: '1.2'
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]
