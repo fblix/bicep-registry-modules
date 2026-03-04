@@ -117,6 +117,26 @@ module testDeployment '../../../main.bicep' = [
           storageAccountResourceId: diagnosticDependencies.outputs.storageAccountResourceId
           workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
         }
+        {
+          name: 'logsOnlySetting'
+          workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
+          logCategoriesAndGroups: [
+            {
+              category: 'AuditEvent'
+              enabled: true
+            }
+          ]
+        }
+        {
+          name: 'metricsOnlySetting'
+          workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
+          metricCategories: [
+            {
+              category: 'AllMetrics'
+              enabled: true
+            }
+          ]
+        }
       ]
       // Only for testing purposes
       enablePurgeProtection: false

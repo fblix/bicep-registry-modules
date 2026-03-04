@@ -2,6 +2,21 @@
 
 The latest version of the changelog can be found [here](https://github.com/Azure/bicep-registry-modules/blob/main/avm/res/key-vault/vault/CHANGELOG.md).
 
+## 0.13.4
+
+### Changes
+
+- Updated diagnostics settings behavior to avoid implicit defaulting to `AllMetrics` / `allLogs` when either `metricCategories` or `logCategoriesAndGroups` is explicitly specified.
+- Added `@minValue(7)` and `@maxValue(90)` validation decorators to `softDeleteRetentionInDays` for earlier editor-time validation.
+- Expanded existing E2E test scenarios to cover diagnostics `logs-only`, diagnostics `metrics-only`, and `softDeleteRetentionInDays` upper-bound (`90`) validation.
+- Updated the AVM telemetry deployment resource API version to `2024-07-01`.
+- Updated `privateEndpoints` referenced module version to `br/public:avm/res/network/private-endpoint:0.11.1`.
+- Added a targeted lint suppression for `Microsoft.Insights/diagnosticSettings@2021-05-01-preview` since the suggested stable alternative is not compatible with the required diagnostics properties.
+
+### Breaking Changes
+
+- None
+
 ## 0.13.3
 
 ### Changes

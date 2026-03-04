@@ -30,8 +30,8 @@ For examples, please refer to the [Usage Examples](#usage-examples) section.
 | `Microsoft.KeyVault/vaults/accessPolicies` | 2024-11-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.keyvault_vaults_accesspolicies.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2024-11-01/vaults/accessPolicies)</li></ul> |
 | `Microsoft.KeyVault/vaults/keys` | 2024-11-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.keyvault_vaults_keys.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2024-11-01/vaults/keys)</li></ul> |
 | `Microsoft.KeyVault/vaults/secrets` | 2024-11-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.keyvault_vaults_secrets.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2024-11-01/vaults/secrets)</li></ul> |
-| `Microsoft.Network/privateEndpoints` | 2024-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/privateEndpoints)</li></ul> |
-| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | 2024-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints_privatednszonegroups.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/privateEndpoints/privateDnsZoneGroups)</li></ul> |
+| `Microsoft.Network/privateEndpoints` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/privateEndpoints)</li></ul> |
+| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | 2024-10-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.network_privateendpoints_privatednszonegroups.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-10-01/privateEndpoints/privateDnsZoneGroups)</li></ul> |
 
 ## Usage examples
 
@@ -65,6 +65,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
     name: 'kvvmin002'
     // Non-required parameters
     enablePurgeProtection: false
+    softDeleteRetentionInDays: 90
   }
 }
 ```
@@ -88,6 +89,9 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
     // Non-required parameters
     "enablePurgeProtection": {
       "value": false
+    },
+    "softDeleteRetentionInDays": {
+      "value": 90
     }
   }
 }
@@ -107,6 +111,7 @@ using 'br/public:avm/res/key-vault/vault:<version>'
 param name = 'kvvmin002'
 // Non-required parameters
 param enablePurgeProtection = false
+param softDeleteRetentionInDays = 90
 ```
 
 </details>
@@ -346,6 +351,26 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
         ]
         name: 'customSetting'
         storageAccountResourceId: '<storageAccountResourceId>'
+        workspaceResourceId: '<workspaceResourceId>'
+      }
+      {
+        logCategoriesAndGroups: [
+          {
+            category: 'AuditEvent'
+            enabled: true
+          }
+        ]
+        name: 'logsOnlySetting'
+        workspaceResourceId: '<workspaceResourceId>'
+      }
+      {
+        metricCategories: [
+          {
+            category: 'AllMetrics'
+            enabled: true
+          }
+        ]
+        name: 'metricsOnlySetting'
         workspaceResourceId: '<workspaceResourceId>'
       }
     ]
@@ -601,6 +626,26 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
           ],
           "name": "customSetting",
           "storageAccountResourceId": "<storageAccountResourceId>",
+          "workspaceResourceId": "<workspaceResourceId>"
+        },
+        {
+          "logCategoriesAndGroups": [
+            {
+              "category": "AuditEvent",
+              "enabled": true
+            }
+          ],
+          "name": "logsOnlySetting",
+          "workspaceResourceId": "<workspaceResourceId>"
+        },
+        {
+          "metricCategories": [
+            {
+              "category": "AllMetrics",
+              "enabled": true
+            }
+          ],
+          "name": "metricsOnlySetting",
           "workspaceResourceId": "<workspaceResourceId>"
         }
       ]
@@ -874,6 +919,26 @@ param diagnosticSettings = [
     ]
     name: 'customSetting'
     storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+  {
+    logCategoriesAndGroups: [
+      {
+        category: 'AuditEvent'
+        enabled: true
+      }
+    ]
+    name: 'logsOnlySetting'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+  {
+    metricCategories: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+      }
+    ]
+    name: 'metricsOnlySetting'
     workspaceResourceId: '<workspaceResourceId>'
   }
 ]
@@ -3270,6 +3335,8 @@ softDelete data retention days. It accepts >=7 and <=90.
 - Required: No
 - Type: int
 - Default: `90`
+- MinValue: 7
+- MaxValue: 90
 
 ### Parameter: `tags`
 
@@ -3297,7 +3364,7 @@ This section gives you an overview of all local-referenced module files (i.e., o
 
 | Reference | Type |
 | :-- | :-- |
-| `br/public:avm/res/network/private-endpoint:0.11.0` | Remote reference |
+| `br/public:avm/res/network/private-endpoint:0.11.1` | Remote reference |
 | `br/public:avm/utl/types/avm-common-types:0.6.1` | Remote reference |
 
 ## Data Collection

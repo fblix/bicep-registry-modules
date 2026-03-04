@@ -33,6 +33,8 @@ param enableVaultForDiskEncryption bool = true
 param enableSoftDelete bool = true
 
 @description('Optional. softDelete data retention days. It accepts >=7 and <=90.')
+@minValue(7)
+@maxValue(90)
 param softDeleteRetentionInDays int = 90
 
 @description('Optional. Property that controls how data actions are authorized. When true, the key vault will use Role Based Access Control (RBAC) for authorization of data actions, and the access policies specified in vault properties will be ignored. When false, the key vault will use the access policies specified in vault properties, and any policy stored on Azure Resource Manager will be ignored. Note that management actions are always authorized with RBAC.')
@@ -173,7 +175,7 @@ var formattedAccessPolicies = [
 // ============ //
 
 #disable-next-line no-deployments-resources
-resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
+resource avmTelemetry 'Microsoft.Resources/deployments@2024-07-01' = if (enableTelemetry) {
   name: '46d3xbcp.res.keyvault-vault.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
   properties: {
     mode: 'Incremental'
@@ -235,6 +237,7 @@ resource keyVault_lock 'Microsoft.Authorization/locks@2020-05-01' = if (!empty(l
   scope: keyVault
 }
 
+#disable-next-line use-recent-api-versions
 resource keyVault_diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = [
   for (diagnosticSetting, index) in (diagnosticSettings ?? []): {
     name: diagnosticSetting.?name ?? '${name}-diagnosticSettings'
@@ -244,14 +247,18 @@ resource keyVault_diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021
       eventHubAuthorizationRuleId: diagnosticSetting.?eventHubAuthorizationRuleResourceId
       eventHubName: diagnosticSetting.?eventHubName
       metrics: [
-        for group in (diagnosticSetting.?metricCategories ?? [{ category: 'AllMetrics' }]): {
+        for group in (contains(diagnosticSetting, 'metricCategories') || !contains(diagnosticSetting, 'logCategoriesAndGroups')
+          ? (diagnosticSetting.?metricCategories ?? [{ category: 'AllMetrics' }])
+          : []): {
           category: group.category
           enabled: group.?enabled ?? true
           timeGrain: null
         }
       ]
       logs: [
-        for group in (diagnosticSetting.?logCategoriesAndGroups ?? [{ categoryGroup: 'allLogs' }]): {
+        for group in (contains(diagnosticSetting, 'logCategoriesAndGroups') || !contains(diagnosticSetting, 'metricCategories')
+          ? (diagnosticSetting.?logCategoriesAndGroups ?? [{ categoryGroup: 'allLogs' }])
+          : []): {
           categoryGroup: group.?categoryGroup
           category: group.?category
           enabled: group.?enabled ?? true
@@ -313,7 +320,7 @@ module keyVault_keys 'key/main.bicep' = [
   }
 ]
 
-module keyVault_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.11.0' = [
+module keyVault_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.11.1' = [
   for (privateEndpoint, index) in (privateEndpoints ?? []): {
     name: '${uniqueString(deployment().name, location)}-keyVault-PrivateEndpoint-${index}'
     scope: resourceGroup(

@@ -44,6 +44,7 @@ module testDeployment '../../../main.bicep' = [
       name: '${namePrefix}${serviceShort}002'
       // Only for testing purposes
       enablePurgeProtection: false
+      softDeleteRetentionInDays: 90
     }
   }
 ]
